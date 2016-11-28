@@ -88,14 +88,14 @@ namespace Qiniu.UnitTests
             putPolicy.Scope = Settings.Bucket;
             putPolicy.SetExpires(3600);
             putPolicy.DeleteAfterDays = 1;
-            string token = Auth.createUploadToken(putPolicy, mac);
+            string token = Auth.CreateUploadToken(putPolicy, mac);
             UploadOptions uploadOptions = null;
 
             UpCompletionHandler upCompletionHandler = new UpCompletionHandler(delegate (string fileKey, ResponseInfo respInfo, string response)
             {
                 Assert.AreEqual(200, respInfo.StatusCode);
             });
-            await target.uploadFile(file, key, token, uploadOptions, upCompletionHandler);
+            await target.UploadFileAsync(file, key, token, uploadOptions, upCompletionHandler);
         }
 
         [TestMethod()]
@@ -113,14 +113,14 @@ namespace Qiniu.UnitTests
             putPolicy.Scope = Settings.Bucket;
             putPolicy.SetExpires(3600);
             putPolicy.DeleteAfterDays = 1;
-            string token = Auth.createUploadToken(putPolicy, mac);
+            string token = Auth.CreateUploadToken(putPolicy, mac);
             UploadOptions uploadOptions = null;
 
             UpCompletionHandler upCompletionHandler = new UpCompletionHandler(delegate (string fileKey, ResponseInfo respInfo, string response)
             {
                 Assert.AreEqual(200, respInfo.StatusCode);
             });
-            await target.uploadStream(fs, key, token, uploadOptions, upCompletionHandler);
+            await target.UploadStreamAsync(fs, key, token, uploadOptions, upCompletionHandler);
         }
     }
 }

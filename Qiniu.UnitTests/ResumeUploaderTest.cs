@@ -40,7 +40,7 @@ namespace Qiniu.UnitTests
             putPolicy.Scope = Settings.Bucket;
             putPolicy.SetExpires(3600);
             putPolicy.DeleteAfterDays = 1;
-            string token = Auth.createUploadToken(putPolicy, mac);
+            string token = Auth.CreateUploadToken(putPolicy, mac);
 
             var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/WhatsNewinCSharp6_high.mp4"));
 
@@ -48,7 +48,7 @@ namespace Qiniu.UnitTests
 
             ResumeRecorder recorder = new ResumeRecorder(folder);
             ResumeUploader target = new ResumeUploader(recorder, "big.rec", file, "WhatsNewinCSharp6_high.mp4", token, null, null);
-            await target.uploadFile();
+            await target.UploadFileAsync();
         }
     }
 }

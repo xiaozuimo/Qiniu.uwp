@@ -65,7 +65,7 @@ namespace Qiniu.Util
         /// <returns>此上传策略的Json字符串。</returns>
         public override string ToString()
         {
-            return StringUtils.jsonEncode(this);
+            return StringUtils.JsonEncode(this);
         }
         /// <summary>
         /// 获取此上传策略的副本。

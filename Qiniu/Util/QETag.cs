@@ -7,7 +7,7 @@ namespace Qiniu.Util
     {
         private static int BLOCK_SIZE = 4 * 1024 * 1024;
         private static int BLOCK_SHA1_SIZE = 20;
-        public static string hash(string filePath)
+        public static string Hash(string filePath)
         {
             string qetag = "";
             try
@@ -23,7 +23,7 @@ namespace Qiniu.Util
                         byte[] readBuffer = new byte[readByteCount];
                         Array.Copy(buffer, readBuffer, readByteCount);
 
-                        byte[] sha1Buffer = StringUtils.sha1(readBuffer);
+                        byte[] sha1Buffer = StringUtils.Sha1(readBuffer);
 
                         finalBuffer[0] = 0x16;
                         Array.Copy(sha1Buffer, 0, finalBuffer, 1, sha1Buffer.Length);
@@ -39,17 +39,17 @@ namespace Qiniu.Util
                             byte[] readBuffer = new byte[readByteCount];
                             Array.Copy(buffer, readBuffer, readByteCount);
 
-                            byte[] sha1Buffer = StringUtils.sha1(readBuffer);
+                            byte[] sha1Buffer = StringUtils.Sha1(readBuffer);
                             Array.Copy(sha1Buffer, 0, sha1AllBuffer, i * BLOCK_SHA1_SIZE, sha1Buffer.Length);
                         }
 
-                        byte[] sha1AllBufferSha1 = StringUtils.sha1(sha1AllBuffer);
+                        byte[] sha1AllBufferSha1 = StringUtils.Sha1(sha1AllBuffer);
 
                         finalBuffer[0] = 0x96;
                         Array.Copy(sha1AllBufferSha1, 0, finalBuffer, 1, sha1AllBufferSha1.Length);
 
                     }
-                    qetag = StringUtils.urlSafeBase64Encode(finalBuffer);
+                    qetag = StringUtils.UrlSafeBase64Encode(finalBuffer);
                 }
             }
             catch (Exception) { }

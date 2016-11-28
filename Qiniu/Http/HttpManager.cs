@@ -20,21 +20,21 @@ namespace Qiniu.Http
         public static string FORM_BOUNDARY_TAG = "--";
         public static int COPY_BYTES_BUFFER = 40 * 1024 * 1024; //40 KB
 
-        private string getUserAgent()
+        private string GetUserAgent()
         {
             return string.Format("QiniuCSharpSDK/{0}", Config.VERSION);
         }
 
-        private string createFormDataBoundary()
+        private string CreateFormDataBoundary()
         {
             string now = DateTime.Now.ToString();
-            return string.Format("-------QiniuCSharpSDKBoundary{0}", Qiniu.Util.StringUtils.md5Hash(now));
+            return string.Format("-------QiniuCSharpSDKBoundary{0}", Qiniu.Util.StringUtils.Md5Hash(now));
         }
 
-        private string createRandomFilename()
+        private string CreateRandomFilename()
         {
             string now = DateTime.Now.ToString();
-            return string.Format("randomfile{0}", Qiniu.Util.StringUtils.urlSafeBase64Encode(now));
+            return string.Format("randomfile{0}", Qiniu.Util.StringUtils.UrlSafeBase64Encode(now));
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Qiniu.Http
         /// <param name="pUrl"></param>
         /// <param name="pHeaders"></param>
         /// <param name="pCompletionHandler"></param>
-        public async Task get(string pUrl, Dictionary<string, string> pHeaders,
+        public async Task GetAsync(string pUrl, Dictionary<string, string> pHeaders,
             CompletionHandler pCompletionHandler)
         {
             HttpWebRequest vWebReq = null;
@@ -65,7 +65,7 @@ namespace Qiniu.Http
             {
                 //vWebReq.AllowAutoRedirect = false;
                 vWebReq.Method = "GET";
-                vWebReq.Headers["User-Agent"] = this.getUserAgent();
+                vWebReq.Headers["User-Agent"] = this.GetUserAgent();
                 if (pHeaders != null)
                 {
                     foreach (KeyValuePair<string, string> kvp in pHeaders)
@@ -79,17 +79,17 @@ namespace Qiniu.Http
 
                 //fire request
                 vWebResp = (HttpWebResponse)(await vWebReq.GetResponseAsync());
-                await handleWebResponse(vWebResp, pCompletionHandler);
+                await HandleWebResponse(vWebResp, pCompletionHandler);
             }
             catch (WebException wexp)
             {
                 // FIX-HTTP 4xx/5xx Error 2016-11-22, 17:00 @fengyh
                 HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
-                await handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
+                await HandleErrorWebResponseAsync(xWebResp, pCompletionHandler, wexp);
             }
             catch (Exception exp)
             {
-                await handleErrorWebResponse(vWebResp, pCompletionHandler, exp);
+                await HandleErrorWebResponseAsync(vWebResp, pCompletionHandler, exp);
             }
         }
 
@@ -100,7 +100,7 @@ namespace Qiniu.Http
         /// <param name="pHeaders"></param>
         /// <param name="pParamDict"></param>
         /// <param name="pCompletionHandler"></param>
-        public async Task postForm(string pUrl, Dictionary<string, string> pHeaders,
+        public async Task PostFormAsync(string pUrl, Dictionary<string, string> pHeaders,
             Dictionary<string, string[]> pPostParams, CompletionHandler pCompletionHandler)
         {
             HttpWebRequest vWebReq = null;
@@ -120,7 +120,7 @@ namespace Qiniu.Http
 
             try
             {
-                vWebReq.Headers["User-Agent"] = this.getUserAgent();
+                vWebReq.Headers["User-Agent"] = this.GetUserAgent();
                 //vWebReq.AllowAutoRedirect = false;
                 vWebReq.Method = "POST";
                 vWebReq.ContentType = FORM_MIME_URLENCODED;
@@ -159,17 +159,17 @@ namespace Qiniu.Http
 
                 //fire request
                 vWebResp = (HttpWebResponse)(await vWebReq.GetResponseAsync());
-                await handleWebResponse(vWebResp, pCompletionHandler);
+                await HandleWebResponse(vWebResp, pCompletionHandler);
             }
             catch (WebException wexp)
             {
                 // FIX-HTTP 4xx/5xx Error 2016-11-22, 17:00 @fengyh
                 HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
-                await handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
+                await HandleErrorWebResponseAsync(xWebResp, pCompletionHandler, wexp);
             }
             catch (Exception exp)
             {
-                await handleErrorWebResponse(vWebResp, pCompletionHandler, exp);
+                await HandleErrorWebResponseAsync(vWebResp, pCompletionHandler, exp);
             }
         }
 
@@ -181,7 +181,7 @@ namespace Qiniu.Http
         /// <param name="pHeaders"></param>
         /// <param name="pPostData"></param>
         /// <param name="pCompletionHandler"></param>
-        public async Task postData(string pUrl, Dictionary<string, string> pHeaders,
+        public async Task PostDataAsync(string pUrl, Dictionary<string, string> pHeaders,
             byte[] pPostData, string contentType, CompletionHandler pCompletionHandler)
         {
             HttpWebRequest vWebReq = null;
@@ -202,7 +202,7 @@ namespace Qiniu.Http
 
             try
             {
-                vWebReq.Headers["User-Agent"] = this.getUserAgent();
+                vWebReq.Headers["User-Agent"] = this.GetUserAgent();
                 //vWebReq.AllowAutoRedirect = false;
                 vWebReq.Method = "POST";
                 if (!string.IsNullOrEmpty(contentType))
@@ -234,17 +234,17 @@ namespace Qiniu.Http
 
                 //fire request
                 vWebResp = (HttpWebResponse)(await vWebReq.GetResponseAsync());
-                await handleWebResponse(vWebResp, pCompletionHandler);
+                await HandleWebResponse(vWebResp, pCompletionHandler);
             }
             catch (WebException wexp)
             {
                 // FIX-HTTP 4xx/5xx Error 2016-11-22, 17:00 @fengyh
                 HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
-                await handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
+                await HandleErrorWebResponseAsync(xWebResp, pCompletionHandler, wexp);
             }
             catch (Exception exp)
             {
-                await handleErrorWebResponse(vWebResp, pCompletionHandler, exp);
+                await HandleErrorWebResponseAsync(vWebResp, pCompletionHandler, exp);
             }
         }
 
@@ -257,7 +257,7 @@ namespace Qiniu.Http
         /// <param name="offset"></param>
         /// <param name="count"></param>
         /// <param name="pCompletionHandler"></param>
-        public async Task postData(string pUrl, Dictionary<string, string> pHeaders,
+        public async Task PostDataAsync(string pUrl, Dictionary<string, string> pHeaders,
             byte[] pPostData, int offset, int count, string contentType,
             CompletionHandler pCompletionHandler)
         {
@@ -278,7 +278,7 @@ namespace Qiniu.Http
 
             try
             {
-                vWebReq.Headers["User-Agent"] = this.getUserAgent();
+                vWebReq.Headers["User-Agent"] = this.GetUserAgent();
                 //vWebReq.AllowAutoRedirect = false;
                 vWebReq.Method = "POST";
                 if (!string.IsNullOrEmpty(contentType))
@@ -310,17 +310,17 @@ namespace Qiniu.Http
 
                 //fire request
                 vWebResp = (HttpWebResponse)(await vWebReq.GetResponseAsync());
-                await handleWebResponse(vWebResp, pCompletionHandler);
+                await HandleWebResponse(vWebResp, pCompletionHandler);
             }
             catch (WebException wexp)
             {
                 // FIX-HTTP 4xx/5xx Error 2016-11-22, 17:00 @fengyh
                 HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
-                await handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
+                await HandleErrorWebResponseAsync(xWebResp, pCompletionHandler, wexp);
             }
             catch (Exception exp)
             {
-                await handleErrorWebResponse(vWebResp, pCompletionHandler, exp);
+                await HandleErrorWebResponseAsync(vWebResp, pCompletionHandler, exp);
             }
         }
 
@@ -334,7 +334,7 @@ namespace Qiniu.Http
         /// <param name="httpFormFile"></param>
         /// <param name="pProgressHandler"></param>
         /// <param name="pCompletionHandler"></param>
-        public async Task postMultipartDataForm(string pUrl, Dictionary<string, string> pHeaders,
+        public async Task PostMultipartDataFormAsync(string pUrl, Dictionary<string, string> pHeaders,
            Dictionary<string, string> pPostParams, HttpFormFile pFormFile,
             ProgressHandler pProgressHandler, CompletionHandler pCompletionHandler)
         {
@@ -365,12 +365,12 @@ namespace Qiniu.Http
 
             try
             {
-                vWebReq.Headers["User-Agent"] = this.getUserAgent();
+                vWebReq.Headers["User-Agent"] = this.GetUserAgent();
                 //vWebReq.AllowAutoRedirect = false;
                 vWebReq.Method = "POST";
 
                 //create boundary
-                string formBoundaryStr = this.createFormDataBoundary();
+                string formBoundaryStr = this.CreateFormDataBoundary();
                 string contentType = string.Format("multipart/form-data; boundary={0}", formBoundaryStr);
                 vWebReq.ContentType = contentType;
                 if (pHeaders != null)
@@ -416,7 +416,7 @@ namespace Qiniu.Http
                     string filename = pFormFile.Filename;
                     if (string.IsNullOrEmpty(filename))
                     {
-                        filename = this.createRandomFilename();
+                        filename = this.CreateRandomFilename();
                     }
                     byte[] filePartTitleData = Encoding.UTF8.GetBytes(
                                 string.Format("Content-Disposition: form-data; name=\"file\"; filename=\"{0}\"\r\n", filename));
@@ -438,7 +438,7 @@ namespace Qiniu.Http
                             {
                                 using(var fs = await pFormFile.BodyFile.OpenStreamForReadAsync())
                                 {
-                                    await this.writeHttpRequestBody(fs, vWebReqStream);
+                                    await this.WriteHttpRequestBodyAsync(fs, vWebReqStream);
                                 }
                             }
                             catch (Exception fex)
@@ -450,7 +450,7 @@ namespace Qiniu.Http
                             }
                             break;
                         case HttpFileType.FILE_STREAM:
-                            await this.writeHttpRequestBody(pFormFile.BodyStream, vWebReqStream);
+                            await this.WriteHttpRequestBodyAsync(pFormFile.BodyStream, vWebReqStream);
                             break;
                         case HttpFileType.DATA_BYTES:
                             await vWebReqStream.WriteAsync(pFormFile.BodyBytes, 0, pFormFile.BodyBytes.Length);
@@ -466,21 +466,21 @@ namespace Qiniu.Http
 
                 //fire request
                 vWebResp = (HttpWebResponse)(await vWebReq.GetResponseAsync());
-                await handleWebResponse(vWebResp, pCompletionHandler);
+                await HandleWebResponse(vWebResp, pCompletionHandler);
             }
             catch (WebException wexp)
             {
                 // FIX-HTTP 4xx/5xx Error 2016-11-22, 17:00 @fengyh
                 HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
-                await handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
+                await HandleErrorWebResponseAsync(xWebResp, pCompletionHandler, wexp);
             }
             catch (Exception exp)
             {
-                await handleErrorWebResponse(vWebResp, pCompletionHandler, exp);
+                await HandleErrorWebResponseAsync(vWebResp, pCompletionHandler, exp);
             }
         }
 
-        private async Task writeHttpRequestBody(Stream fromStream, Stream toStream)
+        private async Task WriteHttpRequestBodyAsync(Stream fromStream, Stream toStream)
         {
             byte[] buffer = new byte[COPY_BYTES_BUFFER];
             int count = -1;
@@ -493,7 +493,7 @@ namespace Qiniu.Http
             }
         }
 
-        private async Task handleWebResponse(HttpWebResponse pWebResp, CompletionHandler pCompletionHandler)
+        private async Task HandleWebResponse(HttpWebResponse pWebResp, CompletionHandler pCompletionHandler)
         {
             DateTime startTime = DateTime.Now;
             //check for exception
@@ -571,7 +571,7 @@ namespace Qiniu.Http
             }
         }
 
-        private async Task handleErrorWebResponse(HttpWebResponse pWebResp, CompletionHandler pCompletionHandler, Exception pExp)
+        private async Task HandleErrorWebResponseAsync(HttpWebResponse pWebResp, CompletionHandler pCompletionHandler, Exception pExp)
         {
             DateTime startTime = DateTime.Now;
             int statusCode = ResponseInfo.NetworkError;

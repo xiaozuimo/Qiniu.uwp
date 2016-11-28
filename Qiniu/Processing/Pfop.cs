@@ -18,7 +18,7 @@ namespace Qiniu.Processing
             this.Mac = mac;
         }
 
-        public async Task<PfopResult> pfop(string bucket, string key, string fops, string pipeline, string notifyUrl, bool force)
+        public async Task<PfopResult> PfopAsync(string bucket, string key, string fops, string pipeline, string notifyUrl, bool force)
         {
             PfopResult pfopResult = null;
 
@@ -41,15 +41,15 @@ namespace Qiniu.Processing
 
             string pfopUrl = Config.ZONE.ApiHost + "/pfop/";
 
-            string accessToken = Auth.createManageToken(pfopUrl, Encoding.UTF8.GetBytes(StringUtils.urlValuesEncode(pfopParams)), this.Mac);
+            string accessToken = Auth.CreateManageToken(pfopUrl, Encoding.UTF8.GetBytes(StringUtils.UrlValuesEncode(pfopParams)), this.Mac);
             Dictionary<string, string> pfopHeaders = new Dictionary<string, string>();
             pfopHeaders.Add("Authorization", accessToken);
 
             CompletionHandler pfopCompletionHandler = new CompletionHandler(delegate (ResponseInfo respInfo, string response)
             {
-                if (respInfo.isOk())
+                if (respInfo.IsOk())
                 {
-                    pfopResult = StringUtils.jsonDecode<PfopResult>(response);
+                    pfopResult = StringUtils.JsonDecode<PfopResult>(response);
                 }
                 else
                 {
@@ -59,13 +59,13 @@ namespace Qiniu.Processing
                 pfopResult.Response = response;
             });
 
-            await this.mHttpManager.postForm(pfopUrl, pfopHeaders, pfopParams, pfopCompletionHandler);
+            await this.mHttpManager.PostFormAsync(pfopUrl, pfopHeaders, pfopParams, pfopCompletionHandler);
             return pfopResult;
         }
-        public async Task<PfopResult> pfop(string bucket, string key, string[] fops, string pipeline, string notifyUrl, bool force)
+        public async Task<PfopResult> PfopAsync(string bucket, string key, string[] fops, string pipeline, string notifyUrl, bool force)
         {
             string newFops = string.Join(";", fops);
-            return await pfop(bucket, key, newFops, pipeline, notifyUrl, force);
+            return await PfopAsync(bucket, key, newFops, pipeline, notifyUrl, force);
         }
     }
 }

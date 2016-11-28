@@ -91,7 +91,7 @@ namespace Qiniu.Http
         /// 判断是否客户端取消
         /// </summary>
         /// <returns>取消状态</returns>
-        public bool isCancelled()
+        public bool IsCancelled()
         {
             return StatusCode == Cancelled;
         }
@@ -100,7 +100,7 @@ namespace Qiniu.Http
         /// 文件上传请求是否完全成功
         /// </summary>
         /// <returns>成功状态</returns>
-        public bool isOk()
+        public bool IsOk()
         {
             return StatusCode == 200 && Error == null && ReqId != null;
         }
@@ -109,7 +109,7 @@ namespace Qiniu.Http
         /// 检测是否网络故障
         /// </summary>
         /// <returns>网络状态</returns>
-        public bool isNetworkBroken()
+        public bool IsNetworkBroken()
         {
             return StatusCode == NetworkError;
         }
@@ -118,7 +118,7 @@ namespace Qiniu.Http
         /// 检测是否七牛服务器错误
         /// </summary>
         /// <returns>服务器状态</returns>
-        public bool isServerError()
+        public bool IsServerError()
         {
             return (StatusCode >= 500 && StatusCode < 600 && StatusCode != 579) || StatusCode == 996;
         }
@@ -127,12 +127,12 @@ namespace Qiniu.Http
         /// 检测客户端是否需要重试上传请求
         /// </summary>
         /// <returns>是否重试</returns>
-        public bool needRetry()
+        public bool NeedRetry()
         {
-            return isNetworkBroken() || isServerError() || StatusCode == 404 || StatusCode == 406 || (StatusCode == 200 && Error != null);
+            return IsNetworkBroken() || IsServerError() || StatusCode == 404 || StatusCode == 406 || (StatusCode == 200 && Error != null);
         }
 
-        private string toStr(string val)
+        private string ToStr(string val)
         {
             return (val == null) ? "null" : val;
         }
@@ -140,7 +140,7 @@ namespace Qiniu.Http
         public override string ToString()
         {
             return string.Format("ResponseInfo: status:{0}, reqId:{1}, xlog:{2}, xvia:{3}, host:{4}, ip:{5}, duration:{6} s, error:{7}",
-                 StatusCode, toStr(ReqId), toStr(Xlog), toStr(Xvia), toStr(Host), toStr(Ip), Duration, toStr(Error));
+                 StatusCode, ToStr(ReqId), ToStr(Xlog), ToStr(Xvia), ToStr(Host), ToStr(Ip), Duration, ToStr(Error));
         }
     }
 }

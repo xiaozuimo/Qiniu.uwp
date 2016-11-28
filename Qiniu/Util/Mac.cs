@@ -29,7 +29,7 @@ namespace Qiniu.Util
 
         public string SignWithData(byte[] data)
         {
-            string encodedData = StringUtils.urlSafeBase64Encode(data);
+            string encodedData = StringUtils.UrlSafeBase64Encode(data);
             return string.Format("{0}:{1}:{2}", this.AccessKey, this._sign(Encoding.UTF8.GetBytes(encodedData)), encodedData);
         }
 

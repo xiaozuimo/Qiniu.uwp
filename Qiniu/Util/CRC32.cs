@@ -83,7 +83,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="filePath">沙盒文件全路径</param>
         /// <returns>crc32值</returns>
-        public static async Task<UInt32> CheckSumFile(StorageFile file)
+        public static async Task<UInt32> CheckSumFileAsync(StorageFile file)
         {
             CRC32 crc = new CRC32();
             int bufferLen = 32 * 1024;

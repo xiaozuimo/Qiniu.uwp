@@ -80,7 +80,7 @@ namespace Qiniu.UnitTests
             {
                 Assert.AreEqual(respInfo.StatusCode, 200);
             });
-            await target.get(url, pHeaders, pCompletionHandler);
+            await target.GetAsync(url, pHeaders, pCompletionHandler);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Qiniu.UnitTests
             {
                 Assert.AreEqual(respInfo.StatusCode, 200);
             });
-            await target.postForm(pUrl, pHeaders, pPostParams, pCompletionHandler);
+            await target.PostFormAsync(pUrl, pHeaders, pPostParams, pCompletionHandler);
         }
     }
 }

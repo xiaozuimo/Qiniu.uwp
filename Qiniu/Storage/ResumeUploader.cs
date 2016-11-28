@@ -55,7 +55,7 @@ namespace Qiniu.Storage
             this.uploadOptions = (uploadOptions == null) ? UploadOptions.defaultOptions() : uploadOptions;
             this.upCompletionHandler = new UpCompletionHandler(delegate(string fileKey, ResponseInfo respInfo, string response)
             {
-                if (respInfo.isOk())
+                if (respInfo.IsOk())
                 {
                     this.uploadOptions.ProgressHandler(key, 1.0);
                 }
@@ -99,7 +99,7 @@ namespace Qiniu.Storage
             this.uploadOptions = (uploadOptions == null) ? UploadOptions.defaultOptions() : uploadOptions;
             this.upCompletionHandler = new UpCompletionHandler(delegate(string fileKey, ResponseInfo respInfo, string response)
             {
-                if (respInfo.isOk())
+                if (respInfo.IsOk())
                 {
                     this.uploadOptions.ProgressHandler(key, 1.0);
                 }
@@ -141,7 +141,7 @@ namespace Qiniu.Storage
         }
 
         #region 发送mkblk请求
-        private async Task makeBlock(string upHost, long offset, int blockSize, int chunkSize,
+        private async Task MakeBlockAsync(string upHost, long offset, int blockSize, int chunkSize,
             ProgressHandler progressHandler, CompletionHandler completionHandler)
         {
             string url = string.Format("{0}/mkblk/{1}", upHost, blockSize);
@@ -155,7 +155,7 @@ namespace Qiniu.Storage
                 return;
             }
             this.crc32 = CRC32.CheckSumSlice(this.chunkBuffer, 0, chunkSize);
-            await this.mHttpManager.postData(url, this.upHeaders, this.chunkBuffer, 0, chunkSize,
+            await this.mHttpManager.PostDataAsync(url, this.upHeaders, this.chunkBuffer, 0, chunkSize,
                 HttpManager.FORM_MIME_OCTECT, new CompletionHandler(delegate (ResponseInfo respInfo, string response)
                 {
                     progressHandler(offset, this.size);
@@ -165,7 +165,7 @@ namespace Qiniu.Storage
         #endregion
 
         #region 发送bput请求
-        private async Task putChunk(string upHost, long offset, int chunkSize, string context,
+        private async Task PutChunkAsync(string upHost, long offset, int chunkSize, string context,
             ProgressHandler progressHandler, CompletionHandler completionHandler)
         {
             int chunkOffset = (int)(offset % Config.BLOCK_SIZE);
@@ -180,7 +180,7 @@ namespace Qiniu.Storage
                 return;
             }
             this.crc32 = CRC32.CheckSumSlice(this.chunkBuffer, 0, chunkSize);
-            await this.mHttpManager.postData(url, this.upHeaders, this.chunkBuffer, 0, chunkSize, 
+            await this.mHttpManager.PostDataAsync(url, this.upHeaders, this.chunkBuffer, 0, chunkSize, 
                 HttpManager.FORM_MIME_OCTECT, new CompletionHandler(delegate(ResponseInfo respInfo,string response)
                 {
                     progressHandler(offset, this.size);
@@ -190,7 +190,7 @@ namespace Qiniu.Storage
         #endregion
 
         #region 发送mkfile请求
-        private async Task makeFile(string upHost, CompletionHandler completionHandler)
+        private async Task MakeFileAsync(string upHost, CompletionHandler completionHandler)
         {
 
             string fname = this.key;
@@ -202,15 +202,15 @@ namespace Qiniu.Storage
             string fnameStr = "";
             if (!string.IsNullOrEmpty(fname))
             {
-                fnameStr = string.Format("/fname/{0}", StringUtils.urlSafeBase64Encode(fname));
+                fnameStr = string.Format("/fname/{0}", StringUtils.UrlSafeBase64Encode(fname));
             }
 
-            string mimeTypeStr = string.Format("/mimeType/{0}", StringUtils.urlSafeBase64Encode(this.uploadOptions.MimeType));
+            string mimeTypeStr = string.Format("/mimeType/{0}", StringUtils.UrlSafeBase64Encode(this.uploadOptions.MimeType));
 
             string keyStr = "";
             if (this.key != null)
             {
-                keyStr = string.Format("/key/{0}", StringUtils.urlSafeBase64Encode(this.key));
+                keyStr = string.Format("/key/{0}", StringUtils.UrlSafeBase64Encode(this.key));
             }
 
             string paramsStr = "";
@@ -220,15 +220,15 @@ namespace Qiniu.Storage
                 int j = 0;
                 foreach (KeyValuePair<string, string> kvp in this.uploadOptions.ExtraParams)
                 {
-                    paramArray[j++] = string.Format("{0}/{1}", kvp.Key, StringUtils.urlSafeBase64Encode(kvp.Value));
+                    paramArray[j++] = string.Format("{0}/{1}", kvp.Key, StringUtils.UrlSafeBase64Encode(kvp.Value));
                 }
-                paramsStr = "/" + StringUtils.join(paramArray, "/");
+                paramsStr = "/" + StringUtils.Join(paramArray, "/");
             }
 
             string url = string.Format("{0}/mkfile/{1}{2}{3}{4}{5}", upHost, this.size, mimeTypeStr, fnameStr, keyStr, paramsStr);
-            string postBody = StringUtils.join(this.contexts, ",");
+            string postBody = StringUtils.Join(this.contexts, ",");
             byte[] postBodyData = Encoding.UTF8.GetBytes(postBody);
-            await this.mHttpManager.postData(url, upHeaders, postBodyData, HttpManager.FORM_MIME_URLENCODED, completionHandler);
+            await this.mHttpManager.PostDataAsync(url, upHeaders, postBodyData, HttpManager.FORM_MIME_URLENCODED, completionHandler);
         }
         #endregion
 
@@ -236,7 +236,7 @@ namespace Qiniu.Storage
         /// 分片方式上传文件
         /// </summary>
         #region 上传文件
-        public async Task uploadFile()
+        public async Task UploadFileAsync()
         {
             // 使用uploadHost -- REMINDME
             // 是否使用CDN(默认：是)
@@ -258,11 +258,11 @@ namespace Qiniu.Storage
                 return;
             }
 
-            long offset = await recoveryFromResumeRecord();
+            long offset = await RecoveryFromResumeRecordAsync();
             this.fileStream.Seek(offset, SeekOrigin.Begin);
 
             completedCts = new TaskCompletionSource<bool>();
-            var _ = this.nextTask(offset, 0, uploadHost);
+            var _ = this.NextTask(offset, 0, uploadHost);
             await completedCts.Task;
             //await this.startTask(offset, 0, uploadHost);
         }
@@ -272,7 +272,7 @@ namespace Qiniu.Storage
         /// 分片方式上传文件流
         /// </summary>
         #region 上传文件流
-        public async Task uploadStream()
+        public async Task UploadStreamAsync()
         {
             // 使用uploadHost -- REMINDME
             // 是否使用CDN(默认：是)
@@ -292,22 +292,22 @@ namespace Qiniu.Storage
                 return;
             }
 
-            long offset = await recoveryFromResumeRecord();
+            long offset = await RecoveryFromResumeRecordAsync();
             this.fileStream.Seek(offset, SeekOrigin.Begin);
-            await this.nextTask(offset, 0, uploadHost);
+            await this.NextTask(offset, 0, uploadHost);
         }
         #endregion
 
         #region 从中断日志中读取上传进度
-        private async Task<long> recoveryFromResumeRecord()
+        private async Task<long> RecoveryFromResumeRecordAsync()
         {
             long offset = 0;
             if (this.resumeRecorder != null && this.recordKey != null)
             {
-                byte[] data = await this.resumeRecorder.get(this.recordKey);
+                byte[] data = await this.resumeRecorder.GetAsync(this.recordKey);
                 if (data != null)
                 {
-                    ResumeRecord r = ResumeRecord.fromJsonData(Encoding.UTF8.GetString(data, 0, data.Length));
+                    ResumeRecord r = ResumeRecord.FromJsonData(Encoding.UTF8.GetString(data, 0, data.Length));
                     offset = r.Offset;
                     for (int i = 0; i < r.Contexts.Length; i++)
                     {
@@ -320,36 +320,36 @@ namespace Qiniu.Storage
         #endregion
 
         #region 记录/更新上传进度信息
-        private async Task record(long offset)
+        private async Task RecordAsync(long offset)
         {
             if (this.resumeRecorder == null || offset == 0)
             {
                 return;
             }
             ResumeRecord r = new ResumeRecord(this.size, offset, this.lastModifyTime, this.contexts);
-            await this.resumeRecorder.set(this.recordKey, Encoding.UTF8.GetBytes(r.toJsonData()));
+            await this.resumeRecorder.SetAsync(this.recordKey, Encoding.UTF8.GetBytes(r.ToJsonData()));
         }
         #endregion
 
         #region 删除上传进度信息
-        private async Task removeRecord()
+        private async Task RemoveRecordAsync()
         {
             if (this.resumeRecorder != null && this.recordKey != null)
             {
-                await this.resumeRecorder.del(this.recordKey);
+                await this.resumeRecorder.DeleteAsync(this.recordKey);
             }
         }
         #endregion
 
         #region 判断上传是否被取消
-        private bool isCancelled()
+        private bool IsCancelled()
         {
             return this.uploadOptions.CancellationSignal();
         }
         #endregion
 
         #region 计算每次上传的分片大小
-        private int calcBPutChunkSize(long offset)
+        private int CalcBPutChunkSize(long offset)
         {
             int chunkSize = Config.CHUNK_SIZE;
             long defaultChunkSize = Config.CHUNK_SIZE;
@@ -363,7 +363,7 @@ namespace Qiniu.Storage
         #endregion
 
         #region 计算每次创建的块大小
-        private int calcMakeBlockSize(long offset)
+        private int CalcMakeBlockSize(long offset)
         {
             int blockSize = Config.BLOCK_SIZE;
             long defaultBlockSize = Config.BLOCK_SIZE;
@@ -378,10 +378,10 @@ namespace Qiniu.Storage
         #endregion
 
         #region 文件上传任务
-        private async Task nextTask(long offset, int retried, string upHost)
+        private async Task NextTask(long offset, int retried, string upHost)
         {
             //上传中途触发停止
-            if (this.isCancelled())
+            if (this.IsCancelled())
             {
                 this.upCompletionHandler(this.key, ResponseInfo.cancelled(), null);
                 completedCts.SetResult(false);
@@ -390,12 +390,12 @@ namespace Qiniu.Storage
             //所有分片已上传
             if (offset == this.size)
             {
-                await this.makeFile(upHost, new CompletionHandler(async delegate(ResponseInfo respInfo, string response)
+                await this.MakeFileAsync(upHost, new CompletionHandler(async delegate(ResponseInfo respInfo, string response)
                 {
                     //makeFile成功
-                    if (respInfo.isOk())
+                    if (respInfo.IsOk())
                     {
-                        await removeRecord();
+                        await RemoveRecordAsync();
                         Debug.WriteLine("mkfile ok, upload done!");
                         this.upCompletionHandler(this.key, respInfo, response);
                         return;
@@ -404,11 +404,11 @@ namespace Qiniu.Storage
                     //失败重试，如果614，则不重试
                     if (respInfo.StatusCode != 614)
                     {
-                        if (respInfo.needRetry() && retried < Config.RETRY_MAX)
+                        if (respInfo.NeedRetry() && retried < Config.RETRY_MAX)
                         {
                             Debug.WriteLine("mkfile retrying due to {0}...", respInfo.StatusCode);
                             string upHost2 = Config.ZONE.UploadHost;
-                            await nextTask(offset, retried + 1, upHost2);
+                            await NextTask(offset, retried + 1, upHost2);
                             return;
                         }
                     }
@@ -421,7 +421,7 @@ namespace Qiniu.Storage
             }
 
             //创建块或上传分片
-            int chunkSize = calcBPutChunkSize(offset);
+            int chunkSize = CalcBPutChunkSize(offset);
             ProgressHandler progressHandler = new ProgressHandler(delegate(long bytesWritten, long totalBytes)
             {
                 double percent = (double)(offset) / this.size;
@@ -443,17 +443,17 @@ namespace Qiniu.Storage
                 {
                     Debug.WriteLine("bput result {0}, offset {1}", respInfo.StatusCode, offset);
                 }
-                if (!respInfo.isOk())
+                if (!respInfo.IsOk())
                 {
                     //如果是701错误，为mkblk的ctx过期
                     if (respInfo.StatusCode == 701)
                     {
-                        await nextTask((offset / Config.BLOCK_SIZE) * Config.BLOCK_SIZE, retried, upHost);
+                        await NextTask((offset / Config.BLOCK_SIZE) * Config.BLOCK_SIZE, retried, upHost);
                         completedCts.SetResult(false);
                         return;
                     }
 
-                    if (retried >= Config.RETRY_MAX || !respInfo.needRetry())
+                    if (retried >= Config.RETRY_MAX || !respInfo.NeedRetry())
                     {
                         this.upCompletionHandler(key, respInfo, response);
                         completedCts.SetResult(false);
@@ -461,11 +461,11 @@ namespace Qiniu.Storage
                     }
 
                     String upHost2 = upHost;
-                    if (respInfo.needRetry())
+                    if (respInfo.NeedRetry())
                     {
                         upHost2 = Config.ZONE.UploadHost;
                     }
-                    await nextTask(offset, retried + 1, upHost2);
+                    await NextTask(offset, retried + 1, upHost2);
                     return;
                 }
 
@@ -473,7 +473,7 @@ namespace Qiniu.Storage
                 string chunkContext = null;
                 if (response == null || string.IsNullOrEmpty(response))
                 {
-                    await nextTask(offset, retried + 1, upHost);
+                    await NextTask(offset, retried + 1, upHost);
                     return;
                 }
 
@@ -490,26 +490,26 @@ namespace Qiniu.Storage
 
                 if (chunkContext == null || chunkCrc32 != this.crc32)
                 {
-                    await nextTask(offset, retried + 1, upHost);
+                    await NextTask(offset, retried + 1, upHost);
                     return;
                 }
 
                 this.contexts[offset / Config.BLOCK_SIZE] = chunkContext;
-                await record(offset + chunkSize);
-                await nextTask(offset + chunkSize, retried, upHost);
+                await RecordAsync(offset + chunkSize);
+                await NextTask(offset + chunkSize, retried, upHost);
             });
 
             //创建块
             if (offset % Config.BLOCK_SIZE == 0)
             {
-                int blockSize = calcMakeBlockSize(offset);
-                await this.makeBlock(upHost, offset, blockSize, chunkSize, progressHandler, completionHandler);
+                int blockSize = CalcMakeBlockSize(offset);
+                await this.MakeBlockAsync(upHost, offset, blockSize, chunkSize, progressHandler, completionHandler);
                 return;
             }
 
             //上传分片
             string context = this.contexts[offset / Config.BLOCK_SIZE];
-            await this.putChunk(upHost, offset, chunkSize, context, progressHandler, completionHandler);
+            await this.PutChunkAsync(upHost, offset, chunkSize, context, progressHandler, completionHandler);
         }
         #endregion
     }

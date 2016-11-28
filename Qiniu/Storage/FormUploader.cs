@@ -21,11 +21,11 @@ namespace Qiniu.Storage
             this.mHttpManager = new HttpManager();
         }
 
-        public async Task uploadData(byte[] data, int offset, int count, string key, string token,
+        public async Task UploadDataAsync(byte[] data, int offset, int count, string key, string token,
             UploadOptions uploadOptions, UpCompletionHandler upCompletionHandler)
         {
             HttpFormFile fFile = HttpFormFile.NewFileFromSlice(key, null, data, offset, count);
-            await upload(fFile, key, token, uploadOptions, upCompletionHandler);
+            await UploadAsync(fFile, key, token, uploadOptions, upCompletionHandler);
         }
 
         /// <summary>
@@ -36,12 +36,12 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="uploadOptions">上传可选设置</param>
         /// <param name="upCompletionHandler">上传完成结果处理器</param>
-        public async Task uploadData(byte[] data, string key,
+        public async Task UploadDataAsync(byte[] data, string key,
             string token, UploadOptions uploadOptions, UpCompletionHandler upCompletionHandler)
         {
             HttpFormFile fFile = HttpFormFile.NewFileFromBytes(key, null, data); 
             // 此处未设置FormFile.ContentType,稍后设置(在upload中已设置) @fengyh 2016-08-17 15:03
-            await upload(fFile, key, token, uploadOptions, upCompletionHandler);
+            await UploadAsync(fFile, key, token, uploadOptions, upCompletionHandler);
         }
 
         /// <summary>
@@ -52,11 +52,11 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="uploadOptions">上传可选设置</param>
         /// <param name="upCompletionHandler">上传完成结果处理器</param>
-        public async Task uploadStream(Stream stream, string key, string token,
+        public async Task UploadStreamAsync(Stream stream, string key, string token,
             UploadOptions uploadOptions, UpCompletionHandler upCompletionHandler)
         {
             HttpFormFile fFile = HttpFormFile.NewFileFromStream(key, null, stream);
-            await upload(fFile, key, token, uploadOptions, upCompletionHandler);
+            await UploadAsync(fFile, key, token, uploadOptions, upCompletionHandler);
         }
 
         /// <summary>
@@ -68,14 +68,14 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="uploadOptions">上传可选设置</param>
         /// <param name="upCompletionHandler">上传完成结果处理器</param>
-        public async Task uploadFile(StorageFile file, string key,
+        public async Task UploadFileAsync(StorageFile file, string key,
             string token, UploadOptions uploadOptions, UpCompletionHandler upCompletionHandler)
         {
             HttpFormFile fFile = HttpFormFile.NewFileFromPath(key, null, file);
-            await upload(fFile, key, token, uploadOptions, upCompletionHandler);
+            await UploadAsync(fFile, key, token, uploadOptions, upCompletionHandler);
         }
 
-        private async Task upload(HttpFormFile fFile, string key, string token,
+        private async Task UploadAsync(HttpFormFile fFile, string key, string token,
             UploadOptions uploadOptions, UpCompletionHandler upCompletionHandler)
         {
             // 使用uploadHost -- REMINDME-0
@@ -113,7 +113,7 @@ namespace Qiniu.Storage
                         fFile.BodyStream.Seek(0, SeekOrigin.Begin);
                         break;
                     case HttpFileType.FILE_PATH:
-                        vPostParams.Add("crc32", string.Format("{0}", await CRC32.CheckSumFile(fFile.BodyFile)));
+                        vPostParams.Add("crc32", string.Format("{0}", await CRC32.CheckSumFileAsync(fFile.BodyFile)));
                         break;
                 }
             }
@@ -152,7 +152,7 @@ namespace Qiniu.Storage
             CompletionHandler fUpCompletionHandler = new CompletionHandler(async delegate (ResponseInfo respInfo, string response)
             {
                 Debug.WriteLine("form upload result, {0}",respInfo.StatusCode);
-                if (respInfo.needRetry())
+                if (respInfo.NeedRetry())
                 {
                     if (fFile.BodyStream != null)
                     {
@@ -162,7 +162,7 @@ namespace Qiniu.Storage
                     CompletionHandler retried = new CompletionHandler(delegate (ResponseInfo retryRespInfo, string retryResponse)
                     {
                         Debug.WriteLine("form upload retry result, {0}",retryRespInfo.StatusCode);
-                        if (respInfo.isOk())
+                        if (respInfo.IsOk())
                         {
                             uploadOptions.ProgressHandler(key, 1.0);
                         }
@@ -186,11 +186,11 @@ namespace Qiniu.Storage
                     });
 
                     // 使用uploadHost -- REMINDME-1
-                    await this.mHttpManager.postMultipartDataForm(uploadHost, null, vPostParams, fFile, fUpProgressHandler, retried);
+                    await this.mHttpManager.PostMultipartDataFormAsync(uploadHost, null, vPostParams, fFile, fUpProgressHandler, retried);
                 }
                 else
                 {
-                    if (respInfo.isOk())
+                    if (respInfo.IsOk())
                     {
                         uploadOptions.ProgressHandler(key, 1.0);
                     }
@@ -215,7 +215,7 @@ namespace Qiniu.Storage
             });
 
             // // 使用uploadHost -- REMINDME-2
-            await this.mHttpManager.postMultipartDataForm(uploadHost, null, vPostParams, fFile, fUpProgressHandler, fUpCompletionHandler);
+            await this.mHttpManager.PostMultipartDataFormAsync(uploadHost, null, vPostParams, fFile, fUpProgressHandler, fUpCompletionHandler);
         }
     }
 }

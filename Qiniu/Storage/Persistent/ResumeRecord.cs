@@ -33,7 +33,7 @@ namespace Qiniu.Storage.Persistent
         /// </summary>
         /// <param name="jsonData">文件内容</param>
         /// <returns>上传进度对象</returns>
-        public static ResumeRecord fromJsonData(string jsonData)
+        public static ResumeRecord FromJsonData(string jsonData)
         {
             ResumeRecord record = JsonConvert.DeserializeObject<ResumeRecord>(jsonData);
             return record;
@@ -43,10 +43,10 @@ namespace Qiniu.Storage.Persistent
         /// 序列化上传进度记录
         /// </summary>
         /// <returns>序列化后的上传进度字符串</returns>
-        public string toJsonData()
+        public string ToJsonData()
         {
             return string.Format("{{\"size\":{0}, \"offset\":{1}, \"modify_time\":{2}, \"contexts\":[{3}]}}",
-                this.Size, this.Offset, this.LastModified, StringUtils.jsonJoin(this.Contexts));
+                this.Size, this.Offset, this.LastModified, StringUtils.JsonJoin(this.Contexts));
         }
     }
 }

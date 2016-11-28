@@ -35,19 +35,19 @@ namespace Qiniu.UnitTests
             Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
             BucketManager target = new BucketManager(mac);
 
-            await target.fetch(testResUrl, Settings.Bucket, "test_BucketManager.txt");
+            await target.FetchAsync(testResUrl, Settings.Bucket, "test_BucketManager.txt");
 
-            await target.stat(Settings.Bucket, "test_BucketManager.txt");
+            await target.StatAsync(Settings.Bucket, "test_BucketManager.txt");
 
-            await target.copy(Settings.Bucket, "test_BucketManager.txt", Settings.Bucket, "copy_BucketManager.txt", true);
+            await target.CopyAsync(Settings.Bucket, "test_BucketManager.txt", Settings.Bucket, "copy_BucketManager.txt", true);
 
-            await target.move(Settings.Bucket, "copy_BucketManager.txt", Settings.Bucket, "move_BucketManager.txt", true);
+            await target.MoveAsync(Settings.Bucket, "copy_BucketManager.txt", Settings.Bucket, "move_BucketManager.txt", true);
 
-            await target.delete(Settings.Bucket, "test_BucketManager.txt");
+            await target.DeleteAsync(Settings.Bucket, "test_BucketManager.txt");
 
-            DomainsResult domainsResult = await target.domains(Settings.Bucket);
+            DomainsResult domainsResult = await target.ListDomainsAsync(Settings.Bucket);
 
-            BucketsResult bucketsResult = await target.buckets();
+            BucketsResult bucketsResult = await target.ListBucketsAsync();
         }
     }
 }

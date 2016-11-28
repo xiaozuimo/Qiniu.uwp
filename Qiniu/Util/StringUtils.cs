@@ -19,7 +19,7 @@ namespace Qiniu.Util
         /// <param name="array">字符串数组</param>
         /// <param name="sep">连接符</param>
         /// <returns>连接后字符串</returns>
-        public static string join(string[] array, string sep)
+        public static string Join(string[] array, string sep)
         {
             if (array == null || sep == null)
             {
@@ -43,7 +43,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="array">字符串数组</param>
         /// <returns>连接后字符串</returns>
-        public static string jsonJoin(string[] array)
+        public static string JsonJoin(string[] array)
         {
             if (array == null)
             {
@@ -67,12 +67,12 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="from">源字符串</param>
         /// <returns>已编码字符串</returns>
-        public static string urlSafeBase64Encode(string from)
+        public static string UrlSafeBase64Encode(string from)
         {
-            return urlSafeBase64Encode(Encoding.UTF8.GetBytes(from));
+            return UrlSafeBase64Encode(Encoding.UTF8.GetBytes(from));
         }
 
-        public static string urlSafeBase64Encode(byte[] from)
+        public static string UrlSafeBase64Encode(byte[] from)
         {
             return Convert.ToBase64String(from).Replace('+', '-').Replace('/', '_');
         }
@@ -82,36 +82,36 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="from">编码字符串</param>
         /// <returns>已解码字符串</returns>
-        public static byte[] urlsafeBase64Decode(string from)
+        public static byte[] UrlsafeBase64Decode(string from)
         {
             return Convert.FromBase64String(from.Replace('-', '+').Replace('_', '/'));
         }
 
-        public static string jsonEncode(object obj)
+        public static string JsonEncode(object obj)
         {
             JsonSerializerSettings setting = new JsonSerializerSettings();
             setting.NullValueHandling = NullValueHandling.Ignore;
             return JsonConvert.SerializeObject(obj, setting);
         }
 
-        public static T jsonDecode<T>(string jsonData)
+        public static T JsonDecode<T>(string jsonData)
         {
             return JsonConvert.DeserializeObject<T>(jsonData);
         }
 
-        public static string encodedEntry(string bucket, string key)
+        public static string EncodedEntry(string bucket, string key)
         {
             if (key == null)
             {
-                return urlSafeBase64Encode(bucket);
+                return UrlSafeBase64Encode(bucket);
             }
             else
             {
-                return urlSafeBase64Encode(bucket + ":" + key);
+                return UrlSafeBase64Encode(bucket + ":" + key);
             }
         }
 
-        public static byte[] sha1(byte[] data)
+        public static byte[] Sha1(byte[] data)
         {
             var algorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
             // 原文的二进制数据
@@ -124,12 +124,12 @@ namespace Qiniu.Util
             return sha1;
         }
 
-        public static string urlencode(string from)
+        public static string Urlencode(string from)
         {
             return Uri.EscapeDataString(from);
         }
 
-        public static string urlValuesEncode(Dictionary<string, string[]> urlValues)
+        public static string UrlValuesEncode(Dictionary<string, string[]> urlValues)
         {
             StringBuilder urlValuesBuilder = new StringBuilder();
            
@@ -144,7 +144,7 @@ namespace Qiniu.Util
             return encodedStr.Substring(0, encodedStr.Length - 1);
         }
 
-        public static string md5Hash(string plainText)
+        public static string Md5Hash(string plainText)
         {
             var algorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
             // 原文的二进制数据

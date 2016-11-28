@@ -20,19 +20,19 @@ namespace Qiniu.Storage
             this.mHttpManager = new HttpManager();
         }
 
-        public async Task<StatResult> stat(string bucket, string key)
+        public async Task<StatResult> StatAsync(string bucket, string key)
         {
             StatResult statResult = null;
-            string statUrl = string.Format("{0}{1}", Config.ZONE.RsHost, statOp(bucket, key));
-            string accessToken = Auth.createManageToken(statUrl, null, this.mac);
+            string statUrl = string.Format("{0}{1}", Config.ZONE.RsHost, StatOp(bucket, key));
+            string accessToken = Auth.CreateManageToken(statUrl, null, this.mac);
 
             Dictionary<string, string> statHeaders = new Dictionary<string, string>();
             statHeaders.Add("Authorization", accessToken);
             CompletionHandler statCompletionHandler = new CompletionHandler(delegate(ResponseInfo respInfo, string response)
             {
-                if (respInfo.isOk())
+                if (respInfo.IsOk())
                 {
-                    statResult = StringUtils.jsonDecode<StatResult>(response);
+                    statResult = StringUtils.JsonDecode<StatResult>(response);
                 }
                 else
                 {
@@ -42,15 +42,15 @@ namespace Qiniu.Storage
                 statResult.ResponseInfo = respInfo;
             });
 
-            await this.mHttpManager.get(statUrl, statHeaders, statCompletionHandler);
+            await this.mHttpManager.GetAsync(statUrl, statHeaders, statCompletionHandler);
             return statResult;
         }
 
-        public async Task<HttpResult> delete(string bucket, string key)
+        public async Task<HttpResult> DeleteAsync(string bucket, string key)
         {
             HttpResult deleteResult = null;
-            string deleteUrl = string.Format("{0}{1}", Config.ZONE.RsHost, deleteOp(bucket, key));
-            string accessToken = Auth.createManageToken(deleteUrl, null, this.mac);
+            string deleteUrl = string.Format("{0}{1}", Config.ZONE.RsHost, DeleteOp(bucket, key));
+            string accessToken = Auth.CreateManageToken(deleteUrl, null, this.mac);
             Dictionary<string, string> deleteHeaders = new Dictionary<string, string>();
             deleteHeaders.Add("Authorization", accessToken);
             CompletionHandler deleteCompletionHandler = new CompletionHandler(delegate(ResponseInfo respInfo, string response)
@@ -60,15 +60,15 @@ namespace Qiniu.Storage
                 deleteResult.ResponseInfo = respInfo;
             });
 
-            await this.mHttpManager.postForm(deleteUrl, deleteHeaders, null, deleteCompletionHandler);
+            await this.mHttpManager.PostFormAsync(deleteUrl, deleteHeaders, null, deleteCompletionHandler);
             return deleteResult;
         }
 
-        public async Task<HttpResult> copy(string srcBucket, string srcKey, string destBucket, string destKey)
+        public async Task<HttpResult> CopyAsync(string srcBucket, string srcKey, string destBucket, string destKey)
         {
             HttpResult copyResult = null;
-            string copyUrl = string.Format("{0}{1}", Config.ZONE.RsHost, copyOp(srcBucket, srcKey, destBucket, destKey));
-            string accessToken = Auth.createManageToken(copyUrl, null, this.mac);
+            string copyUrl = string.Format("{0}{1}", Config.ZONE.RsHost, CopyOp(srcBucket, srcKey, destBucket, destKey));
+            string accessToken = Auth.CreateManageToken(copyUrl, null, this.mac);
             Dictionary<string, string> copyHeaders = new Dictionary<string, string>();
             copyHeaders.Add("Authorization", accessToken);
             CompletionHandler copyCompletionHandler = new CompletionHandler(delegate(ResponseInfo respInfo, string response)
@@ -78,17 +78,17 @@ namespace Qiniu.Storage
                 copyResult.ResponseInfo = respInfo;
             });
 
-            await this.mHttpManager.postForm(copyUrl, copyHeaders, null, copyCompletionHandler);
+            await this.mHttpManager.PostFormAsync(copyUrl, copyHeaders, null, copyCompletionHandler);
             return copyResult;
         }
 
         // ADD 'force' param
         // 2016-08-22 14:58 @fengyh
-        public async Task<HttpResult> copy(string srcBucket, string srcKey, string destBucket, string destKey, bool force)
+        public async Task<HttpResult> CopyAsync(string srcBucket, string srcKey, string destBucket, string destKey, bool force)
         {
             HttpResult copyResult = null;
-            string copyUrl = string.Format("{0}{1}", Config.ZONE.RsHost, copyOp(srcBucket, srcKey, destBucket, destKey, force));
-            string accessToken = Auth.createManageToken(copyUrl, null, this.mac);
+            string copyUrl = string.Format("{0}{1}", Config.ZONE.RsHost, CopyOp(srcBucket, srcKey, destBucket, destKey, force));
+            string accessToken = Auth.CreateManageToken(copyUrl, null, this.mac);
             Dictionary<string, string> copyHeaders = new Dictionary<string, string>();
             copyHeaders.Add("Authorization", accessToken);
             CompletionHandler copyCompletionHandler = new CompletionHandler(delegate(ResponseInfo respInfo, string response)
@@ -98,15 +98,15 @@ namespace Qiniu.Storage
                 copyResult.ResponseInfo = respInfo;
             });
 
-            await this.mHttpManager.postForm(copyUrl, copyHeaders, null, copyCompletionHandler);
+            await this.mHttpManager.PostFormAsync(copyUrl, copyHeaders, null, copyCompletionHandler);
             return copyResult;
         }
 
-        public async Task<HttpResult> move(string srcBucket, string srcKey, string destBucket, string destKey)
+        public async Task<HttpResult> MoveAsync(string srcBucket, string srcKey, string destBucket, string destKey)
         {
             HttpResult moveResult = null;
-            string moveUrl = string.Format("{0}{1}", Config.ZONE.RsHost, moveOp(srcBucket, srcKey, destBucket, destKey));
-            string accessToken = Auth.createManageToken(moveUrl, null, this.mac);
+            string moveUrl = string.Format("{0}{1}", Config.ZONE.RsHost, MoveOp(srcBucket, srcKey, destBucket, destKey));
+            string accessToken = Auth.CreateManageToken(moveUrl, null, this.mac);
             Dictionary<string, string> moveHeaders = new Dictionary<string, string>();
             moveHeaders.Add("Authorization", accessToken);
             CompletionHandler moveCompletionHandler = new CompletionHandler(delegate(ResponseInfo respInfo, string response)
@@ -116,17 +116,17 @@ namespace Qiniu.Storage
                 moveResult.ResponseInfo = respInfo;
             });
 
-            await this.mHttpManager.postForm(moveUrl, moveHeaders, null, moveCompletionHandler);
+            await this.mHttpManager.PostFormAsync(moveUrl, moveHeaders, null, moveCompletionHandler);
             return moveResult;
         }
 
         // ADD 'force' param
         // 2016-08-22 14:58 @fengyh
-        public async Task<HttpResult> move(string srcBucket, string srcKey, string destBucket, string destKey, bool force)
+        public async Task<HttpResult> MoveAsync(string srcBucket, string srcKey, string destBucket, string destKey, bool force)
         {
             HttpResult moveResult = null;
-            string moveUrl = string.Format("{0}{1}", Config.ZONE.RsHost, moveOp(srcBucket, srcKey, destBucket, destKey, force));
-            string accessToken = Auth.createManageToken(moveUrl, null, this.mac);
+            string moveUrl = string.Format("{0}{1}", Config.ZONE.RsHost, MoveOp(srcBucket, srcKey, destBucket, destKey, force));
+            string accessToken = Auth.CreateManageToken(moveUrl, null, this.mac);
             Dictionary<string, string> moveHeaders = new Dictionary<string, string>();
             moveHeaders.Add("Authorization", accessToken);
             CompletionHandler moveCompletionHandler = new CompletionHandler(delegate(ResponseInfo respInfo, string response)
@@ -136,15 +136,15 @@ namespace Qiniu.Storage
                 moveResult.ResponseInfo = respInfo;
             });
 
-            await this.mHttpManager.postForm(moveUrl, moveHeaders, null, moveCompletionHandler);
+            await this.mHttpManager.PostFormAsync(moveUrl, moveHeaders, null, moveCompletionHandler);
             return moveResult;
         }
 
-        public async Task<HttpResult> chgm(string bucket, string key, string mimeType)
+        public async Task<HttpResult> ChgmAsync(string bucket, string key, string mimeType)
         {
             HttpResult chgmResult = null;
-            string chgmUrl = string.Format("{0}{1}", Config.ZONE.RsHost, chgmOp(bucket, key, mimeType));
-            string accessToken = Auth.createManageToken(chgmUrl, null, this.mac);
+            string chgmUrl = string.Format("{0}{1}", Config.ZONE.RsHost, ChgmOp(bucket, key, mimeType));
+            string accessToken = Auth.CreateManageToken(chgmUrl, null, this.mac);
             Dictionary<string, string> chgmHeaders = new Dictionary<string, string>();
             chgmHeaders.Add("Authorization", accessToken);
             CompletionHandler chgmCompletionHandler = new CompletionHandler(delegate(ResponseInfo respInfo, string response)
@@ -154,15 +154,15 @@ namespace Qiniu.Storage
                 chgmResult.ResponseInfo = respInfo;
             });
 
-            await this.mHttpManager.postForm(chgmUrl, chgmHeaders, null, chgmCompletionHandler);
+            await this.mHttpManager.PostFormAsync(chgmUrl, chgmHeaders, null, chgmCompletionHandler);
             return chgmResult;
         }
 
-        public async Task<HttpResult> batch(string ops)
+        public async Task<HttpResult> BatchAsync(string ops)
         {
             HttpResult batchResult = null;
             string batchUrl = string.Format("{0}{1}", Config.ZONE.RsHost, "/batch");
-            string accessToken = Auth.createManageToken(batchUrl, Encoding.UTF8.GetBytes(ops), this.mac);
+            string accessToken = Auth.CreateManageToken(batchUrl, Encoding.UTF8.GetBytes(ops), this.mac);
             Dictionary<string, string> batchHeaders = new Dictionary<string, string>();
             batchHeaders.Add("Authorization", accessToken);
             CompletionHandler batchCompletionHandler = new CompletionHandler(delegate(ResponseInfo respInfo, string response)
@@ -173,7 +173,7 @@ namespace Qiniu.Storage
             });
 
 
-            await this.mHttpManager.postData(batchUrl, batchHeaders, Encoding.UTF8.GetBytes(ops),
+            await this.mHttpManager.PostDataAsync(batchUrl, batchHeaders, Encoding.UTF8.GetBytes(ops),
                 HttpManager.FORM_MIME_URLENCODED, batchCompletionHandler);
             return batchResult;
         }
@@ -183,7 +183,7 @@ namespace Qiniu.Storage
         /// </summary>
         /// <param name="ops"></param>
         /// <returns></returns>
-        public async Task<HttpResult> batch(string[] ops)
+        public async Task<HttpResult> BatchAsync(string[] ops)
         {
             HttpResult batchResult = null;
             string batchUrl = string.Format("{0}{1}", Config.ZONE.RsHost, "/batch");
@@ -197,7 +197,7 @@ namespace Qiniu.Storage
                     opsBuilder.Append("&");
                 }
             }
-            string accessToken = Auth.createManageToken(batchUrl, Encoding.UTF8.GetBytes(opsBuilder.ToString()), this.mac);
+            string accessToken = Auth.CreateManageToken(batchUrl, Encoding.UTF8.GetBytes(opsBuilder.ToString()), this.mac);
             Dictionary<string, string> batchHeaders = new Dictionary<string, string>();
             batchHeaders.Add("Authorization", accessToken);
             CompletionHandler batchCompletionHandler = new CompletionHandler(delegate(ResponseInfo respInfo, string response)
@@ -209,22 +209,22 @@ namespace Qiniu.Storage
 
             Dictionary<string, string[]> batchParams = new Dictionary<string, string[]>();
             batchParams.Add("op", ops);
-            await this.mHttpManager.postForm(batchUrl, batchHeaders, batchParams, batchCompletionHandler);
+            await this.mHttpManager.PostFormAsync(batchUrl, batchHeaders, batchParams, batchCompletionHandler);
             return batchResult;
         }
 
-        public async Task<FetchResult> fetch(string remoteResUrl, string bucket, string key)
+        public async Task<FetchResult> FetchAsync(string remoteResUrl, string bucket, string key)
         {
             FetchResult fetchResult = null;
-            string fetchUrl = string.Format("{0}{1}", Config.ZONE.IovipHost, fetchOp(remoteResUrl, bucket, key));
-            string accessToken = Auth.createManageToken(fetchUrl, null, this.mac);
+            string fetchUrl = string.Format("{0}{1}", Config.ZONE.IovipHost, FetchOp(remoteResUrl, bucket, key));
+            string accessToken = Auth.CreateManageToken(fetchUrl, null, this.mac);
             Dictionary<string, string> fetchHeaders = new Dictionary<string, string>();
             fetchHeaders.Add("Authorization", accessToken);
             CompletionHandler fetchCompletionHandler = new CompletionHandler(delegate(ResponseInfo respInfo, string response)
             {
-                if (respInfo.isOk())
+                if (respInfo.IsOk())
                 {
-                    fetchResult = StringUtils.jsonDecode<FetchResult>(response);
+                    fetchResult = StringUtils.JsonDecode<FetchResult>(response);
                 }
                 else
                 {
@@ -234,15 +234,15 @@ namespace Qiniu.Storage
                 fetchResult.ResponseInfo = respInfo;
             });
 
-            await this.mHttpManager.postForm(fetchUrl, fetchHeaders, null, fetchCompletionHandler);
+            await this.mHttpManager.PostFormAsync(fetchUrl, fetchHeaders, null, fetchCompletionHandler);
             return fetchResult;
         }
 
-        public async Task<HttpResult> prefetch(string bucket, string key)
+        public async Task<HttpResult> PrefetchAsync(string bucket, string key)
         {
             HttpResult prefetchResult = null;
-            string prefetchUrl = string.Format("{0}{1}", Config.ZONE.IovipHost, prefetchOp(bucket, key));
-            string accessToken = Auth.createManageToken(prefetchUrl, null, this.mac);
+            string prefetchUrl = string.Format("{0}{1}", Config.ZONE.IovipHost, PrefetchOp(bucket, key));
+            string accessToken = Auth.CreateManageToken(prefetchUrl, null, this.mac);
             Dictionary<string, string> prefetchHeaders = new Dictionary<string, string>();
             prefetchHeaders.Add("Authorization", accessToken);
             CompletionHandler prefetchCompletionHandler = new CompletionHandler(delegate(ResponseInfo respInfo, string response)
@@ -252,16 +252,16 @@ namespace Qiniu.Storage
                 prefetchResult.ResponseInfo = respInfo;
             });
 
-            await this.mHttpManager.postForm(prefetchUrl, prefetchHeaders, null, prefetchCompletionHandler);
+            await this.mHttpManager.PostFormAsync(prefetchUrl, prefetchHeaders, null, prefetchCompletionHandler);
             return prefetchResult;
         }
 
-        public async Task<BucketsResult> buckets()
+        public async Task<BucketsResult> ListBucketsAsync()
         {
             BucketsResult bucketsResult = null;
             List<string> buckets = new List<string>();
             string bucketsUrl = string.Format("{0}/buckets", Config.ZONE.RsHost);
-            string accessToken = Auth.createManageToken(bucketsUrl, null, this.mac);
+            string accessToken = Auth.CreateManageToken(bucketsUrl, null, this.mac);
             Dictionary<string, string> bucketsHeaders = new Dictionary<string, string>();
             bucketsHeaders.Add("Authorization", accessToken);
             CompletionHandler bucketsCompletionHandler = new CompletionHandler(delegate(ResponseInfo respInfo, string response)
@@ -269,24 +269,24 @@ namespace Qiniu.Storage
                 bucketsResult = new BucketsResult();
                 bucketsResult.Response = response;
                 bucketsResult.ResponseInfo = respInfo;
-                if (respInfo.isOk())
+                if (respInfo.IsOk())
                 {
                     buckets = JsonConvert.DeserializeObject<List<string>>(response);
                     bucketsResult.Buckets = buckets;
                 }
             });
 
-            await this.mHttpManager.get(bucketsUrl, bucketsHeaders, bucketsCompletionHandler);
+            await this.mHttpManager.GetAsync(bucketsUrl, bucketsHeaders, bucketsCompletionHandler);
             return bucketsResult;
         }
 
-        public async Task<DomainsResult> domains(string bucket)
+        public async Task<DomainsResult> ListDomainsAsync(string bucket)
         {
             DomainsResult domainsResult = null;
             List<string> domains = new List<string>();
             string domainsUrl = string.Format("{0}/v6/domain/list", Config.ZONE.ApiHost);
             string postBody = string.Format("tbl={0}", bucket);
-            string accessToken = Auth.createManageToken(domainsUrl, Encoding.UTF8.GetBytes(postBody), this.mac);
+            string accessToken = Auth.CreateManageToken(domainsUrl, Encoding.UTF8.GetBytes(postBody), this.mac);
 
             Dictionary<string, string> domainsHeaders = new Dictionary<string, string>();
             domainsHeaders.Add("Authorization", accessToken);
@@ -296,7 +296,7 @@ namespace Qiniu.Storage
                 domainsResult = new DomainsResult();
                 domainsResult.Response = response;
                 domainsResult.ResponseInfo = respInfo;
-                if (respInfo.isOk())
+                if (respInfo.IsOk())
                 {
                     domains = JsonConvert.DeserializeObject<List<string>>(response);
                     domainsResult.Domains = domains;
@@ -305,11 +305,11 @@ namespace Qiniu.Storage
 
             Dictionary<string, string[]> postParams = new Dictionary<string, string[]>();
             postParams.Add("tbl", new string[] { bucket });
-            await this.mHttpManager.postForm(domainsUrl, domainsHeaders, postParams, domainsCompletionHandler);
+            await this.mHttpManager.PostFormAsync(domainsUrl, domainsHeaders, postParams, domainsCompletionHandler);
             return domainsResult;
         }
 
-        public async Task<CdnRefreshResult> cdnRefresh(List<string> urls, List<string> dirs)
+        public async Task<CdnRefreshResult> RefreshCdnAsync(List<string> urls, List<string> dirs)
         {
             CdnRefreshResult result = null;
             if (urls == null && dirs == null)
@@ -345,7 +345,7 @@ namespace Qiniu.Storage
 
             string postData = JsonConvert.SerializeObject(req);
             string refreshUrl = string.Format("{0}/refresh", Config.FUSION_API_HOST);
-            string accessToken = Auth.createManageToken(refreshUrl, null, this.mac);
+            string accessToken = Auth.CreateManageToken(refreshUrl, null, this.mac);
             Dictionary<string, string> refreshHeaders = new Dictionary<string, string>();
             refreshHeaders.Add("Authorization", accessToken);
 
@@ -354,13 +354,13 @@ namespace Qiniu.Storage
                 result = new CdnRefreshResult();
                 result.Response = response;
                 result.ResponseInfo = respInfo;
-                if (respInfo.isOk())
+                if (respInfo.IsOk())
                 {
                     result = JsonConvert.DeserializeObject<CdnRefreshResult>(response);
                 }
             });
 
-            await this.mHttpManager.postData(refreshUrl, refreshHeaders, Encoding.UTF8.GetBytes(postData),
+            await this.mHttpManager.PostDataAsync(refreshUrl, refreshHeaders, Encoding.UTF8.GetBytes(postData),
                 HttpManager.FORM_MIME_JSON, refreshCompletionHandler);
             return result;
         }
@@ -387,7 +387,7 @@ namespace Qiniu.Storage
         ///            于是可以在本地先创建一个目录fakepath,然后在该目录下写入items中的文件
         ///            
         /// </summary>
-        public async Task<ListFilesResult> listFiles(string bucket,string prefix,string marker,int limit,string delimiter)
+        public async Task<ListFilesResult> ListFilesAsync(string bucket,string prefix,string marker,int limit,string delimiter)
         {
             ListFilesResult result = null;
 
@@ -418,7 +418,7 @@ namespace Qiniu.Storage
             }
 
             string listFilesUrl = Config.ZONE.RsfHost + "/list?" + sb.ToString();
-            string accessToken = Auth.createManageToken(listFilesUrl, null, mac);
+            string accessToken = Auth.CreateManageToken(listFilesUrl, null, mac);
 
             Dictionary<string, string> listFilesHeaders = new Dictionary<string, string>();
             listFilesHeaders.Add("Authorization", accessToken);
@@ -428,7 +428,7 @@ namespace Qiniu.Storage
                 result = new ListFilesResult();
                 result.Response = response;
                 result.ResponseInfo = respInfo;
-                if (respInfo.isOk())
+                if (respInfo.IsOk())
                 {
                     ListFilesResponse resp = JsonConvert.DeserializeObject<ListFilesResponse>(response);
 
@@ -438,65 +438,65 @@ namespace Qiniu.Storage
                 }
             });
 
-            await this.mHttpManager.postForm(listFilesUrl, listFilesHeaders, null, listFilesCompletionHandler);
+            await this.mHttpManager.PostFormAsync(listFilesUrl, listFilesHeaders, null, listFilesCompletionHandler);
 
             return result;
         }
 
-        public string statOp(string bucket, string key)
+        public string StatOp(string bucket, string key)
         {
-            return string.Format("/stat/{0}", StringUtils.encodedEntry(bucket, key));
+            return string.Format("/stat/{0}", StringUtils.EncodedEntry(bucket, key));
         }
 
-        public string deleteOp(string bucket, string key)
+        public string DeleteOp(string bucket, string key)
         {
-            return string.Format("/delete/{0}", StringUtils.encodedEntry(bucket, key));
+            return string.Format("/delete/{0}", StringUtils.EncodedEntry(bucket, key));
         }
 
-        public string copyOp(string srcBucket, string srcKey, string destBucket, string destKey)
+        public string CopyOp(string srcBucket, string srcKey, string destBucket, string destKey)
         {
-            return string.Format("/copy/{0}/{1}", StringUtils.encodedEntry(srcBucket, srcKey),
-                StringUtils.encodedEntry(destBucket, destKey));
-        }
-
-        // ADD 'force' param
-        // 2016-08-22 14:58 @fengyh
-        public string copyOp(string srcBucket, string srcKey, string destBucket, string destKey, bool force)
-        {
-            string fx = force ? "force/true" : "force/false";
-            return string.Format("/copy/{0}/{1}/{2}", StringUtils.encodedEntry(srcBucket, srcKey),
-                StringUtils.encodedEntry(destBucket, destKey), fx);
-        }
-
-        public string moveOp(string srcBucket, string srcKey, string destBucket, string destKey)
-        {
-            return string.Format("/move/{0}/{1}", StringUtils.encodedEntry(srcBucket, srcKey),
-                StringUtils.encodedEntry(destBucket, destKey));
+            return string.Format("/copy/{0}/{1}", StringUtils.EncodedEntry(srcBucket, srcKey),
+                StringUtils.EncodedEntry(destBucket, destKey));
         }
 
         // ADD 'force' param
         // 2016-08-22 14:58 @fengyh
-        public string moveOp(string srcBucket, string srcKey, string destBucket, string destKey, bool force)
+        public string CopyOp(string srcBucket, string srcKey, string destBucket, string destKey, bool force)
         {
             string fx = force ? "force/true" : "force/false";
-            return string.Format("/move/{0}/{1}/{2}", StringUtils.encodedEntry(srcBucket, srcKey),
-                StringUtils.encodedEntry(destBucket, destKey), fx);
-        }
-        public string chgmOp(string bucket, string key, string mimeType)
-        {
-            return string.Format("/chgm/{0}/mime/{1}", StringUtils.encodedEntry(bucket, key),
-                StringUtils.urlSafeBase64Encode(mimeType));
+            return string.Format("/copy/{0}/{1}/{2}", StringUtils.EncodedEntry(srcBucket, srcKey),
+                StringUtils.EncodedEntry(destBucket, destKey), fx);
         }
 
-        public string fetchOp(string url, string bucket, string key)
+        public string MoveOp(string srcBucket, string srcKey, string destBucket, string destKey)
         {
-            return string.Format("/fetch/{0}/to/{1}", StringUtils.urlSafeBase64Encode(url),
-                StringUtils.encodedEntry(bucket, key));
+            return string.Format("/move/{0}/{1}", StringUtils.EncodedEntry(srcBucket, srcKey),
+                StringUtils.EncodedEntry(destBucket, destKey));
         }
 
-        public string prefetchOp(string bucket, string key)
+        // ADD 'force' param
+        // 2016-08-22 14:58 @fengyh
+        public string MoveOp(string srcBucket, string srcKey, string destBucket, string destKey, bool force)
         {
-            return string.Format("/prefetch/{0}", StringUtils.encodedEntry(bucket, key));
+            string fx = force ? "force/true" : "force/false";
+            return string.Format("/move/{0}/{1}/{2}", StringUtils.EncodedEntry(srcBucket, srcKey),
+                StringUtils.EncodedEntry(destBucket, destKey), fx);
+        }
+        public string ChgmOp(string bucket, string key, string mimeType)
+        {
+            return string.Format("/chgm/{0}/mime/{1}", StringUtils.EncodedEntry(bucket, key),
+                StringUtils.UrlSafeBase64Encode(mimeType));
+        }
+
+        public string FetchOp(string url, string bucket, string key)
+        {
+            return string.Format("/fetch/{0}/to/{1}", StringUtils.UrlSafeBase64Encode(url),
+                StringUtils.EncodedEntry(bucket, key));
+        }
+
+        public string PrefetchOp(string bucket, string key)
+        {
+            return string.Format("/prefetch/{0}", StringUtils.EncodedEntry(bucket, key));
         }
     }
 }

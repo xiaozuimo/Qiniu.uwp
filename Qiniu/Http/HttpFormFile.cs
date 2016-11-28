@@ -21,7 +21,7 @@ namespace Qiniu.Http
         {
         }
 
-        private static HttpFormFile newObject(string filename, string contentType, object body)
+        private static HttpFormFile NewObject(string filename, string contentType, object body)
         {
             HttpFormFile obj = new HttpFormFile();
             obj.Filename = filename;
@@ -50,7 +50,7 @@ namespace Qiniu.Http
         /// <returns></returns>
         public static HttpFormFile NewFileFromPath(string filename, string contentType, StorageFile file)
         {
-            HttpFormFile obj = newObject(filename, contentType, file);
+            HttpFormFile obj = NewObject(filename, contentType, file);
             obj.BodyType = HttpFileType.FILE_PATH;
             return obj;
         }
@@ -64,7 +64,7 @@ namespace Qiniu.Http
         /// <returns></returns>
         public static HttpFormFile NewFileFromStream(string filename, string contentType, Stream stream)
         {
-            HttpFormFile obj = newObject(filename, contentType, stream);
+            HttpFormFile obj = NewObject(filename, contentType, stream);
             obj.BodyType = HttpFileType.FILE_STREAM;
             return obj;
         }
@@ -78,7 +78,7 @@ namespace Qiniu.Http
         /// <returns></returns>
         public static HttpFormFile NewFileFromBytes(string filename, string contentType, byte[] fileData)
         {
-            HttpFormFile obj = newObject(filename, contentType, fileData);
+            HttpFormFile obj = NewObject(filename, contentType, fileData);
             obj.BodyType = HttpFileType.DATA_BYTES;
             return obj;
         }
@@ -94,7 +94,7 @@ namespace Qiniu.Http
         /// <returns></returns>
         public static HttpFormFile NewFileFromSlice(string filename, string contentType, byte[] fileData, int offset, int count)
         {
-            HttpFormFile obj = newObject(filename, contentType, fileData);
+            HttpFormFile obj = NewObject(filename, contentType, fileData);
             obj.BodyType = HttpFileType.DATA_SLICE;
             obj.Offset = offset;
             obj.Count = count;

@@ -52,10 +52,10 @@ namespace Qiniu.Storage
         /// <param name="uploadOptions">上传可选设置</param>
         /// <param name="upCompletionHandler">上传结果处理器</param>
         #region 上传字节数据
-        public async Task uploadData(byte[] data, string key,
+        public async Task UploadDataAsync(byte[] data, string key,
             string token, UploadOptions uploadOptions, UpCompletionHandler upCompletionHandler)
         {
-            await new FormUploader().uploadData(data, key, token, uploadOptions, upCompletionHandler);
+            await new FormUploader().UploadDataAsync(data, key, token, uploadOptions, upCompletionHandler);
         }
         #endregion
 
@@ -68,13 +68,13 @@ namespace Qiniu.Storage
         /// <param name="uploadOptions">上传可选设置</param>
         /// <param name="upCompletionHandler">上传结果处理器</param>
         #region 上传文件流
-        public async Task uploadStream(Stream stream, string key, string token,
+        public async Task UploadStreamAsync(Stream stream, string key, string token,
             UploadOptions uploadOptions, UpCompletionHandler upCompletionHandler)
         {
             long fileSize = stream.Length;
             if (fileSize <= Config.PUT_THRESHOLD)
             {
-                await new FormUploader().uploadStream(stream, key, token, uploadOptions, upCompletionHandler);
+                await new FormUploader().UploadStreamAsync(stream, key, token, uploadOptions, upCompletionHandler);
             }
             else
             {
@@ -83,7 +83,7 @@ namespace Qiniu.Storage
                 {
                     recorderKey = this.keyGenerator();
                 }
-                await new ResumeUploader(this.resumeRecorder, recorderKey, stream, key, token, uploadOptions, upCompletionHandler).uploadStream();
+                await new ResumeUploader(this.resumeRecorder, recorderKey, stream, key, token, uploadOptions, upCompletionHandler).UploadStreamAsync();
             }
         }
         #endregion
@@ -97,7 +97,7 @@ namespace Qiniu.Storage
         /// <param name="uploadOptions">上传可选设置</param>
         /// <param name="upCompletionHandler">上传结果处理器</param>
         #region 上传文件
-        public async Task uploadFile(StorageFile file, string key, string token,
+        public async Task UploadFileAsync(StorageFile file, string key, string token,
             UploadOptions uploadOptions, UpCompletionHandler upCompletionHandler)
         {
             try
@@ -109,7 +109,7 @@ namespace Qiniu.Storage
                 //判断文件大小，选择上传方式
                 if (fileSize <= Config.PUT_THRESHOLD)
                 {
-                    await new FormUploader().uploadFile(file, key, token, uploadOptions, upCompletionHandler);
+                    await new FormUploader().UploadFileAsync(file, key, token, uploadOptions, upCompletionHandler);
                 }
                 else
                 {
@@ -118,7 +118,7 @@ namespace Qiniu.Storage
                     {
                         recorderKey = this.keyGenerator();
                     }
-                    await new ResumeUploader(this.resumeRecorder, recorderKey, file, key, token, uploadOptions, upCompletionHandler).uploadFile();
+                    await new ResumeUploader(this.resumeRecorder, recorderKey, file, key, token, uploadOptions, upCompletionHandler).UploadFileAsync();
                 }
             }
             catch (Exception ex)

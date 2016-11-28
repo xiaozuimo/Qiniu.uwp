@@ -28,7 +28,7 @@ namespace Qiniu.Storage.Persistent
         /// </summary>
         /// <param name="key">记录文件名</param>
         /// <param name="data">上传进度数据</param>
-        public async Task set(string key, byte[] data)
+        public async Task SetAsync(string key, byte[] data)
         {
             string filePath = Path.Combine(_folder.Path, key);
             var file = await _folder.CreateFileAsync(key, CreationCollisionOption.ReplaceExisting);
@@ -40,7 +40,7 @@ namespace Qiniu.Storage.Persistent
         /// </summary>
         /// <param name="key">记录文件名</param>
         /// <returns>上传进度数据</returns>
-        public async Task<byte[]> get(string key)
+        public async Task<byte[]> GetAsync(string key)
         {
             byte[] data = null;
             try
@@ -62,7 +62,7 @@ namespace Qiniu.Storage.Persistent
         /// 删除上传进度记录
         /// </summary>
         /// <param name="key">记录文件名</param>
-        public async Task del(string key)
+        public async Task DeleteAsync(string key)
         {
             try
             {
