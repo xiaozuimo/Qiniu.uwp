@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Qiniu.uwp</id>
+    <version>$version$</version>
+    <title>Qiniu.uwp</title>
+    <authors>ZhuiMeng</authors>
+    <owners>ZhuiMeng</owners>
+    <licenseUrl>https://github.com/MengYunfan/Qiniu.uwp</licenseUrl>
+    <projectUrl>https://github.com/MengYunfan/Qiniu.uwp</projectUrl>
+    <iconUrl>https://github.com/MengYunfan/Qiniu.uwp/tree/master/build/nuget.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Qiniu SDK For Universal Windows Platform</description>
+    <releaseNotes>First Release.</releaseNotes>
+    <copyright>© yunfan.me. All rights reserved.</copyright>
+    <tags>Qiniu</tags>
+    <dependencies>
+      <group>
+        <dependency id="Newtonsoft.Json" version="[9.0.1,)" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Debug\Qiniu.dll" target="lib\uap10.0" />
+    <file src="bin\Debug\Qiniu.pdb" target="lib\uap10.0" />
+    <file src="bin\Debug\Qiniu.pri" target="lib\uap10.0" />
+    <file src="bin\Debug\Qiniu.xml" target="lib\uap10.0" />
+  </files>
+</package>
