@@ -21,9 +21,9 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Debug\Qiniu.dll" target="lib\uap10.0" />
-    <file src="bin\Debug\Qiniu.pdb" target="lib\uap10.0" />
-    <file src="bin\Debug\Qiniu.pri" target="lib\uap10.0" />
-    <file src="bin\Debug\Qiniu.xml" target="lib\uap10.0" />
+    <file src="bin\Release\Qiniu.dll" target="lib\uap10.0" />
+    <file src="bin\Release\Qiniu.pdb" target="lib\uap10.0" />
+    <file src="bin\Release\Qiniu.pri" target="lib\uap10.0" />
+    <file src="bin\Release\Qiniu.xml" target="lib\uap10.0" />
   </files>
 </package>
