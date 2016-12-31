@@ -8,7 +8,7 @@
     <owners>ZhuiMeng</owners>
     <licenseUrl>https://github.com/MengYunfan/Qiniu.uwp</licenseUrl>
     <projectUrl>https://github.com/MengYunfan/Qiniu.uwp</projectUrl>
-    <iconUrl>https://github.com/MengYunfan/Qiniu.uwp/tree/master/Assets/nuget.png</iconUrl>
+    <iconUrl>http://assets.qiniu.com/qiniu-55x41.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Qiniu SDK For Universal Windows Platform</description>
     <releaseNotes>First Release.</releaseNotes>
