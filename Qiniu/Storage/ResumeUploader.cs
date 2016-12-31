@@ -238,8 +238,7 @@ namespace Qiniu.Storage
         #region 上传文件
         public async Task UploadFileAsync()
         {
-            // 使用uploadHost -- REMINDME
-            // 是否使用CDN(默认：是)
+            // 正常上传，使用UPLOAD_HOST
             string uploadHost = Config.UploadFromCDN ? Config.ZONE.UploadHost : Config.ZONE.UpHost;
 
             try
@@ -274,8 +273,7 @@ namespace Qiniu.Storage
         #region 上传文件流
         public async Task UploadStreamAsync()
         {
-            // 使用uploadHost -- REMINDME
-            // 是否使用CDN(默认：是)
+            // 正常上传，使用UPLOAD_HOST
             string uploadHost = Config.UploadFromCDN ? Config.ZONE.UploadHost : Config.ZONE.UpHost;
 
             try
@@ -407,13 +405,14 @@ namespace Qiniu.Storage
                         if (respInfo.NeedRetry() && retried < Config.RETRY_MAX)
                         {
                             Debug.WriteLine("mkfile retrying due to {0}...", respInfo.StatusCode);
-                            string upHost2 = Config.ZONE.UploadHost;
-                            await NextTask(offset, retried + 1, upHost2);
+                            //string upHost2 = Config.ZONE.UploadHost;
+                            fileStream.Seek(offset, SeekOrigin.Begin);
+                            await NextTask(offset, retried + 1, upHost);
                             return;
                         }
                     }
 
-                    Debug.WriteLine("mkfile error, upload failed due to {0}",respInfo.StatusCode);
+                    Debug.WriteLine("mkfile error, upload failed due to {0}", respInfo.StatusCode);
                     this.upCompletionHandler(key, respInfo, response);
                 }));
                 completedCts.SetResult(true);
@@ -426,10 +425,11 @@ namespace Qiniu.Storage
             {
                 double percent = (double)(offset) / this.size;
                 Debug.WriteLine("resumable upload progress {0}", percent);
-                if (percent > 0.95)
-                {
-                    percent = 0.95;
-                }
+                // why 0.95
+                //if (percent > 0.95)
+                //{
+                //    percent = 0.95;
+                //}
                 this.uploadOptions.ProgressHandler(this.key, percent);
             });
 
@@ -448,7 +448,10 @@ namespace Qiniu.Storage
                     //如果是701错误，为mkblk的ctx过期
                     if (respInfo.StatusCode == 701)
                     {
-                        await NextTask((offset / Config.BLOCK_SIZE) * Config.BLOCK_SIZE, retried, upHost);
+                        Debug.WriteLine("mkblk ctx is out of date, re-do upload");
+                        offset = (offset / Config.BLOCK_SIZE) * Config.BLOCK_SIZE;
+                        fileStream.Seek(offset, SeekOrigin.Begin);
+                        await NextTask(offset, retried, upHost);
                         completedCts.SetResult(false);
                         return;
                     }
@@ -460,12 +463,31 @@ namespace Qiniu.Storage
                         return;
                     }
 
-                    String upHost2 = upHost;
+                    // 下一个任务，使用uploadHost
+                    string uploadHost = upHost;
                     if (respInfo.NeedRetry())
                     {
-                        upHost2 = Config.ZONE.UploadHost;
+                        Debug.WriteLine(string.Format("upload-retry #{0}", retried + 1));
+
+                        if (Config.RetryWaitForNext)
+                        {
+                            Debug.WriteLine(string.Format("wait for {0} milisecond(s)", Config.RETRY_INTERVAL_MILISEC));
+                            // 如果需要重试，并且设置了多次重试之间的时间间隔
+                            await Task.Delay(Config.RETRY_INTERVAL_MILISEC);
+                        }
+
+                        //// 交替使用两个域名重试 
+                        //if (retried % 2 != 0)
+                        //{
+                        //    uploadHost = Config.UploadFromCDN ? Config.ZONE.UploadHost : Config.ZONE.UpHost;
+                        //}
+                        //else
+                        //{
+                        //    uploadHost = Config.UploadFromCDN ? Config.ZONE.UpHost : Config.ZONE.UploadHost;
+                        //}
                     }
-                    await NextTask(offset, retried + 1, upHost2);
+                    fileStream.Seek(offset, SeekOrigin.Begin);
+                    await NextTask(offset, retried + 1, uploadHost);
                     return;
                 }
 
@@ -473,6 +495,7 @@ namespace Qiniu.Storage
                 string chunkContext = null;
                 if (response == null || string.IsNullOrEmpty(response))
                 {
+                    fileStream.Seek(offset, SeekOrigin.Begin);
                     await NextTask(offset, retried + 1, upHost);
                     return;
                 }
@@ -490,6 +513,7 @@ namespace Qiniu.Storage
 
                 if (chunkContext == null || chunkCrc32 != this.crc32)
                 {
+                    fileStream.Seek(offset, SeekOrigin.Begin);
                     await NextTask(offset, retried + 1, upHost);
                     return;
                 }

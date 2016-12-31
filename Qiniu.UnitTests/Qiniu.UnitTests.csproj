@@ -97,12 +97,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FormUploaderTest.cs" />
+    <Compile Include="FusionManagerTest.cs" />
     <Compile Include="HttpManager2Test.cs" />
-    <Compile Include="Models\PersistentOpsAvthumbTest.cs" />
     <Compile Include="Models\QAuth.cs" />
-    <Compile Include="PersistentOpsAvthumbTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PutPolicyExtensionTest.cs" />
     <Compile Include="ResumeUploaderTest.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UnitTestApp.xaml.cs">
@@ -110,7 +108,6 @@
     </Compile>
     <Compile Include="BucketManagerTest.cs" />
     <Compile Include="UploadManagerTest.cs" />
-    <Compile Include="Utils\RandomExtension.cs" />
     <Compile Include="ZoneConfigTest.cs" />
   </ItemGroup>
   <ItemGroup>

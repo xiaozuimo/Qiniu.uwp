@@ -36,6 +36,7 @@
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Qiniu.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <PlatformTarget>x86</PlatformTarget>
@@ -112,6 +113,19 @@
     <Compile Include="Common\Config.cs" />
     <Compile Include="Common\Zone.cs" />
     <Compile Include="Common\ZoneHelper.cs" />
+    <Compile Include="Fusion\FusionManager.cs" />
+    <Compile Include="Fusion\Model\BandwidthRequest.cs" />
+    <Compile Include="Fusion\Model\BandwidthResult.cs" />
+    <Compile Include="Fusion\Model\FluxRequest.cs" />
+    <Compile Include="Fusion\Model\FluxResult.cs" />
+    <Compile Include="Fusion\Model\HotLinkRequest.cs" />
+    <Compile Include="Fusion\Model\LogListRequest.cs" />
+    <Compile Include="Fusion\Model\LogListResult.cs" />
+    <Compile Include="Fusion\Model\PrefetchRequest.cs" />
+    <Compile Include="Fusion\Model\PrefetchResult.cs" />
+    <Compile Include="Fusion\Model\RefreshRequest.cs" />
+    <Compile Include="Fusion\Model\RefreshResult.cs" />
+    <Compile Include="Fusion\Model\UrlHelper.cs" />
     <Compile Include="Http\CancellationSignal.cs" />
     <Compile Include="Http\CompletionHandler.cs" />
     <Compile Include="Http\HttpCode.cs" />
@@ -121,6 +135,8 @@
     <Compile Include="Http\HttpResult.cs" />
     <Compile Include="Http\ProgressHandler.cs" />
     <Compile Include="Http\ResponseInfo.cs" />
+    <Compile Include="Processing\Dfop.cs" />
+    <Compile Include="Processing\DfopResult.cs" />
     <Compile Include="Processing\Pfop.cs" />
     <Compile Include="Processing\PfopResult.cs" />
     <Compile Include="Processing\Prefop.cs" />
@@ -144,23 +160,14 @@
     <Compile Include="Storage\UploadManager.cs" />
     <Compile Include="Storage\UploadOptions.cs" />
     <Compile Include="Storage\UpProgressHandler.cs" />
-    <Compile Include="Util\AudioCodec.cs" />
     <Compile Include="Util\Auth.cs" />
-    <Compile Include="Util\AVThumbFormats.cs" />
     <Compile Include="Util\CRC32.cs" />
     <Compile Include="Util\Crypto.cs" />
-    <Compile Include="Util\IPersistentOps.cs" />
-    <Compile Include="Util\IPersistentOpsAvthumb.cs" />
-    <Compile Include="Util\IPersistentOpsAvthumbForAudio.cs" />
-    <Compile Include="Util\IPersistentOpsAvthumbForVideo.cs" />
     <Compile Include="Util\Mac.cs" />
-    <Compile Include="Util\PersistentOps.Avthumb.cs" />
-    <Compile Include="Util\PersistentOps.cs" />
     <Compile Include="Util\PutPolicy.cs" />
-    <Compile Include="Util\PutPolicy.Extension.cs" />
     <Compile Include="Util\QETag.cs" />
+    <Compile Include="Util\StorageUtils.cs" />
     <Compile Include="Util\StringUtils.cs" />
-    <Compile Include="Util\VideoCodec.cs" />
     <EmbeddedResource Include="Properties\Qiniu.rd.xml" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

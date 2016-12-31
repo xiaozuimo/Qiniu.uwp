@@ -1,7 +1,9 @@
 ﻿using Qiniu.Common;
 using Qiniu.Http;
 using Qiniu.Storage.Persistent;
+using Qiniu.Util;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -78,8 +80,18 @@ namespace Qiniu.Storage
             }
             else
             {
+                if (this.resumeRecorder == null)
+                {
+                    var folder = await StorageUtils.GetDefulatResumeRecorderFolder();
+                    this.resumeRecorder = new ResumeRecorder(folder);
+                }
+
                 string recorderKey = null;
-                if (this.keyGenerator != null)
+                if (this.keyGenerator == null)
+                {
+                    recorderKey = string.Format("qiniu_{0}.resume", Util.StringUtils.Md5Hash(key));
+                }
+                else
                 {
                     recorderKey = this.keyGenerator();
                 }
@@ -102,6 +114,11 @@ namespace Qiniu.Storage
         {
             try
             {
+                if (upCompletionHandler == null)
+                {
+                    upCompletionHandler = DefaultUpCompletionHandler;
+                }
+
                 long fileSize = 0;
                 var info = await file.GetBasicPropertiesAsync();
                 fileSize = (long)info.Size;
@@ -113,8 +130,18 @@ namespace Qiniu.Storage
                 }
                 else
                 {
+                    if (this.resumeRecorder == null)
+                    {
+                        var folder = await StorageUtils.GetDefulatResumeRecorderFolder();
+                        this.resumeRecorder = new ResumeRecorder(folder);
+                    }
+
                     string recorderKey = null;
-                    if (this.keyGenerator != null)
+                    if (this.keyGenerator == null)
+                    {
+                        recorderKey = string.Format("qiniu_{0}.resume", Util.StringUtils.Md5Hash(file.Path + key));
+                    }
+                    else
                     {
                         recorderKey = this.keyGenerator();
                     }
@@ -130,5 +157,11 @@ namespace Qiniu.Storage
             }
         }
         #endregion
+
+
+        private void DefaultUpCompletionHandler(string key, ResponseInfo respInfo, string respJson)
+        {
+            Debug.WriteLine(string.Format("key={0}\nrespInfo={1}\nresponse={2}", key, respInfo, respJson));
+        }
     }
 }

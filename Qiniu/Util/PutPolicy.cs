@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace Qiniu.Util
 {
     [JsonObject(MemberSerialization.OptIn)]
-    public class PutPolicy : ICloneable
+    public class PutPolicy
     {
         [JsonProperty("scope")]
         public string Scope { set; get; }
@@ -44,8 +44,6 @@ namespace Qiniu.Util
         [JsonProperty("fsizeLimit")]
         public int? FsizeLimit { set; get; }
 
-        [JsonProperty("fsizeMin")]
-        public int? FsizeMin { set; get; }
         [JsonProperty("detectMime")]
         public int? DetectMime { set; get; }
         [JsonProperty("mimeLimit")]
@@ -59,46 +57,10 @@ namespace Qiniu.Util
             TimeSpan ts = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0));
             this.Deadline = (int)ts.TotalSeconds + expireInSeconds;
         }
-        /// <summary>
-        /// 获取此上传策略的Json字符串。
-        /// </summary>
-        /// <returns>此上传策略的Json字符串。</returns>
+
         public override string ToString()
         {
             return StringUtils.JsonEncode(this);
         }
-        /// <summary>
-        /// 获取此上传策略的副本。
-        /// </summary>
-        /// <returns>上传策略的副本。</returns>
-        object ICloneable.Clone()
-        {
-            return this.Clone();
-        }
-        /// <summary>
-        /// 获取此上传策略的副本。
-        /// </summary>
-        /// <returns>上传策略的副本。</returns>
-        public PutPolicy Clone()
-        {
-            return this.MemberwiseClone() as PutPolicy;
-        }
-    }
-
-
-    //
-    // Summary:
-    //     Supports cloning, which creates a new instance of a class with the same value
-    //     as an existing instance.
-    [ComVisible(true)]
-    public interface ICloneable
-    {
-        //
-        // Summary:
-        //     Creates a new object that is a copy of the current instance.
-        //
-        // Returns:
-        //     A new object that is a copy of this instance.
-        object Clone();
     }
 }

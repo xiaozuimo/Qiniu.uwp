@@ -2,6 +2,7 @@
 using Qiniu.Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -79,7 +80,7 @@ namespace Qiniu.Http
 
                 //fire request
                 vWebResp = (HttpWebResponse)(await vWebReq.GetResponseAsync());
-                await HandleWebResponse(vWebResp, pCompletionHandler);
+                await HandleWebResponseAsync(vWebResp, pCompletionHandler);
             }
             catch (WebException wexp)
             {
@@ -91,7 +92,73 @@ namespace Qiniu.Http
             {
                 await HandleErrorWebResponseAsync(vWebResp, pCompletionHandler, exp);
             }
+            finally
+            {
+                if (vWebResp != null)
+                {
+                    vWebResp.Dispose();
+                    vWebResp = null;
+                }
+
+                if (vWebReq != null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
+            }
         }
+
+        public async Task GetRawAsync(string pUrl, RecvDataHandler pRecvDataHandler)
+        {
+            HttpWebRequest vWebReq = null;
+            HttpWebResponse vWebResp = null;
+            try
+            {
+                vWebReq = (HttpWebRequest)WebRequest.Create(pUrl);
+            }
+            catch (Exception ex)
+            {
+                if (pRecvDataHandler != null)
+                {
+                    pRecvDataHandler(ResponseInfo.invalidRequest(ex.Message), null);
+                }
+                return;
+            }
+
+            try
+            {
+                //vWebReq.AllowAutoRedirect = false;
+                vWebReq.Method = "GET";
+                vWebReq.Headers["User-Agent"] = this.GetUserAgent();
+
+                //fire request
+                vWebResp = (HttpWebResponse)(await vWebReq.GetResponseAsync());
+                await HandleWebResponseAsync(vWebResp, pRecvDataHandler);
+            }
+            catch (Exception exp)
+            {
+
+                if (pRecvDataHandler != null)
+                {
+                    pRecvDataHandler(ResponseInfo.networkError(exp.Message), null);
+                }
+            }
+            finally
+            {
+                if (vWebResp != null)
+                {
+                    vWebResp.Dispose();
+                    vWebResp = null;
+                }
+
+                if (vWebReq != null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
+            }
+        }
+
 
         /// <summary>
         /// post the url encoded form to remote server
@@ -159,7 +226,7 @@ namespace Qiniu.Http
 
                 //fire request
                 vWebResp = (HttpWebResponse)(await vWebReq.GetResponseAsync());
-                await HandleWebResponse(vWebResp, pCompletionHandler);
+                await HandleWebResponseAsync(vWebResp, pCompletionHandler);
             }
             catch (WebException wexp)
             {
@@ -171,7 +238,92 @@ namespace Qiniu.Http
             {
                 await HandleErrorWebResponseAsync(vWebResp, pCompletionHandler, exp);
             }
+            finally
+            {
+                if (vWebResp != null)
+                {
+                    vWebResp.Dispose();
+                    vWebResp = null;
+                }
+
+                if (vWebReq != null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
+            }
         }
+
+
+        /// <summary>
+        /// post data from raw
+        /// </summary>
+        /// <param name="pUrl"></param>
+        /// <param name="pHeaders"></param>
+        /// <param name="pRecvDataHandler"></param>
+        public async Task PostFormRawAsync(string pUrl, Dictionary<string, string> pHeaders, RecvDataHandler pRecvDataHandler)
+        {
+            HttpWebRequest vWebReq = null;
+            HttpWebResponse vWebResp = null;
+            try
+            {
+                vWebReq = (HttpWebRequest)WebRequest.Create(pUrl);
+            }
+            catch (Exception ex)
+            {
+                if (pRecvDataHandler != null)
+                {
+                    pRecvDataHandler(ResponseInfo.invalidRequest(ex.Message), null);
+                }
+                return;
+            }
+
+            try
+            {
+                vWebReq.Headers["User-Agent"] = this.GetUserAgent();
+                //vWebReq.AllowAutoRedirect = false;
+                vWebReq.Method = "POST";
+                vWebReq.ContentType = FORM_MIME_URLENCODED;
+                if (pHeaders != null)
+                {
+                    foreach (KeyValuePair<string, string> kvp in pHeaders)
+                    {
+                        if (!kvp.Key.Equals("Content-Type"))
+                        {
+                            vWebReq.Headers[kvp.Key] = kvp.Value;
+                        }
+                    }
+                }
+
+                //fire request
+                vWebResp = (HttpWebResponse)(await vWebReq.GetResponseAsync());
+                await HandleWebResponseAsync(vWebResp, pRecvDataHandler);
+            }
+            catch (Exception exp)
+            {
+                if (pRecvDataHandler != null)
+                {
+                    pRecvDataHandler(ResponseInfo.networkError(exp.Message), null);
+                }
+            }
+            finally
+            {
+                if (vWebResp != null)
+                {
+                    vWebResp.Dispose();
+                    vWebResp = null;
+                }
+
+                if (vWebReq != null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
+            }
+        }
+
+
+
 
 
         /// <summary>
@@ -234,7 +386,7 @@ namespace Qiniu.Http
 
                 //fire request
                 vWebResp = (HttpWebResponse)(await vWebReq.GetResponseAsync());
-                await HandleWebResponse(vWebResp, pCompletionHandler);
+                await HandleWebResponseAsync(vWebResp, pCompletionHandler);
             }
             catch (WebException wexp)
             {
@@ -245,6 +397,20 @@ namespace Qiniu.Http
             catch (Exception exp)
             {
                 await HandleErrorWebResponseAsync(vWebResp, pCompletionHandler, exp);
+            }
+            finally
+            {
+                if (vWebResp != null)
+                {
+                    vWebResp.Dispose();
+                    vWebResp = null;
+                }
+
+                if (vWebReq != null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
             }
         }
 
@@ -310,7 +476,7 @@ namespace Qiniu.Http
 
                 //fire request
                 vWebResp = (HttpWebResponse)(await vWebReq.GetResponseAsync());
-                await HandleWebResponse(vWebResp, pCompletionHandler);
+                await HandleWebResponseAsync(vWebResp, pCompletionHandler);
             }
             catch (WebException wexp)
             {
@@ -321,6 +487,20 @@ namespace Qiniu.Http
             catch (Exception exp)
             {
                 await HandleErrorWebResponseAsync(vWebResp, pCompletionHandler, exp);
+            }
+            finally
+            {
+                if (vWebResp != null)
+                {
+                    vWebResp.Dispose();
+                    vWebResp = null;
+                }
+
+                if (vWebReq != null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
             }
         }
 
@@ -466,7 +646,7 @@ namespace Qiniu.Http
 
                 //fire request
                 vWebResp = (HttpWebResponse)(await vWebReq.GetResponseAsync());
-                await HandleWebResponse(vWebResp, pCompletionHandler);
+                await HandleWebResponseAsync(vWebResp, pCompletionHandler);
             }
             catch (WebException wexp)
             {
@@ -478,7 +658,168 @@ namespace Qiniu.Http
             {
                 await HandleErrorWebResponseAsync(vWebResp, pCompletionHandler, exp);
             }
+            finally
+            {
+                if (vWebResp != null)
+                {
+                    vWebResp.Dispose();
+                    vWebResp = null;
+                }
+
+                if (vWebReq != null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
+            }
         }
+
+        /// <summary>
+        /// post multi-part data form to remote server
+        /// used to upload data
+        /// </summary>
+        /// <param name="pUrl"></param>
+        /// <param name="pHeaders"></param>
+        /// <param name="httpFormFile"></param>
+        /// <param name="pProgressHandler"></param>
+        /// <param name="pCompletionHandler"></param>
+        public async Task PostMultipartDataRawAsync(string pUrl, Dictionary<string, string> pHeaders,
+            HttpFormFile pFormFile, ProgressHandler pProgressHandler, RecvDataHandler pRecvDataHandler)
+        {
+            if (pFormFile == null)
+            {
+                if (pRecvDataHandler != null)
+                {
+                    pRecvDataHandler(ResponseInfo.fileError(new Exception("no file specified")), null);
+                }
+                return;
+            }
+
+            HttpWebRequest vWebReq = null;
+            HttpWebResponse vWebResp = null;
+            try
+            {
+                vWebReq = (HttpWebRequest)WebRequest.Create(pUrl);
+            }
+            catch (Exception ex)
+            {
+                if (pRecvDataHandler != null)
+                {
+                    pRecvDataHandler(ResponseInfo.invalidRequest(ex.Message), null);
+                }
+                return;
+            }
+
+            try
+            {
+                vWebReq.Headers["User-Agent"] = this.GetUserAgent();
+                vWebReq.Method = "POST";
+
+                //create boundary
+                string formBoundaryStr = this.CreateFormDataBoundary();
+                string contentType = string.Format("multipart/form-data; boundary={0}", formBoundaryStr);
+                vWebReq.ContentType = contentType;
+                if (pHeaders != null)
+                {
+                    foreach (KeyValuePair<string, string> kvp in pHeaders)
+                    {
+                        if (!kvp.Key.Equals("Content-Type"))
+                        {
+                            vWebReq.Headers[kvp.Key] = kvp.Value;
+                        }
+                    }
+                }
+
+                //write post body
+
+                byte[] formBoundaryBytes = Encoding.UTF8.GetBytes(string.Format("{0}{1}\r\n",
+                    FORM_BOUNDARY_TAG, formBoundaryStr));
+                byte[] formBoundaryEndBytes = Encoding.UTF8.GetBytes(string.Format("\r\n{0}{1}{2}\r\n",
+                    FORM_BOUNDARY_TAG, formBoundaryStr, FORM_BOUNDARY_TAG));
+
+                using (Stream vWebReqStream = await vWebReq.GetRequestStreamAsync())
+                {
+                    vWebReqStream.Write(formBoundaryBytes, 0, formBoundaryBytes.Length);
+
+                    //write file name
+                    string filename = pFormFile.Filename;
+                    if (string.IsNullOrEmpty(filename))
+                    {
+                        filename = this.CreateRandomFilename();
+                    }
+                    byte[] filePartTitleData = Encoding.UTF8.GetBytes(
+                                string.Format("Content-Disposition: form-data; name=\"data\"; filename=\"{0}\"\r\n", filename));
+                    vWebReqStream.Write(filePartTitleData, 0, filePartTitleData.Length);
+                    //write content type
+                    string mimeType = FORM_MIME_OCTECT;  //!!!注意这里 @fengyh 2016-08-17 15:00
+                    if (!string.IsNullOrEmpty(pFormFile.ContentType))
+                    {
+                        mimeType = pFormFile.ContentType;
+                    }
+                    byte[] filePartMimeData = Encoding.UTF8.GetBytes(string.Format("Content-Type: {0}\r\n\r\n", mimeType));
+                    vWebReqStream.Write(filePartMimeData, 0, filePartMimeData.Length);
+
+                    //write file data
+                    switch (pFormFile.BodyType)
+                    {
+                        case HttpFileType.FILE_PATH:
+                            try
+                            {
+                                using (var fs = await pFormFile.BodyFile.OpenStreamForReadAsync())
+                                {
+                                    await this.WriteHttpRequestBodyAsync(fs, vWebReqStream);
+                                }
+                            }
+                            catch (Exception fex)
+                            {
+                                if (pRecvDataHandler != null)
+                                {
+                                    pRecvDataHandler(ResponseInfo.fileError(fex), null);
+                                }
+                            }
+                            break;
+                        case HttpFileType.FILE_STREAM:
+                            await this.WriteHttpRequestBodyAsync(pFormFile.BodyStream, vWebReqStream);
+                            break;
+                        case HttpFileType.DATA_BYTES:
+                            vWebReqStream.Write(pFormFile.BodyBytes, 0, pFormFile.BodyBytes.Length);
+                            break;
+                        case HttpFileType.DATA_SLICE:
+                            vWebReqStream.Write(pFormFile.BodyBytes, pFormFile.Offset, pFormFile.Count);
+                            break;
+                    }
+
+                    vWebReqStream.Write(formBoundaryEndBytes, 0, formBoundaryEndBytes.Length);
+                    vWebReqStream.Flush();
+                }
+
+                //fire request
+                vWebResp = (HttpWebResponse)(await vWebReq.GetResponseAsync());
+                await HandleWebResponseAsync(vWebResp, pRecvDataHandler);
+            }
+            catch (Exception exp)
+            {
+                if (pRecvDataHandler != null)
+                {
+                    pRecvDataHandler(ResponseInfo.networkError(exp.Message), null);
+                }
+            }
+            finally
+            {
+                if (vWebResp != null)
+                {
+                    vWebResp.Dispose();
+                    vWebResp = null;
+                }
+
+                if (vWebReq != null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
+            }
+        }
+
 
         private async Task WriteHttpRequestBodyAsync(Stream fromStream, Stream toStream)
         {
@@ -493,7 +834,7 @@ namespace Qiniu.Http
             }
         }
 
-        private async Task HandleWebResponse(HttpWebResponse pWebResp, CompletionHandler pCompletionHandler)
+        private async Task HandleWebResponseAsync(HttpWebResponse pWebResp, CompletionHandler pCompletionHandler)
         {
             DateTime startTime = DateTime.Now;
             //check for exception
@@ -505,62 +846,91 @@ namespace Qiniu.Http
             string error = null;
             string host = null;
             string respData = null;
+            int contentLength = -1;
 
-            statusCode = (int)pWebResp.StatusCode;
-            if (pWebResp.Headers != null)
+            if (pWebResp != null)
             {
-                WebHeaderCollection respHeaders = pWebResp.Headers;
-                foreach (string headerName in respHeaders.AllKeys)
-                {
-                    if (headerName.Equals("X-Reqid"))
-                    {
-                        reqId = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("X-Log"))
-                    {
-                        xlog = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("X-Via"))
-                    {
-                        xvia = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("X-Px"))
-                    {
-                        xvia = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("Fw-Via"))
-                    {
-                        xvia = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("Host"))
-                    {
-                        host = respHeaders[headerName].ToString();
-                    }
-                }
+                statusCode = (int)pWebResp.StatusCode;
 
-                using (StreamReader respStream = new StreamReader(pWebResp.GetResponseStream()))
+                if (pWebResp.Headers != null)
                 {
-                    respData = await respStream.ReadToEndAsync();
-                }
-
-                try
-                {
-                    /////////////////////////////////////////////////////////////
-                    // 改进Response的error解析, 根据HttpStatusCode
-                    // @fengyh 2016-08-17 18:29
-                    /////////////////////////////////////////////////////////////
-                    if (statusCode != (int)HCODE.OK)
+                    WebHeaderCollection respHeaders = pWebResp.Headers;
+                    foreach (string headerName in respHeaders.AllKeys)
                     {
-                        bool isOtherCode = HttpCode.GetErrorMessage(statusCode, out error);
-
-                        if (isOtherCode)
+                        if (headerName.Equals("X-Reqid"))
                         {
-                            Dictionary<string, string> errorDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(respData);
-                            error = errorDict["error"];
+                            reqId = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Log"))
+                        {
+                            xlog = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Via"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Px"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Fw-Via"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Host"))
+                        {
+                            host = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Content-Length"))
+                        {
+                            contentLength = int.Parse(respHeaders[headerName].ToString());
                         }
                     }
                 }
-                catch (Exception) { }
+
+                if (contentLength > 0)
+                {
+                    Stream ps = pWebResp.GetResponseStream();
+                    byte[] raw = new byte[contentLength];
+                    int bytesRead = 0; // 已读取的字节数
+                    int bytesLeft = contentLength; // 剩余字节数
+                    while (bytesLeft > 0)
+                    {
+                        bytesRead = await ps.ReadAsync(raw, contentLength - bytesLeft, bytesLeft);
+                        bytesLeft -= bytesRead;
+                    }
+
+                    respData = Encoding.UTF8.GetString(raw);
+
+                    try
+                    {
+                        /////////////////////////////////////////////////////////////
+                        // 改进Response的error解析, 根据HttpStatusCode
+                        // @fengyh 2016-08-17 18:29
+                        /////////////////////////////////////////////////////////////
+                        if (statusCode != (int)HCODE.OK)
+                        {
+                            bool isOtherCode = HttpCode.GetErrorMessage(statusCode, out error);
+
+                            if (isOtherCode)
+                            {
+                                Dictionary<string, string> errorDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(respData);
+                                error = errorDict["error"];
+                            }
+                        }
+                    }
+                    catch (Exception) { }
+                }
+                else
+                {
+                    //statusCode = -1;
+                    //error = "response err";
+                }
+            }
+            else
+            {
+                error = "invalid response";
+                statusCode = -1;
             }
 
             double duration = DateTime.Now.Subtract(startTime).TotalSeconds;
@@ -599,61 +969,84 @@ namespace Qiniu.Http
             string error = null;
             string host = null;
             string respData = null;
+            int contentLength = -1;
 
-            if (pWebResp != null && pWebResp.Headers != null)
+            if (pWebResp != null)
             {
-                WebHeaderCollection respHeaders = pWebResp.Headers;
-                foreach (string headerName in respHeaders.AllKeys)
+                if (pWebResp.Headers != null)
                 {
-                    if (headerName.Equals("X-Reqid"))
+                    WebHeaderCollection respHeaders = pWebResp.Headers;
+                    foreach (string headerName in respHeaders.AllKeys)
                     {
-                        reqId = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("X-Log"))
-                    {
-                        xlog = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("X-Via"))
-                    {
-                        xvia = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("X-Px"))
-                    {
-                        xvia = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("Fw-Via"))
-                    {
-                        xvia = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("Host"))
-                    {
-                        host = respHeaders[headerName].ToString();
-                    }
-                }
-
-                using (StreamReader respStream = new StreamReader(pWebResp.GetResponseStream()))
-                {
-                    respData = await respStream.ReadToEndAsync();
-                }
-
-                try
-                {
-                    /////////////////////////////////////////////////////////////
-                    // 改进Response的error解析, 根据HttpStatusCode
-                    // @fengyh 2016-08-17 18:29
-                    /////////////////////////////////////////////////////////////
-                    if (statusCode != (int)HCODE.OK)
-                    {
-                        bool isOtherCode = HttpCode.GetErrorMessage(statusCode, out error);
-
-                        if (isOtherCode)
+                        if (headerName.Equals("X-Reqid"))
                         {
-                            Dictionary<string, string> errorDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(respData);
-                            error = errorDict["error"];
+                            reqId = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Log"))
+                        {
+                            xlog = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Via"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Px"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Fw-Via"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Host"))
+                        {
+                            host = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Content-Length"))
+                        {
+                            contentLength = int.Parse(respHeaders[headerName].ToString());
                         }
                     }
                 }
-                catch (Exception) { }
+
+                if (contentLength > 0)
+                {
+                    Stream ps = pWebResp.GetResponseStream();
+                    byte[] raw = new byte[contentLength];
+                    int bytesRead = 0; // 已读取的字节数
+                    int bytesLeft = contentLength; // 剩余字节数
+                    while (bytesLeft > 0)
+                    {
+                        bytesRead = await ps.ReadAsync(raw, contentLength - bytesLeft, bytesLeft);
+                        bytesLeft -= bytesRead;
+                    }
+
+                    respData = Encoding.UTF8.GetString(raw);
+
+                    try
+                    {
+                        /////////////////////////////////////////////////////////////
+                        // 改进Response的error解析, 根据HttpStatusCode
+                        // @fengyh 2016-08-17 18:29
+                        /////////////////////////////////////////////////////////////
+                        if (statusCode != (int)HCODE.OK)
+                        {
+                            bool isOtherCode = HttpCode.GetErrorMessage(statusCode, out error);
+
+                            if (isOtherCode)
+                            {
+                                Dictionary<string, string> errorDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(respData);
+                                error = errorDict["error"];
+                            }
+                        }
+                    }
+                    catch (Exception) { }
+                }
+                else
+                {
+                    statusCode = -1;
+                    error = "response err";
+                }
             }
             else
             {
@@ -665,6 +1058,106 @@ namespace Qiniu.Http
             if (pCompletionHandler != null)
             {
                 pCompletionHandler(respInfo, respData);
+            }
+        }
+
+        private async Task HandleWebResponseAsync(HttpWebResponse pWebResp, RecvDataHandler pRecvDataHandler)
+        {
+            DateTime startTime = DateTime.Now;
+            //check for exception
+            int statusCode = ResponseInfo.NetworkError;
+            string reqId = null;
+            string xlog = null;
+            string ip = null;
+            string xvia = null;
+            string error = null;
+            string host = null;
+            byte[] respData = null;
+            int contentLength = -1;
+
+            if (pWebResp != null)
+            {
+                statusCode = (int)pWebResp.StatusCode;
+
+                if (pWebResp.Headers != null)
+                {
+                    WebHeaderCollection respHeaders = pWebResp.Headers;
+                    foreach (string headerName in respHeaders.AllKeys)
+                    {
+                        if (headerName.Equals("X-Reqid"))
+                        {
+                            reqId = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Log"))
+                        {
+                            xlog = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Via"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Px"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Fw-Via"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Host"))
+                        {
+                            host = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Content-Length"))
+                        {
+                            contentLength = int.Parse(respHeaders["Content-Length"]);
+                        }
+                    }
+                }
+
+                if (contentLength > 0)
+                {
+                    Stream ps = pWebResp.GetResponseStream();
+                    respData = new byte[contentLength];
+                    int bytesRead = 0; // 已读取的字节数
+                    int bytesLeft = contentLength; // 剩余字节数
+                    while (bytesLeft > 0)
+                    {
+                        bytesRead = await ps.ReadAsync(respData, contentLength - bytesLeft, bytesLeft);
+                        bytesLeft -= bytesRead;
+                    }
+
+                    try
+                    {
+                        /////////////////////////////////////////////////////////////
+                        // 改进Response的error解析, 根据HttpStatusCode
+                        // @fengyh 2016-08-17 18:29
+                        /////////////////////////////////////////////////////////////
+                        if (statusCode != (int)HCODE.OK)
+                        {
+                            bool isOtherCode = HttpCode.GetErrorMessage(statusCode, out error);
+
+                            if (isOtherCode)
+                            {
+                                string respJson = Encoding.UTF8.GetString(respData);
+                                Dictionary<string, string> errorDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(respJson);
+                                error = errorDict["error"];
+                            }
+                        }
+                    }
+                    catch (Exception) { }
+                }
+                else
+                {
+                    error = "response error";
+                }
+            }
+
+            double duration = DateTime.Now.Subtract(startTime).TotalSeconds;
+            ResponseInfo respInfo = new ResponseInfo(statusCode, reqId, xlog, xvia, host, ip, duration, error);
+            if (pRecvDataHandler != null)
+            {
+                pRecvDataHandler(respInfo, respData);
             }
         }
 
