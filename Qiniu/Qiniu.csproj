@@ -145,7 +145,6 @@
     <Compile Include="IO\Model\UploadController.cs" />
     <Compile Include="IO\Model\UploadProgressHandler.cs" />
     <Compile Include="IO\ResumableUploader.cs" />
-    <Compile Include="IO\SimpleUploader.cs" />
     <Compile Include="IO\UploadManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QiniuCSharpSDK.cs" />

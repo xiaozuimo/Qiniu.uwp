@@ -11,7 +11,7 @@ namespace Qiniu.Util
         /// 获取home路径
         /// </summary>
         /// <returns>HOME路径</returns>
-        public static string getHomeFolder()
+        public static string GetHomeFolder()
         {
             // Windows下Home目录 = %HOMEDRIVE% + %HOMEPATH%
             string homeFolder = Environment.GetEnvironmentVariable("HOMEDRIVE") + Environment.GetEnvironmentVariable("HOMEPATH");

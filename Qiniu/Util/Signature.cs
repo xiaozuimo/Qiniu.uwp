@@ -25,15 +25,15 @@ namespace Qiniu.Util
             this.mac = mac;
         }
 
-        private string encodedSign(byte[] data)
+        private string EncodedSign(byte[] data)
         {
             return Crypto.HmacSha1(data, mac.SecretKey).HexToBase64String().HexToBase64String();
         }
 
-        private string encodedSign(string str)
+        private string EncodedSign(string str)
         {
             byte[] data = Encoding.UTF8.GetBytes(str);
-            return encodedSign(data);
+            return EncodedSign(data);
         }
 
         /// <summary>
@@ -41,9 +41,9 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="data">待签名的数据</param>
         /// <returns></returns>
-        public string sign(byte[] data)
+        public string Sign(byte[] data)
         {
-            return string.Format("{0}:{1}", mac.AccessKey,encodedSign(data));
+            return string.Format("{0}:{1}", mac.AccessKey,EncodedSign(data));
         }
 
         /// <summary>
@@ -51,10 +51,10 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="str">待签名的数据</param>
         /// <returns></returns>
-        public string sign(string str)
+        public string Sign(string str)
         {
             byte[] data = Encoding.UTF8.GetBytes(str);
-            return sign(data);
+            return Sign(data);
         }
 
         /// <summary>
@@ -62,10 +62,10 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="data">待签名的数据</param>
         /// <returns></returns>
-        public string signWithData(byte[] data)
+        public string SignWithData(byte[] data)
         {
-            string sstr = Base64.urlSafeBase64Encode(data);
-            return string.Format("{0}:{1}:{2}", mac.AccessKey, encodedSign(sstr), sstr);
+            string sstr = Base64.UrlSafeBase64Encode(data);
+            return string.Format("{0}:{1}:{2}", mac.AccessKey, EncodedSign(sstr), sstr);
         }
 
         /// <summary>
@@ -73,10 +73,10 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="str">待签名的数据</param>
         /// <returns>签名结果</returns>
-        public string signWithData(string str)
+        public string SignWithData(string str)
         {
             byte[] data = Encoding.UTF8.GetBytes(str);
-            return signWithData(data);
+            return SignWithData(data);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Qiniu.Util
         /// <param name="url">请求目标的URL</param>
         /// <param name="body">请求的主体数据</param>
         /// <returns></returns>
-        public string signRequest(string url, byte[] body)
+        public string SignRequest(string url, byte[] body)
         {
             Uri u = new Uri(url);
             string pathAndQuery = u.PathAndQuery;
@@ -109,10 +109,10 @@ namespace Qiniu.Util
         /// <param name="url">请求目标的URL</param>
         /// <param name="body">请求的主体数据</param>
         /// <returns></returns>
-        public string signRequest(string url, string body)
+        public string SignRequest(string url, string body)
         {
             byte[] data = Encoding.UTF8.GetBytes(body);
-            return signRequest(url, data);
+            return SignRequest(url, data);
         }
     }
 }

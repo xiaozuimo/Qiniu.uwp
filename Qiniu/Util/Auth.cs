@@ -24,9 +24,9 @@
         /// <param name="url">请求的URL</param>
         /// <param name="body">请求的主体内容</param>
         /// <returns>生成的管理凭证</returns>
-        public string createManageToken(string url,byte[] body)
+        public string CreateManageToken(string url,byte[] body)
         {
-            return string.Format("QBox {0}", signature.signRequest(url, body));
+            return string.Format("QBox {0}", signature.SignRequest(url, body));
         }
 
         /// <summary>
@@ -34,9 +34,9 @@
         /// </summary>
         /// <param name="url">请求的URL</param>
         /// <returns>生成的管理凭证</returns>
-        public string createManageToken(string url)
+        public string CreateManageToken(string url)
         {
-            return createManageToken(url, null);
+            return CreateManageToken(url, null);
         }
 
         /// <summary>
@@ -44,9 +44,9 @@
         /// </summary>
         /// <param name="jsonBody">上传策略JSON串</param>
         /// <returns>生成的上传凭证</returns>
-        public string createUploadToken(string jsonBody)
+        public string CreateUploadToken(string jsonBody)
         {
-            return signature.signWithData(jsonBody);
+            return signature.SignWithData(jsonBody);
         }
 
         /// <summary>
@@ -54,9 +54,9 @@
         /// </summary>
         /// <param name="url">原始链接</param>
         /// <returns></returns>
-        public string createDownloadToken(string url)
+        public string CreateDownloadToken(string url)
         {
-            return signature.sign(url);
+            return signature.Sign(url);
         }
 
         /// <summary>
@@ -64,9 +64,9 @@
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public string createStreamPublishToken(string path)
+        public string CreateStreamPublishToken(string path)
         {
-            return signature.sign(path);
+            return signature.Sign(path);
         }
 
         /// <summary>
@@ -74,9 +74,9 @@
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public string createStreamManageToken(string data)
+        public string CreateStreamManageToken(string data)
         {
-            return string.Format("Qiniu {0}", signature.signWithData(data));
+            return string.Format("Qiniu {0}", signature.SignWithData(data));
         }
 
         /// <summary>
@@ -88,10 +88,10 @@
         /// <param name="url">访问的URL</param>
         /// <param name="body">请求的body</param>
         /// <returns>生成的管理凭证</returns>
-        public static string createManageToken(Mac mac, string url, byte[] body)
+        public static string CreateManageToken(Mac mac, string url, byte[] body)
         {
             Signature sx = new Signature(mac);
-            return string.Format("QBox {0}", sx.signRequest(url, body));
+            return string.Format("QBox {0}", sx.SignRequest(url, body));
         }
 
         /// <summary>
@@ -100,9 +100,9 @@
         /// <param name="mac">账号</param>
         /// <param name="url">请求的URL</param>
         /// <returns>生成的管理凭证</returns>
-        public static string createManageToken(Mac mac, string url)
+        public static string CreateManageToken(Mac mac, string url)
         {
-            return createManageToken(mac, url, null);
+            return CreateManageToken(mac, url, null);
         }
 
         /// <summary>
@@ -111,10 +111,10 @@
         /// <param name="mac">账号</param>
         /// <param name="jsonBody">上传策略JSON串</param>
         /// <returns>生成的上传凭证</returns>
-        public static string createUploadToken(Mac mac, string jsonBody)
+        public static string CreateUploadToken(Mac mac, string jsonBody)
         {
             Signature sx = new Signature(mac);
-            return sx.signWithData(jsonBody);
+            return sx.SignWithData(jsonBody);
         }
 
         /// <summary>
@@ -123,10 +123,10 @@
         /// <param name="mac">账号</param>
         /// <param name="url">原始链接</param>
         /// <returns></returns>
-        public static string createDownloadToken(Mac mac, string url)
+        public static string CreateDownloadToken(Mac mac, string url)
         {
             Signature sx = new Signature(mac);
-            return sx.sign(url);
+            return sx.Sign(url);
         }
 
         /// <summary>
@@ -135,10 +135,10 @@
         /// <param name="mac"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static string createStreamPublishToken(Mac mac,string path)
+        public static string CreateStreamPublishToken(Mac mac,string path)
         {
             Signature sx = new Signature(mac);
-            return sx.sign(path);
+            return sx.Sign(path);
         }
 
         /// <summary>
@@ -147,10 +147,10 @@
         /// <param name="mac"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static string createStreamManageToken(Mac mac, string data)
+        public static string CreateStreamManageToken(Mac mac, string data)
         {
             Signature sx = new Signature(mac);
-            return string.Format("Qiniu {0}", sx.sign(data));
+            return string.Format("Qiniu {0}", sx.Sign(data));
         }
 
     }

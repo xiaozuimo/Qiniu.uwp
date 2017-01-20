@@ -39,7 +39,7 @@ namespace Qiniu.RS
             try
             {
                 string statUrl = Config.ZONE.RsHost + StatOp(bucket, key);
-                string token = auth.createManageToken(statUrl);
+                string token = auth.CreateManageToken(statUrl);
 
                 HttpResult hr = await httpManager.GetAsync(statUrl, token);
                 result.shadow(hr);
@@ -74,7 +74,7 @@ namespace Qiniu.RS
             try
             {
                 string bucketsUrl = Config.ZONE.RsHost + "/buckets";
-                string token = auth.createManageToken(bucketsUrl);
+                string token = auth.CreateManageToken(bucketsUrl);
 
                 HttpResult hr = await httpManager.GetAsync(bucketsUrl, token);
                 result.shadow(hr);
@@ -110,7 +110,7 @@ namespace Qiniu.RS
             try
             {
                 string bucketsUrl = Config.ZONE.RsHost + "/bucket/" + bucketName;
-                string token = auth.createManageToken(bucketsUrl);
+                string token = auth.CreateManageToken(bucketsUrl);
 
                 HttpResult hr = await httpManager.GetAsync(bucketsUrl, token);
                 result.shadow(hr);
@@ -147,7 +147,7 @@ namespace Qiniu.RS
             try
             {
                 string deleteUrl = Config.ZONE.RsHost + DeleteOp(bucket, key);
-                string token = auth.createManageToken(deleteUrl);
+                string token = auth.CreateManageToken(deleteUrl);
 
                 result = await httpManager.PostAsync(deleteUrl, token);
             }
@@ -185,7 +185,7 @@ namespace Qiniu.RS
             try
             {
                 string copyUrl = Config.ZONE.RsHost + CopyOp(srcBucket, srcKey, dstBucket, dstKey);
-                string token = auth.createManageToken(copyUrl);
+                string token = auth.CreateManageToken(copyUrl);
 
                 result = await httpManager.PostAsync(copyUrl, token);
             }
@@ -224,7 +224,7 @@ namespace Qiniu.RS
             try
             {
                 string copyUrl = Config.ZONE.RsHost + CopyOp(srcBucket, srcKey, dstBucket, dstKey, force);
-                string token = auth.createManageToken(copyUrl);
+                string token = auth.CreateManageToken(copyUrl);
 
                 result = await httpManager.PostAsync(copyUrl, token);
             }
@@ -262,7 +262,7 @@ namespace Qiniu.RS
             try
             {
                 string moveUrl = Config.ZONE.RsHost + MoveOp(srcBucket, srcKey, dstBucket, dstKey);
-                string token = auth.createManageToken(moveUrl);
+                string token = auth.CreateManageToken(moveUrl);
 
                 result = await httpManager.PostAsync(moveUrl, token);
             }
@@ -301,7 +301,7 @@ namespace Qiniu.RS
             try
             {
                 string moveUrl = Config.ZONE.RsHost + MoveOp(srcBucket, srcKey, dstBucket, dstKey, force);
-                string token = auth.createManageToken(moveUrl);
+                string token = auth.CreateManageToken(moveUrl);
 
                 result = await httpManager.PostAsync(moveUrl, token);
             }
@@ -350,7 +350,7 @@ namespace Qiniu.RS
             try
             {
                 string chgmUrl = Config.ZONE.RsHost + ChgmOp(bucket, key, mimeType);
-                string token = auth.createManageToken(chgmUrl);
+                string token = auth.CreateManageToken(chgmUrl);
 
                 result = await httpManager.PostAsync(chgmUrl, token);
             }
@@ -386,7 +386,7 @@ namespace Qiniu.RS
             {
                 string batchUrl = Config.ZONE.RsHost + "/batch";
                 byte[] data = Encoding.UTF8.GetBytes(batchOps);
-                string token = auth.createManageToken(batchUrl, data);
+                string token = auth.CreateManageToken(batchUrl, data);
 
                 HttpResult hr = await httpManager.PostFormAsync(batchUrl, data, token);
                 result.shadow(hr);
@@ -475,7 +475,7 @@ namespace Qiniu.RS
             try
             {
                 string fetchUrl = Config.ZONE.IovipHost + FetchOp(resUrl, bucket, key);
-                string token = auth.createManageToken(fetchUrl);
+                string token = auth.CreateManageToken(fetchUrl);
 
                 result = await httpManager.PostAsync(fetchUrl, token);
             }
@@ -511,7 +511,7 @@ namespace Qiniu.RS
             try
             {
                 string prefetchUrl = Config.ZONE.IovipHost + PrefetchOp(bucket, key);
-                string token = auth.createManageToken(prefetchUrl);
+                string token = auth.CreateManageToken(prefetchUrl);
 
                 result = await httpManager.PostAsync(prefetchUrl, token);
             }
@@ -548,7 +548,7 @@ namespace Qiniu.RS
                 string domainsUrl = Config.ZONE.ApiHost + "/v6/domain/list";
                 string body = string.Format("tbl={0}", bucket);
                 byte[] data = Encoding.UTF8.GetBytes(body);
-                string token = auth.createManageToken(domainsUrl, data);
+                string token = auth.CreateManageToken(domainsUrl, data);
 
                 HttpResult hr = await httpManager.PostFormAsync(domainsUrl, data, token);
                 result.shadow(hr);
@@ -633,7 +633,7 @@ namespace Qiniu.RS
                 }
 
                 string listUrl = Config.ZONE.RsfHost + sb.ToString();
-                string token = auth.createManageToken(listUrl);
+                string token = auth.CreateManageToken(listUrl);
 
                 HttpResult hr = await httpManager.PostAsync(listUrl, token);
                 result.shadow(hr);
@@ -671,7 +671,7 @@ namespace Qiniu.RS
             try
             {
                 string updateUrl = Config.ZONE.RsHost + UpdateLifecycleOp(bucket, key, deleteAfterDays);
-                string token = auth.createManageToken(updateUrl);
+                string token = auth.CreateManageToken(updateUrl);
 
                 result = await httpManager.PostAsync(updateUrl, token);
             }
@@ -702,7 +702,7 @@ namespace Qiniu.RS
         /// <returns>stat操作字符串</returns>
         public string StatOp(string bucket, string key)
         {
-            return string.Format("/stat/{0}", Base64.urlSafeBase64Encode(bucket, key));
+            return string.Format("/stat/{0}", Base64.UrlSafeBase64Encode(bucket, key));
         }
 
         /// <summary>
@@ -713,7 +713,7 @@ namespace Qiniu.RS
         /// <returns>delete操作字符串</returns>
         public string DeleteOp(string bucket, string key)
         {
-            return string.Format("/delete/{0}", Base64.urlSafeBase64Encode(bucket, key));
+            return string.Format("/delete/{0}", Base64.UrlSafeBase64Encode(bucket, key));
         }
 
         /// <summary>
@@ -727,8 +727,8 @@ namespace Qiniu.RS
         public string CopyOp(string srcBucket, string srcKey, string dstBucket, string dstKey)
         {
             return string.Format("/copy/{0}/{1}",
-                Base64.urlSafeBase64Encode(srcBucket, srcKey),
-                Base64.urlSafeBase64Encode(dstBucket, dstKey));
+                Base64.UrlSafeBase64Encode(srcBucket, srcKey),
+                Base64.UrlSafeBase64Encode(dstBucket, dstKey));
         }
 
         /// <summary>
@@ -744,8 +744,8 @@ namespace Qiniu.RS
         {
             string fx = force ? "force/true" : "force/false";
             return string.Format("/copy/{0}/{1}/{2}",
-                Base64.urlSafeBase64Encode(srcBucket, srcKey),
-                Base64.urlSafeBase64Encode(dstBucket, dstKey), fx);
+                Base64.UrlSafeBase64Encode(srcBucket, srcKey),
+                Base64.UrlSafeBase64Encode(dstBucket, dstKey), fx);
         }
 
         /// <summary>
@@ -759,8 +759,8 @@ namespace Qiniu.RS
         public string MoveOp(string srcBucket, string srcKey, string dstBucket, string dstKey)
         {
             return string.Format("/move/{0}/{1}",
-                Base64.urlSafeBase64Encode(srcBucket, srcKey),
-                Base64.urlSafeBase64Encode(dstBucket, dstKey));
+                Base64.UrlSafeBase64Encode(srcBucket, srcKey),
+                Base64.UrlSafeBase64Encode(dstBucket, dstKey));
         }
 
         /// <summary>
@@ -776,8 +776,8 @@ namespace Qiniu.RS
         {
             string fx = force ? "force/true" : "force/false";
             return string.Format("/move/{0}/{1}/{2}",
-                Base64.urlSafeBase64Encode(srcBucket, srcKey),
-                Base64.urlSafeBase64Encode(dstBucket, dstKey), fx);
+                Base64.UrlSafeBase64Encode(srcBucket, srcKey),
+                Base64.UrlSafeBase64Encode(dstBucket, dstKey), fx);
         }
 
         /// <summary>
@@ -790,8 +790,8 @@ namespace Qiniu.RS
         public string ChgmOp(string bucket, string key, string mimeType)
         {
             return string.Format("/chgm/{0}/mime/{1}",
-                Base64.urlSafeBase64Encode(bucket, key),
-                Base64.urlSafeBase64Encode(mimeType));
+                Base64.UrlSafeBase64Encode(bucket, key),
+                Base64.UrlSafeBase64Encode(mimeType));
         }
 
         /// <summary>
@@ -804,8 +804,8 @@ namespace Qiniu.RS
         public string FetchOp(string url, string bucket, string key)
         {
             return string.Format("/fetch/{0}/to/{1}",
-                Base64.urlSafeBase64Encode(url),
-                Base64.urlSafeBase64Encode(bucket, key));
+                Base64.UrlSafeBase64Encode(url),
+                Base64.UrlSafeBase64Encode(bucket, key));
         }
 
         /// <summary>
@@ -817,7 +817,7 @@ namespace Qiniu.RS
         public string PrefetchOp(string bucket, string key)
         {
             return string.Format("/prefetch/{0}",
-                Base64.urlSafeBase64Encode(bucket, key));
+                Base64.UrlSafeBase64Encode(bucket, key));
         }
 
         /// <summary>
@@ -830,7 +830,7 @@ namespace Qiniu.RS
         public string UpdateLifecycleOp(string bucket,string key,int deleteAfterDays)
         {
             return string.Format("/deleteAfterDays/{0}/{1}",
-                Base64.urlSafeBase64Encode(bucket, key), deleteAfterDays);
+                Base64.UrlSafeBase64Encode(bucket, key), deleteAfterDays);
         }
 
     }

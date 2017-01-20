@@ -46,7 +46,7 @@ namespace Qiniu.RSF
                 string pfopUrl = Config.ZONE.ApiHost + "/pfop/";
 
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("bucket={0}&key={1}&fops={2}", bucket, key, StringHelper.urlEncode(fops));
+                sb.AppendFormat("bucket={0}&key={1}&fops={2}", bucket, key, StringHelper.UrlEncode(fops));
                 if (!string.IsNullOrEmpty(notifyUrl))
                 {
                     sb.AppendFormat("&notifyURL={0}", notifyUrl);
@@ -60,7 +60,7 @@ namespace Qiniu.RSF
                     sb.AppendFormat("&pipeline={0}", pipeline);
                 }
                 byte[] data = Encoding.UTF8.GetBytes(sb.ToString());
-                string token = auth.createManageToken(pfopUrl, data);
+                string token = auth.CreateManageToken(pfopUrl, data);
 
                 HttpResult hr = await httpManager.PostFormAsync(pfopUrl, data, token);
                 result.shadow(hr);
@@ -143,7 +143,7 @@ namespace Qiniu.RSF
         /// <returns>操作结果/返回数据</returns>
         public async Task<HttpResult> DfopAsync(string fop, string uri)
         {
-            if (UrlHelper.isValidUrl(uri))
+            if (UrlHelper.IsValidUrl(uri))
             {
                 return await DfopUrlAsync(fop, uri);
             }
@@ -166,7 +166,7 @@ namespace Qiniu.RSF
             try
             {
                 string dfopUrl = string.Format("{0}/dfop?fop={1}", Config.DFOP_API_HOST, fop);
-                string token = auth.createManageToken(dfopUrl);
+                string token = auth.CreateManageToken(dfopUrl);
                 string boundary = HttpManager.CreateFormDataBoundary();
                 string sep = "--" + boundary;
                 StringBuilder sb = new StringBuilder();
@@ -235,9 +235,9 @@ namespace Qiniu.RSF
 
             try
             {
-                string encodedUrl = StringHelper.urlEncode(url);
+                string encodedUrl = StringHelper.UrlEncode(url);
                 string dfopUrl = string.Format("{0}/dfop?fop={1}&url={2}", Config.DFOP_API_HOST, fop, encodedUrl);
-                string token = auth.createManageToken(dfopUrl);
+                string token = auth.CreateManageToken(dfopUrl);
 
                 result = await httpManager.PostAsync(dfopUrl, token, true);
             }
@@ -273,7 +273,7 @@ namespace Qiniu.RSF
             try
             {
                 string dfopUrl = string.Format("{0}/dfop?fop={1}", Config.DFOP_API_HOST, fop);
-                string token = auth.createManageToken(dfopUrl);
+                string token = auth.CreateManageToken(dfopUrl);
                 string boundary = HttpManager.CreateFormDataBoundary();
                 string sep = "--" + boundary;
 

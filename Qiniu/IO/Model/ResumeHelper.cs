@@ -46,7 +46,7 @@ namespace Qiniu.IO.Model
         public static void Save(ResumeInfo resumeInfo, string recordFile)
         {
             string jsonStr = string.Format("{{\"fileSize\":{0}, \"blockIndex\":{1}, \"blockCount\":{2}, \"contexts\":[{3}]}}",
-                resumeInfo.FileSize, resumeInfo.BlockIndex, resumeInfo.BlockCount, StringHelper.jsonJoin(resumeInfo.Contexts));
+                resumeInfo.FileSize, resumeInfo.BlockIndex, resumeInfo.BlockCount, StringHelper.JsonJoin(resumeInfo.Contexts));
 
             using (FileStream fs = new FileStream(recordFile, FileMode.Create))
             {

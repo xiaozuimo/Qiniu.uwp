@@ -98,7 +98,7 @@ namespace Qiniu.IO
             {
                 if (string.IsNullOrEmpty(recordFile))
                 {
-                    recordFile = "QiniuRU_" + Hashing.calcMD5(localFile + saveKey);
+                    recordFile = "QiniuRU_" + Hashing.CalcMD5(localFile + saveKey);
                 }
 
                 if (upph == null)

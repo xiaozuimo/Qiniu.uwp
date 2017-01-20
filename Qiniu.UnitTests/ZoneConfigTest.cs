@@ -39,10 +39,10 @@ namespace Qiniu.UnitTests
         public void zoneTest()
         {
             Zone v1 = new Zone();
-            Zone v2 = Zone.ZONE_CN_East();
-            Zone v3 = Zone.ZONE_CN_North();
-            Zone v4 = Zone.ZONE_CN_South();
-            Zone v5 = Zone.ZONE_US_North();
+            Zone v2 = Zone.ZONE_CN_East(true);
+            Zone v3 = Zone.ZONE_CN_North(true);
+            Zone v4 = Zone.ZONE_CN_South(true);
+            Zone v5 = Zone.ZONE_US_North(true);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Qiniu.UnitTests
         {
             //Settings.load();
             await Settings.LoadFromFile();
-            ZoneID zid = await AutoZone.Query(Settings.AccessKey, Settings.Bucket);
+            ZoneID zid = await Zone.getZone.Query(Settings.AccessKey, Settings.Bucket);
         }
 
         /// <summary>

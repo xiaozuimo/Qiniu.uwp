@@ -71,7 +71,7 @@ namespace Qiniu.CDN.Model
         public HotLinkRequest(string url, string key, int expire)
         {
             string host, path, file, query;
-            UrlHelper.urlSplit(url, out host, out path, out file, out query);
+            UrlHelper.UrlSplit(url, out host, out path, out file, out query);
 
             Host = host;
             Path = path;

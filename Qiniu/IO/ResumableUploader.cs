@@ -62,7 +62,7 @@ namespace Qiniu.IO
         public async Task<HttpResult> UploadFileAsync(string localFile, string saveKey, string token)
         {
             string recordKey = DefaultRecordKey(localFile, saveKey);
-            string recordFile = Path.Combine(UserEnv.getHomeFolder(), recordKey);
+            string recordFile = Path.Combine(UserEnv.GetHomeFolder(), recordKey);
             UploadProgressHandler uppHandler = new UploadProgressHandler(DefaultUploadProgressHandler);
             return await UploadFileAsync(localFile, saveKey, token, recordFile, uppHandler);
         }
@@ -160,7 +160,7 @@ namespace Qiniu.IO
                     }
 
                     fs.Read(chunkBuffer, 0, (int)chunkSize);
-                    hr = await mkblkAsync(chunkBuffer, blockSize, chunkSize, token);
+                    hr = await MkblkAsync(chunkBuffer, blockSize, chunkSize, token);
                     if (hr.Code != (int)HttpCode.OK)
                     {
                         result.shadow(hr);
@@ -196,7 +196,7 @@ namespace Qiniu.IO
                             }
 
                             fs.Read(chunkBuffer, 0, (int)chunkSize);
-                            hr = await bputAsync(chunkBuffer, blockOffset, chunkSize, context, token);
+                            hr = await BputAsync(chunkBuffer, blockOffset, chunkSize, context, token);
                             if (hr.Code != (int)HttpCode.OK)
                             {
                                 result.shadow(hr);
@@ -228,7 +228,7 @@ namespace Qiniu.IO
                 }
 
                 string fileName = Path.GetFileName(localFile);
-                hr = await mkfileAsync(fileName, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token);
+                hr = await MkfileAsync(fileName, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.shadow(hr);
@@ -386,7 +386,7 @@ namespace Qiniu.IO
                         }
 
                         fs.Read(chunkBuffer, 0, (int)chunkSize);
-                        hr = await mkblkAsync(chunkBuffer, blockSize, chunkSize, token);
+                        hr = await MkblkAsync(chunkBuffer, blockSize, chunkSize, token);
                         if (hr.Code != (int)HttpCode.OK)
                         {
                             result.shadow(hr);
@@ -422,7 +422,7 @@ namespace Qiniu.IO
                                 }
 
                                 fs.Read(chunkBuffer, 0, (int)chunkSize);
-                                hr = await bputAsync(chunkBuffer, blockOffset, chunkSize, context, token);
+                                hr = await BputAsync(chunkBuffer, blockOffset, chunkSize, context, token);
                                 if (hr.Code != (int)HttpCode.OK)
                                 {
                                     result.shadow(hr);
@@ -455,7 +455,7 @@ namespace Qiniu.IO
                 }
 
                 string fileName = Path.GetFileName(localFile);
-                hr = await mkfileAsync(fileName, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token);
+                hr = await MkfileAsync(fileName, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.shadow(hr);
@@ -507,7 +507,7 @@ namespace Qiniu.IO
         public async Task<HttpResult> UploadFileAsync(string localFile, string saveKey, string token, int maxTry)
         {
             string recordKey = DefaultRecordKey(localFile, saveKey);
-            string recordFile = Path.Combine(UserEnv.getHomeFolder(), recordKey);
+            string recordFile = Path.Combine(UserEnv.GetHomeFolder(), recordKey);
             UploadProgressHandler uppHandler = new UploadProgressHandler(DefaultUploadProgressHandler);
             return await UploadFileAsync(localFile, saveKey, token, recordFile, maxTry, uppHandler);
         }
@@ -617,7 +617,7 @@ namespace Qiniu.IO
                     {
                         result.RefText += string.Format("[ResumableUpload] try mkblk#{0} @{1}\n", iTry, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                        hr = await mkblkCheckedAsync(chunkBuffer, blockSize, chunkSize, token);
+                        hr = await MkblkCheckedAsync(chunkBuffer, blockSize, chunkSize, token);
 
                         if (hr.Code == (int)HttpCode.OK && hr.RefCode != (int)HttpCode.USER_NEED_RETRY)
                         {
@@ -666,7 +666,7 @@ namespace Qiniu.IO
                             {
                                 result.RefText += string.Format("[ResumableUpload] try bput#{0} @{1}\n", iTry, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                                hr = await bputCheckedAsync(chunkBuffer, blockOffset, chunkSize, context, token);
+                                hr = await BputCheckedAsync(chunkBuffer, blockOffset, chunkSize, context, token);
 
                                 if (hr.Code == (int)HttpCode.OK && hr.RefCode != (int)HttpCode.USER_NEED_RETRY)
                                 {
@@ -703,7 +703,7 @@ namespace Qiniu.IO
                 }
 
                 string fileName = Path.GetFileName(localFile);
-                hr = await mkfileAsync(fileName, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token);
+                hr = await MkfileAsync(fileName, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.shadow(hr);
@@ -874,7 +874,7 @@ namespace Qiniu.IO
                             result.RefText += string.Format("[ResumableUpload] try mkblk#{0} @{1}\n", iTry,
                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                            hr = await mkblkCheckedAsync(chunkBuffer, blockSize, chunkSize, token);
+                            hr = await MkblkCheckedAsync(chunkBuffer, blockSize, chunkSize, token);
 
                             if (hr.Code == (int)HttpCode.OK && hr.RefCode != (int)HttpCode.USER_NEED_RETRY)
                             {
@@ -923,7 +923,7 @@ namespace Qiniu.IO
                                     result.RefText += string.Format("[ResumableUpload] try bput#{0} @{1}\n", iTry,
                                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                                    hr = await bputCheckedAsync(chunkBuffer, blockOffset, chunkSize, context, token);
+                                    hr = await BputCheckedAsync(chunkBuffer, blockOffset, chunkSize, context, token);
 
                                     if (hr.Code == (int)HttpCode.OK && hr.RefCode != (int)HttpCode.USER_NEED_RETRY)
                                     {
@@ -962,7 +962,7 @@ namespace Qiniu.IO
                 }
 
                 string fileName = Path.GetFileName(localFile);
-                hr = await mkfileAsync(fileName, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token);
+                hr = await MkfileAsync(fileName, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.shadow(hr);
@@ -1136,7 +1136,7 @@ namespace Qiniu.IO
                             result.RefText += string.Format("[ResumableUpload] try mkblk#{0} @{1}\n", iTry,
                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                            hr = await mkblkCheckedAsync(chunkBuffer, blockSize, chunkSize, token);
+                            hr = await MkblkCheckedAsync(chunkBuffer, blockSize, chunkSize, token);
 
                             if (hr.Code == (int)HttpCode.OK && hr.RefCode != (int)HttpCode.USER_NEED_RETRY)
                             {
@@ -1185,7 +1185,7 @@ namespace Qiniu.IO
                                     result.RefText += string.Format("[ResumableUpload] try bput#{0} @{1}\n", iTry,
                                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                                    hr = await bputCheckedAsync(chunkBuffer, blockOffset, chunkSize, context, token);
+                                    hr = await BputCheckedAsync(chunkBuffer, blockOffset, chunkSize, context, token);
 
                                     if (hr.Code == (int)HttpCode.OK && hr.RefCode != (int)HttpCode.USER_NEED_RETRY)
                                     {
@@ -1224,7 +1224,7 @@ namespace Qiniu.IO
                 }
 
                 string fileName = Path.GetFileName(localFile);
-                hr = await mkfileAsync(fileName, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token, extraParams);
+                hr = await MkfileAsync(fileName, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token, extraParams);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.shadow(hr);
@@ -1319,11 +1319,11 @@ namespace Qiniu.IO
 
                     if (chunkSize < blockSize)
                     {
-                        hr = await mkblkAsync(buffer, chunkSize, chunkSize, token);
+                        hr = await MkblkAsync(buffer, chunkSize, chunkSize, token);
                     }
                     else
                     {
-                        hr = await mkblkAsync(buffer, blockSize, chunkSize, token);
+                        hr = await MkblkAsync(buffer, blockSize, chunkSize, token);
                     }
                     if (hr.Code != (int)HttpCode.OK)
                     {
@@ -1351,7 +1351,7 @@ namespace Qiniu.IO
                     ++index;
                 }
 
-                hr = await mkfileAsync(streamId, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token);
+                hr = await MkfileAsync(streamId, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.shadow(hr);
@@ -1409,7 +1409,7 @@ namespace Qiniu.IO
         /// <returns></returns>
         public string DefaultRecordKey(string localFile, string saveKey)
         {
-            return "QiniuRU_" + Hashing.calcMD5(localFile + saveKey);
+            return "QiniuRU_" + Hashing.CalcMD5(localFile + saveKey);
         }
 
         /// <summary>
@@ -1450,18 +1450,18 @@ namespace Qiniu.IO
         /// <summary>
         /// 创建文件
         /// </summary>
-        private async Task<HttpResult> mkfileAsync(string fileName, long size, string saveKey, string mimeType, List<string> contexts, string token)
+        private async Task<HttpResult> MkfileAsync(string fileName, long size, string saveKey, string mimeType, List<string> contexts, string token)
         {
             HttpResult result = new HttpResult();
 
             try
             {
-                string fnameStr = string.Format("/fname/{0}", Base64.urlSafeBase64Encode(fileName));
-                string mimeTypeStr = string.Format("/mimeType/{0}", Base64.urlSafeBase64Encode(mimeType));
-                string keyStr = string.Format("/key/{0}", Base64.urlSafeBase64Encode(saveKey));
+                string fnameStr = string.Format("/fname/{0}", Base64.UrlSafeBase64Encode(fileName));
+                string mimeTypeStr = string.Format("/mimeType/{0}", Base64.UrlSafeBase64Encode(mimeType));
+                string keyStr = string.Format("/key/{0}", Base64.UrlSafeBase64Encode(saveKey));
 
                 string url = string.Format("{0}/mkfile/{1}{2}{3}{4}", uploadHost, size, mimeTypeStr, fnameStr, keyStr);
-                string body = StringHelper.join(contexts, ",");
+                string body = StringHelper.Join(contexts, ",");
                 string upToken = string.Format("UpToken {0}", token);
 
                 result = await httpManager.PostFormAsync(url, body, upToken);
@@ -1488,15 +1488,15 @@ namespace Qiniu.IO
         /// <summary>
         /// 创建文件
         /// </summary>
-        private async Task<HttpResult> mkfileAsync(string fileName, long size, string saveKey, string mimeType, List<string> contexts, string token, Dictionary<string, string> extraParams)
+        private async Task<HttpResult> MkfileAsync(string fileName, long size, string saveKey, string mimeType, List<string> contexts, string token, Dictionary<string, string> extraParams)
         {
             HttpResult result = new HttpResult();
 
             try
             {
-                string fnameStr = string.Format("/fname/{0}", Base64.urlSafeBase64Encode(fileName));
-                string mimeTypeStr = string.Format("/mimeType/{0}", Base64.urlSafeBase64Encode(mimeType));
-                string keyStr = string.Format("/key/{0}", Base64.urlSafeBase64Encode(saveKey));
+                string fnameStr = string.Format("/fname/{0}", Base64.UrlSafeBase64Encode(fileName));
+                string mimeTypeStr = string.Format("/mimeType/{0}", Base64.UrlSafeBase64Encode(mimeType));
+                string keyStr = string.Format("/key/{0}", Base64.UrlSafeBase64Encode(saveKey));
                 string paramStr = "";
                 if (extraParams != null && extraParams.Count > 0)
                 {
@@ -1510,7 +1510,7 @@ namespace Qiniu.IO
                 }
 
                 string url = string.Format("{0}/mkfile/{1}{2}{3}{4}{5}", uploadHost, size, mimeTypeStr, fnameStr, keyStr, paramStr);
-                string body = StringHelper.join(contexts, ",");
+                string body = StringHelper.Join(contexts, ",");
                 string upToken = string.Format("UpToken {0}", token);
 
                 result = await httpManager.PostFormAsync(url, body, upToken);
@@ -1537,7 +1537,7 @@ namespace Qiniu.IO
         /// <summary>
         /// 创建块(携带首片数据)
         /// </summary>
-        private async Task<HttpResult> mkblkAsync(byte[] chunkBuffer, long blockSize, long chunkSize, string token)
+        private async Task<HttpResult> MkblkAsync(byte[] chunkBuffer, long blockSize, long chunkSize, string token)
         {
             HttpResult result = new HttpResult();
 
@@ -1573,7 +1573,7 @@ namespace Qiniu.IO
         /// <summary>
         /// 创建块(携带首片数据),同时检查CRC32
         /// </summary>
-        private async Task<HttpResult> mkblkCheckedAsync(byte[] chunkBuffer, long blockSize, long chunkSize, string token)
+        private async Task<HttpResult> MkblkCheckedAsync(byte[] chunkBuffer, long blockSize, long chunkSize, string token)
         {
             HttpResult result = new HttpResult();
 
@@ -1593,7 +1593,7 @@ namespace Qiniu.IO
                         if (rd.ContainsKey("crc32"))
                         {
                             uint crc_1 = Convert.ToUInt32(rd["crc32"]);
-                            uint crc_2 = CRC32.checkSumSlice(chunkBuffer, 0, (int)chunkSize);
+                            uint crc_2 = CRC32.CheckSumSlice(chunkBuffer, 0, (int)chunkSize);
                             if (crc_1 != crc_2)
                             {
                                 result.RefCode = (int)HttpCode.USER_NEED_RETRY;
@@ -1629,7 +1629,7 @@ namespace Qiniu.IO
         /// <summary>
         /// 上传数据片
         /// </summary>
-        private async Task<HttpResult> bputAsync(byte[] chunkBuffer, long offset, long chunkSize, string context, string token)
+        private async Task<HttpResult> BputAsync(byte[] chunkBuffer, long offset, long chunkSize, string context, string token)
         {
             HttpResult result = new HttpResult();
 
@@ -1671,7 +1671,7 @@ namespace Qiniu.IO
         /// <param name="context"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        private async Task<HttpResult> bputCheckedAsync(byte[] chunkBuffer, long offset, long chunkSize, string context, string token)
+        private async Task<HttpResult> BputCheckedAsync(byte[] chunkBuffer, long offset, long chunkSize, string context, string token)
         {
             HttpResult result = new HttpResult();
 
@@ -1692,7 +1692,7 @@ namespace Qiniu.IO
                         if (rd.ContainsKey("crc32"))
                         {
                             uint crc_1 = Convert.ToUInt32(rd["crc32"]);
-                            uint crc_2 = CRC32.checkSumSlice(chunkBuffer, 0, (int)chunkSize);
+                            uint crc_2 = CRC32.CheckSumSlice(chunkBuffer, 0, (int)chunkSize);
                             if (crc_1 != crc_2)
                             {
                                 result.RefCode = (int)HttpCode.USER_NEED_RETRY;

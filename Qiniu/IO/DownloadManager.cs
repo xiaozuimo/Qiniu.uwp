@@ -22,7 +22,7 @@ namespace Qiniu.IO
         /// <returns>包含过期时间的已授权的下载链接</returns>
         public static string CreateSignedUrl(Mac mac, string url, int expireInSeconds = 3600)
         {
-            string deadline = StringHelper.calcUnixTimestamp(expireInSeconds);
+            string deadline = StringHelper.CalcUnixTimestamp(expireInSeconds);
 
             StringBuilder sb = new StringBuilder(url);
             if (url.Contains("?"))
@@ -34,7 +34,7 @@ namespace Qiniu.IO
                 sb.AppendFormat("?e={0}", deadline);
             }
             
-            string token = Auth.createDownloadToken(mac, sb.ToString());
+            string token = Auth.CreateDownloadToken(mac, sb.ToString());
             sb.AppendFormat("&token={0}", token);
 
             return sb.ToString();

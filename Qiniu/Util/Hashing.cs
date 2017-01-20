@@ -17,7 +17,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="data">字节数据</param>
         /// <returns>SHA1</returns>
-        public static byte[] calcSHA1(byte[] data)
+        public static byte[] CalcSHA1(byte[] data)
         {
             var algorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
             // 原文的二进制数据
@@ -37,7 +37,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="str">待计算的字符串</param>
         /// <returns>MD5结果</returns>
-        public static string calcMD5(string str)
+        public static string CalcMD5(string str)
         {
             var algorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
             // 原文的二进制数据

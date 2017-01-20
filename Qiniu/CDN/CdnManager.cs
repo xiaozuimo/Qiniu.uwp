@@ -68,7 +68,7 @@ namespace Qiniu.CDN
             {
                 string url = RefreshEntry();
                 string body = request.ToJsonStr();
-                string token = auth.createManageToken(url);
+                string token = auth.CreateManageToken(url);
 
                 HttpResult hr = await httpManager.PostJsonAsync(url, body, token);
                 result.shadow(hr);
@@ -141,7 +141,7 @@ namespace Qiniu.CDN
             {
                 string url = PrefetchEntry();
                 string body = request.ToJsonStr();
-                string token = auth.createManageToken(url);
+                string token = auth.CreateManageToken(url);
 
                 HttpResult hr = await httpManager.PostJsonAsync(url, body, token);
                 result.shadow(hr);                
@@ -190,7 +190,7 @@ namespace Qiniu.CDN
             {
                 string url = BandwidthEntry();
                 string body = request.ToJsonStr();
-                string token = auth.createManageToken(url);
+                string token = auth.CreateManageToken(url);
 
                 HttpResult hr = await httpManager.PostJsonAsync(url, body, token);
                 result.shadow(hr);                
@@ -224,7 +224,7 @@ namespace Qiniu.CDN
         /// <returns>带宽数居</returns>
         public async Task<BandwidthResult> GetBandwidthDataAsync(string[] domains,string startDate,string endDate,string granularity)
         {
-            BandwidthRequest request = new BandwidthRequest(startDate, endDate, granularity, StringHelper.join(domains, ";"));
+            BandwidthRequest request = new BandwidthRequest(startDate, endDate, granularity, StringHelper.Join(domains, ";"));
             return await GetBandwidthDataAsync(request);
         }
 
@@ -242,7 +242,7 @@ namespace Qiniu.CDN
             {
                 string url = FluxEntry();
                 string body = request.ToJsonStr();
-                string token = auth.createManageToken(url);
+                string token = auth.CreateManageToken(url);
 
                 HttpResult hr = await httpManager.PostJsonAsync(url, body, token);
                 result.shadow(hr);
@@ -276,7 +276,7 @@ namespace Qiniu.CDN
         /// <returns>流量数据</returns>
         public async Task<FluxResult> GetFluxDataAsync(string[] domains, string startDate, string endDate, string granularity)
         {
-            FluxRequest request = new FluxRequest(startDate, endDate, granularity, StringHelper.join(domains, ";"));
+            FluxRequest request = new FluxRequest(startDate, endDate, granularity, StringHelper.Join(domains, ";"));
             return await GetFluxDataAsync(request);
         }
 
@@ -295,7 +295,7 @@ namespace Qiniu.CDN
             {
                 string url = LoglistEntry();
                 string body = request.ToJsonStr();
-                string token = auth.createManageToken(url);
+                string token = auth.CreateManageToken(url);
 
                 HttpResult hr = await httpManager.PostJsonAsync(url, body, token);
                 result.shadow(hr);
@@ -327,7 +327,7 @@ namespace Qiniu.CDN
         /// <returns>日志列表</returns>
         public async Task<LogListResult> GetCdnLogListAsync(string[] domains,string date)
         {
-            LogListRequest request = new LogListRequest(date, StringHelper.join(domains, ";"));
+            LogListRequest request = new LogListRequest(date, StringHelper.Join(domains, ";"));
             return await GetCdnLogListAsync(request);
         }
 
@@ -345,7 +345,7 @@ namespace Qiniu.CDN
             string path = Uri.EscapeUriString(request.Path);
             string file = request.File;
             string ts = (int.Parse(request.Timestamp)).ToString("x");
-            string SIGN = Hashing.calcMD5(key + path + file + ts);
+            string SIGN = Hashing.CalcMD5(key + path + file + ts);
 
             return string.Format("{0}&sign={1}&t={2}", RAW, SIGN, ts);
         }
