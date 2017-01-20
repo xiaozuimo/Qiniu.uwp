@@ -1,8 +1,10 @@
 ﻿using Qiniu.Util;
 using Qiniu.IO.Model;
+using System;
 using System.IO;
 using Qiniu.Http;
 using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace Qiniu.IO
 {
@@ -33,7 +35,7 @@ namespace Qiniu.IO
         private UploadController upctl = null;
 
         // 上传记录文件 - 仅用于上传大文件
-        private string recordFile = null;
+        private StorageFile recordFile = null;
 
         /// <summary>
         /// 初始化
@@ -68,7 +70,7 @@ namespace Qiniu.IO
         /// 设置断点记录文件-仅对于上传大文件有效
         /// </summary>
         /// <param name="recordFile">记录文件</param>
-        public void SetRecordFile(string recordFile)
+        public void SetRecordFile(StorageFile recordFile)
         {
             this.recordFile = recordFile;
         }
@@ -85,20 +87,22 @@ namespace Qiniu.IO
         /// <summary>
         /// 上传文件
         /// </summary>
-        /// <param name="localFile">本地待上传的文件名</param>
+        /// <param name="file">本地待上传的文件</param>
         /// <param name="saveKey">要保存的文件名称</param>
         /// <param name="token">上传凭证</param>
         /// <returns>上传结果</returns>
-        public async Task<HttpResult> UploadFileAsync(string localFile, string saveKey, string token)
+        public async Task<HttpResult> UploadFileAsync(StorageFile file, string saveKey, string token)
         {
             HttpResult result = new HttpResult();
 
-            FileInfo fi = new FileInfo(localFile);
-            if (fi.Length > PUT_THRESHOLD)
+            var info = await file.GetBasicPropertiesAsync();
+
+            if (info.Size > (ulong)PUT_THRESHOLD)
             {
-                if (string.IsNullOrEmpty(recordFile))
+                if (recordFile == null)
                 {
-                    recordFile = "QiniuRU_" + Hashing.CalcMD5(localFile + saveKey);
+                    var recordKey = "QiniuRU_" + Hashing.CalcMD5(file + saveKey);
+                    recordFile = await (await UserEnv.GetHomeFolderAsync()).CreateFileAsync(recordKey);
                 }
 
                 if (upph == null)
@@ -112,12 +116,12 @@ namespace Qiniu.IO
                 }
 
                 ResumableUploader ru = new ResumableUploader(UPLOAD_FROM_CDN, CHUNK_UNIT);
-                result = await ru.UploadFileAsync(localFile, saveKey, token, recordFile, upph, upctl);
+                result = await ru.UploadFileAsync(file, saveKey, token, recordFile, upph, upctl);
             }
             else
             {
                 FormUploader su = new FormUploader(UPLOAD_FROM_CDN);
-                result = await su.UploadFileAsync(localFile, saveKey, token);
+                result = await su.UploadFileAsync(file, saveKey, token);
             }
 
             return result;

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Qiniu.Common;
 using Qiniu.Http;
 using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.Storage.Streams;
 
 namespace Qiniu.IO
 {
@@ -41,11 +43,11 @@ namespace Qiniu.IO
         /// [1] http://developer.qiniu.com/article/developer/security/upload-token.html
         /// [2] http://developer.qiniu.com/article/developer/security/put-policy.html
         /// </summary>
-        /// <param name="localFile">待上传的本地文件</param>
+        /// <param name="file">待上传的本地文件</param>
         /// <param name="saveKey">要保存的目标文件名称</param>
         /// <param name="token">上传凭证</param>
         /// <returns>上传结果</returns>
-        public async Task<HttpResult> UploadFileAsync(string localFile, string saveKey, string token)
+        public async Task<HttpResult> UploadFileAsync(StorageFile file, string saveKey, string token)
         {
             HttpResult result = new HttpResult();
 
@@ -68,7 +70,7 @@ namespace Qiniu.IO
                 sbp1.AppendLine(token);
                 sbp1.AppendLine(sep);
 
-                string filename = Path.GetFileName(localFile);
+                string filename = Path.GetFileName(file.Path);
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();
@@ -78,7 +80,7 @@ namespace Qiniu.IO
                 sbp3.AppendLine(sep + "--");
 
                 byte[] partData1 = Encoding.UTF8.GetBytes(sbp1.ToString());
-                byte[] partData2 = File.ReadAllBytes(localFile);
+                byte[] partData2 = await ReadToByteArray(file);
                 byte[] partData3 = Encoding.UTF8.GetBytes(sbp3.ToString());
 
                 MemoryStream ms = new MemoryStream();
@@ -88,7 +90,7 @@ namespace Qiniu.IO
 
                 result = await httpManager.PostMultipartAsync(uploadHost, ms.ToArray(), boundary, null);
                 result.RefText += string.Format("[SimpleUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
-                    localFile, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                    file, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
             }
             catch (Exception ex)
             {
@@ -112,12 +114,12 @@ namespace Qiniu.IO
         /// <summary>
         /// 上传文件 - 可附加自定义参数
         /// </summary>
-        /// <param name="localFile">待上传的本地文件</param>
+        /// <param name="file">待上传的本地文件</param>
         /// <param name="saveKey">要保存的目标文件名称</param>
         /// <param name="token">上传凭证</param>
         /// <param name="extraParams">用户自定义的附加参数</param>
         /// <returns></returns>
-        public async Task<HttpResult> UploadFileAsync(string localFile, string saveKey, string token, Dictionary<string, string> extraParams)
+        public async Task<HttpResult> UploadFileAsync(StorageFile file, string saveKey, string token, Dictionary<string, string> extraParams)
         {
             HttpResult result = new HttpResult();
 
@@ -148,7 +150,7 @@ namespace Qiniu.IO
                     sbp1.AppendLine(sep);
                 }
 
-                string filename = Path.GetFileName(localFile);
+                string filename = Path.GetFileName(file.Path);
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();
@@ -158,8 +160,10 @@ namespace Qiniu.IO
                 sbp3.AppendLine(sep + "--");
 
                 byte[] partData1 = Encoding.UTF8.GetBytes(sbp1.ToString());
-                byte[] partData2 = File.ReadAllBytes(localFile);
+                byte[] partData2 = await ReadToByteArray(file);
                 byte[] partData3 = Encoding.UTF8.GetBytes(sbp3.ToString());
+                
+
 
                 MemoryStream ms = new MemoryStream();
                 ms.Write(partData1, 0, partData1.Length);
@@ -168,7 +172,7 @@ namespace Qiniu.IO
 
                 result = await httpManager.PostMultipartAsync(uploadHost, ms.ToArray(), boundary, null);
                 result.RefText += string.Format("[SimpleUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
-                    localFile, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                    file, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
             }
             catch (Exception ex)
             {
@@ -342,6 +346,26 @@ namespace Qiniu.IO
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Read StorageFile to byte array
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public static async Task<Byte[]> ReadToByteArray(StorageFile file)
+        {
+            byte[] bytes = null;
+            using (var stream = await file.OpenStreamForReadAsync()) 
+            {
+                bytes = new byte[stream.Length];
+                using (var dateReader = new DataReader(stream.AsInputStream())) 
+                {
+                    await dateReader.LoadAsync((uint)stream.Length);
+                    dateReader.ReadBytes(bytes);
+                }
+            }
+            return bytes;
         }
 
     }

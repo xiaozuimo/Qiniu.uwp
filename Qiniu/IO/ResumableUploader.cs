@@ -10,6 +10,7 @@ using Qiniu.Util;
 using Qiniu.Http;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace Qiniu.IO
 {
@@ -55,47 +56,47 @@ namespace Qiniu.IO
         /// 分片上传/断点续上传
         /// 使用默认记录文件(recordFile)和默认进度处理(progressHandler)
         /// </summary>
-        /// <param name="localFile">本地待上传的文件名</param>
+        /// <param name="file">本地待上传的文件</param>
         /// <param name="saveKey">要保存的文件名称</param>
         /// <param name="token">上传凭证</param>
         /// <returns>上传结果</returns>
-        public async Task<HttpResult> UploadFileAsync(string localFile, string saveKey, string token)
+        public async Task<HttpResult> UploadFileAsync(StorageFile file, string saveKey, string token)
         {
-            string recordKey = DefaultRecordKey(localFile, saveKey);
-            string recordFile = Path.Combine(UserEnv.GetHomeFolder(), recordKey);
+            var recordKey = DefaultRecordKey(file.Path, saveKey);
+            var recordFile = await (await UserEnv.GetHomeFolderAsync()).CreateFileAsync(recordKey);
             UploadProgressHandler uppHandler = new UploadProgressHandler(DefaultUploadProgressHandler);
-            return await UploadFileAsync(localFile, saveKey, token, recordFile, uppHandler);
+            return await UploadFileAsync(file, saveKey, token, recordFile, uppHandler);
         }
 
         /// <summary>
         /// 分片上传/断点续上传
         /// 使用默认进度处理(progressHandler)
         /// </summary>
-        /// <param name="localFile">本地待上传的文件名</param>
+        /// <param name="file">本地待上传的文件</param>
         /// <param name="saveKey">要保存的文件名称</param>
         /// <param name="token">上传凭证</param>
         /// <param name="recordFile">记录文件(记录断点信息)</param>
         /// <returns>上传结果</returns>
-        public async Task<HttpResult> UploadFileAsync(string localFile, string saveKey, string token, string recordFile)
+        public async Task<HttpResult> UploadFileAsync(StorageFile file, string saveKey, string token, StorageFile recordFile)
         {
             UploadProgressHandler uppHandler = new UploadProgressHandler(DefaultUploadProgressHandler);
-            return await UploadFileAsync(localFile, saveKey, token, recordFile, uppHandler);
+            return await UploadFileAsync(file, saveKey, token, recordFile, uppHandler);
         }
 
         /// <summary>
         /// 分片上传/断点续上传，带有自定义进度处理
         /// </summary>
-        /// <param name="localFile">本地待上传的文件名</param>
+        /// <param name="file">本地待上传的文件</param>
         /// <param name="saveKey">要保存的文件名称</param>
         /// <param name="token">上传凭证</param>
         /// <param name="recordFile">记录文件(记录断点信息)</param>
         /// <param name="uppHandler">上传进度处理</param>
         /// <returns>上传结果</returns>
-        public async Task<HttpResult> UploadFileAsync(string localFile, string saveKey, string token, string recordFile, UploadProgressHandler uppHandler)
+        public async Task<HttpResult> UploadFileAsync(StorageFile file, string saveKey, string token, StorageFile recordFile, UploadProgressHandler uppHandler)
         {
             HttpResult result = new HttpResult();
 
-            FileStream fs = null;
+            Stream fs = null;
 
             if(uppHandler==null)
             {
@@ -104,7 +105,7 @@ namespace Qiniu.IO
 
             try
             {
-                fs = new FileStream(localFile, FileMode.Open);
+                fs = await file.OpenStreamForReadAsync();
 
                 long fileSize = fs.Length;
                 long chunkSize = CHUNK_SIZE;
@@ -112,7 +113,7 @@ namespace Qiniu.IO
                 byte[] chunkBuffer = new byte[chunkSize];
                 int blockCount = (int)((fileSize + blockSize - 1) / blockSize);
 
-                ResumeInfo resumeInfo = ResumeHelper.Load(recordFile);
+                var resumeInfo = await ResumeHelper.LoadAsync(recordFile);
                 if (resumeInfo == null)
                 {
                     resumeInfo = new ResumeInfo()
@@ -123,7 +124,7 @@ namespace Qiniu.IO
                         Contexts = new List<string>(blockCount)
                     };
 
-                    ResumeHelper.Save(resumeInfo, recordFile);
+                    await ResumeHelper.SaveAsync(resumeInfo, recordFile);
                 }
 
                 int index = resumeInfo.BlockIndex;
@@ -223,11 +224,11 @@ namespace Qiniu.IO
 
                     resumeInfo.BlockIndex = index;
                     resumeInfo.Contexts.Add(context);
-                    ResumeHelper.Save(resumeInfo, recordFile);
+                    await ResumeHelper.SaveAsync(resumeInfo, recordFile);
                     ++index;
                 }
 
-                string fileName = Path.GetFileName(localFile);
+                string fileName = Path.GetFileName(file.Path);
                 hr = await MkfileAsync(fileName, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
@@ -237,10 +238,10 @@ namespace Qiniu.IO
                     return result;
                 }
 
-                File.Delete(recordFile);
+                await recordFile.DeleteAsync();
                 result.shadow(hr);
                 result.RefText += string.Format("[ResumableUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
-                    localFile, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                    file, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
             }
             catch (Exception ex)
@@ -272,18 +273,18 @@ namespace Qiniu.IO
         /// <summary>
         /// 分片上传/断点续上传，带有自定义进度处理、高级控制功能
         /// </summary>
-        /// <param name="localFile">本地待上传的文件名</param>
+        /// <param name="file">本地待上传的文件</param>
         /// <param name="saveKey">要保存的文件名称</param>
         /// <param name="token">上传凭证</param>
         /// <param name="recordFile">记录文件(记录断点信息)</param>
         /// <param name="uppHandler">上传进度处理</param>
         /// <param name="uploadController">上传控制(暂停/继续/退出)</param>
         /// <returns>上传结果</returns>
-        public async Task<HttpResult> UploadFileAsync(string localFile, string saveKey, string token, string recordFile, UploadProgressHandler uppHandler, UploadController uploadController)
+        public async Task<HttpResult> UploadFileAsync(StorageFile file, string saveKey, string token, StorageFile recordFile, UploadProgressHandler uppHandler, UploadController uploadController)
         {
             HttpResult result = new HttpResult();
 
-            FileStream fs = null;
+            Stream fs = null;
 
             if (uppHandler == null)
             {
@@ -292,7 +293,7 @@ namespace Qiniu.IO
 
             try
             {
-                fs = new FileStream(localFile, FileMode.Open);
+                fs = await file.OpenStreamForReadAsync();
 
                 long fileSize = fs.Length;
                 long chunkSize = CHUNK_SIZE;
@@ -300,7 +301,7 @@ namespace Qiniu.IO
                 byte[] chunkBuffer = new byte[chunkSize];
                 int blockCount = (int)((fileSize + blockSize - 1) / blockSize);
 
-                ResumeInfo resumeInfo = ResumeHelper.Load(recordFile);
+                var resumeInfo = await ResumeHelper.LoadAsync(recordFile);
                 if (resumeInfo == null)
                 {
                     resumeInfo = new ResumeInfo()
@@ -311,7 +312,7 @@ namespace Qiniu.IO
                         Contexts = new List<string>(blockCount)
                     };
 
-                    ResumeHelper.Save(resumeInfo, recordFile);
+                    await ResumeHelper.SaveAsync(resumeInfo, recordFile);
                 }
 
                 int index = resumeInfo.BlockIndex;
@@ -449,12 +450,12 @@ namespace Qiniu.IO
 
                         resumeInfo.BlockIndex = index;
                         resumeInfo.Contexts.Add(context);
-                        ResumeHelper.Save(resumeInfo, recordFile);
+                        await ResumeHelper.SaveAsync(resumeInfo, recordFile);
                         ++index;
                     }
                 }
 
-                string fileName = Path.GetFileName(localFile);
+                string fileName = Path.GetFileName(file.Path);
                 hr = await MkfileAsync(fileName, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
@@ -464,10 +465,10 @@ namespace Qiniu.IO
                     return result;
                 }
 
-                File.Delete(recordFile);
+                await recordFile.DeleteAsync();
                 result.shadow(hr);
                 result.RefText += string.Format("[ResumableUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
-                    localFile, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                    file, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
             }
             catch (Exception ex)
             {
@@ -499,50 +500,50 @@ namespace Qiniu.IO
         /// 分片上传/断点续上传，检查CRC32，支持重试
         /// 使用默认记录文件(recordFile)和默认进度处理(progressHandler)
         /// </summary>
-        /// <param name="localFile">本地待上传的文件名</param>
+        /// <param name="file">本地待上传的文件</param>
         /// <param name="saveKey">要保存的文件名称</param>
         /// <param name="token">上传凭证</param>
         /// <param name="maxTry">最大尝试次数</param>
         /// <returns>上传结果</returns>
-        public async Task<HttpResult> UploadFileAsync(string localFile, string saveKey, string token, int maxTry)
+        public async Task<HttpResult> UploadFileAsync(StorageFile file, string saveKey, string token, int maxTry)
         {
-            string recordKey = DefaultRecordKey(localFile, saveKey);
-            string recordFile = Path.Combine(UserEnv.GetHomeFolder(), recordKey);
+            string recordKey = DefaultRecordKey(file.Path, saveKey);
+            var recordFile = await (await UserEnv.GetHomeFolderAsync()).CreateFileAsync(recordKey);
             UploadProgressHandler uppHandler = new UploadProgressHandler(DefaultUploadProgressHandler);
-            return await UploadFileAsync(localFile, saveKey, token, recordFile, maxTry, uppHandler);
+            return await UploadFileAsync(file, saveKey, token, recordFile, maxTry, uppHandler);
         }
 
         /// <summary>
         /// 分片上传/断点续上传，检查CRC32，支持重试
         /// 使用默认进度处理(progressHandler)
         /// </summary>
-        /// <param name="localFile">本地待上传的文件名</param>
+        /// <param name="file">本地待上传的文件</param>
         /// <param name="saveKey">要保存的文件名称</param>
         /// <param name="token">上传凭证</param>
         /// <param name="recordFile">记录文件(记录断点信息)</param>
         /// <param name="maxTry">最大尝试次数</param>
         /// <returns>上传结果</returns>
-        public async Task<HttpResult> UploadFileAsync(string localFile, string saveKey, string token, string recordFile, int maxTry)
+        public async Task<HttpResult> UploadFileAsync(StorageFile file, string saveKey, string token, StorageFile recordFile, int maxTry)
         {
             UploadProgressHandler uppHandler = new UploadProgressHandler(DefaultUploadProgressHandler);
-            return await UploadFileAsync(localFile, saveKey, token, recordFile, maxTry, uppHandler);
+            return await UploadFileAsync(file, saveKey, token, recordFile, maxTry, uppHandler);
         }
 
         /// <summary>
         /// 分片上传/断点续上传，检查CRC32，带有自定义进度处理，支持重试
         /// </summary>
-        /// <param name="localFile">本地待上传的文件名</param>
+        /// <param name="file">本地待上传的文件</param>
         /// <param name="saveKey">要保存的文件名称</param>
         /// <param name="token">上传凭证</param>
         /// <param name="recordFile">记录文件(记录断点信息)</param>
         /// <param name="maxTry">最大尝试次数</param>
         /// <param name="uppHandler">上传进度处理</param>
         /// <returns>上传结果</returns>
-        public async Task<HttpResult> UploadFileAsync(string localFile, string saveKey, string token, string recordFile, int maxTry, UploadProgressHandler uppHandler)
+        public async Task<HttpResult> UploadFileAsync(StorageFile file, string saveKey, string token, StorageFile recordFile, int maxTry, UploadProgressHandler uppHandler)
         {
             HttpResult result = new HttpResult();
 
-            FileStream fs = null;
+            Stream fs = null;
 
             int MAX_TRY = GetMaxTry(maxTry);
 
@@ -553,7 +554,7 @@ namespace Qiniu.IO
 
             try
             {
-                fs = new FileStream(localFile, FileMode.Open);
+                fs = await file.OpenStreamForReadAsync();
 
                 long fileSize = fs.Length;
                 long chunkSize = CHUNK_SIZE;
@@ -561,7 +562,7 @@ namespace Qiniu.IO
                 byte[] chunkBuffer = new byte[chunkSize];
                 int blockCount = (int)((fileSize + blockSize - 1) / blockSize);
 
-                ResumeInfo resumeInfo = ResumeHelper.Load(recordFile);
+                ResumeInfo resumeInfo = await ResumeHelper.LoadAsync(recordFile);
                 if (resumeInfo == null)
                 {
                     resumeInfo = new ResumeInfo()
@@ -572,7 +573,7 @@ namespace Qiniu.IO
                         Contexts = new List<string>(blockCount)
                     };
 
-                    ResumeHelper.Save(resumeInfo, recordFile);
+                    await ResumeHelper.SaveAsync(resumeInfo, recordFile);
                 }
 
                 int index = resumeInfo.BlockIndex;
@@ -698,11 +699,11 @@ namespace Qiniu.IO
 
                     resumeInfo.BlockIndex = index;
                     resumeInfo.Contexts.Add(context);
-                    ResumeHelper.Save(resumeInfo, recordFile);
+                    await ResumeHelper.SaveAsync(resumeInfo, recordFile);
                     ++index;
                 }
 
-                string fileName = Path.GetFileName(localFile);
+                string fileName = Path.GetFileName(file.Path);
                 hr = await MkfileAsync(fileName, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
@@ -712,10 +713,10 @@ namespace Qiniu.IO
                     return result;
                 }
 
-                File.Delete(recordFile);
+                await recordFile.DeleteAsync();
                 result.shadow(hr);
                 result.RefText += string.Format("[ResumableUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
-                    localFile, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                    file, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
             }
             catch (Exception ex)
             {
@@ -746,7 +747,7 @@ namespace Qiniu.IO
         /// <summary>
         /// 分片上传/断点续上传，检查CRC32，，带有自定义进度处理和上传控制，支持重试
         /// </summary>
-        /// <param name="localFile">本地待上传的文件名</param>
+        /// <param name="file">本地待上传的文件</param>
         /// <param name="saveKey">要保存的文件名称</param>
         /// <param name="token">上传凭证</param>
         /// <param name="recordFile">记录文件(记录断点信息)</param>
@@ -754,11 +755,11 @@ namespace Qiniu.IO
         /// <param name="uppHandler">上传进度处理</param>
         /// <param name="uploadController">上传控制(暂停/继续/退出)</param>
         /// <returns>上传结果</returns>
-        public async Task<HttpResult> UploadFileAsync(string localFile, string saveKey, string token, string recordFile, int maxTry, UploadProgressHandler uppHandler, UploadController uploadController)
+        public async Task<HttpResult> UploadFileAsync(StorageFile file, string saveKey, string token, StorageFile recordFile, int maxTry, UploadProgressHandler uppHandler, UploadController uploadController)
         {
             HttpResult result = new HttpResult();
 
-            FileStream fs = null;
+            Stream fs = null;
 
             int MAX_TRY = GetMaxTry(maxTry);
 
@@ -769,7 +770,7 @@ namespace Qiniu.IO
 
             try
             {
-                fs = new FileStream(localFile, FileMode.Open);
+                fs = await file.OpenStreamForReadAsync();
 
                 long fileSize = fs.Length;
                 long chunkSize = CHUNK_SIZE;
@@ -777,7 +778,7 @@ namespace Qiniu.IO
                 byte[] chunkBuffer = new byte[chunkSize];
                 int blockCount = (int)((fileSize + blockSize - 1) / blockSize);
 
-                ResumeInfo resumeInfo = ResumeHelper.Load(recordFile);
+                var resumeInfo = await ResumeHelper.LoadAsync(recordFile);
                 if (resumeInfo == null)
                 {
                     resumeInfo = new ResumeInfo()
@@ -788,7 +789,7 @@ namespace Qiniu.IO
                         Contexts = new List<string>(blockCount)
                     };
 
-                    ResumeHelper.Save(resumeInfo, recordFile);
+                    await ResumeHelper.SaveAsync(resumeInfo, recordFile);
                 }
 
                 int index = resumeInfo.BlockIndex;
@@ -956,12 +957,12 @@ namespace Qiniu.IO
 
                         resumeInfo.BlockIndex = index;
                         resumeInfo.Contexts.Add(context);
-                        ResumeHelper.Save(resumeInfo, recordFile);
+                        await ResumeHelper.SaveAsync(resumeInfo, recordFile);
                         ++index;
                     }
                 }
 
-                string fileName = Path.GetFileName(localFile);
+                string fileName = Path.GetFileName(file.Path);
                 hr = await MkfileAsync(fileName, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
@@ -972,10 +973,10 @@ namespace Qiniu.IO
                     return result;
                 }
 
-                File.Delete(recordFile);
+                await recordFile.DeleteAsync();
                 result.shadow(hr);
                 result.RefText += string.Format("[ResumableUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
-                    localFile, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                    file, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
             }
             catch (Exception ex)
             {
@@ -1007,7 +1008,7 @@ namespace Qiniu.IO
         /// <summary>
         /// 分片上传/断点续上传，检查CRC32，，带有自定义进度处理和上传控制，支持重试
         /// </summary>
-        /// <param name="localFile">本地待上传的文件名</param>
+        /// <param name="file">本地待上传的文件</param>
         /// <param name="saveKey">要保存的文件名称</param>
         /// <param name="token">上传凭证</param>
         /// <param name="recordFile">记录文件(记录断点信息)</param>
@@ -1016,11 +1017,11 @@ namespace Qiniu.IO
         /// <param name="uploadController">上传控制(暂停/继续/退出)</param>
         /// <param name="extraParams">用户自定义的附加参数</param>
         /// <returns>上传结果</returns>
-        public async Task<HttpResult> UploadFileAsync(string localFile, string saveKey, string token, string recordFile, int maxTry, UploadProgressHandler uppHandler, UploadController uploadController, Dictionary<string, string> extraParams)
+        public async Task<HttpResult> UploadFileAsync(StorageFile file, string saveKey, string token, StorageFile recordFile, int maxTry, UploadProgressHandler uppHandler, UploadController uploadController, Dictionary<string, string> extraParams)
         {
             HttpResult result = new HttpResult();
 
-            FileStream fs = null;
+            Stream fs = null;
 
             int MAX_TRY = GetMaxTry(maxTry);
 
@@ -1031,7 +1032,7 @@ namespace Qiniu.IO
 
             try
             {
-                fs = new FileStream(localFile, FileMode.Open);
+                fs = await file.OpenStreamForReadAsync();
 
                 long fileSize = fs.Length;
                 long chunkSize = CHUNK_SIZE;
@@ -1039,7 +1040,7 @@ namespace Qiniu.IO
                 byte[] chunkBuffer = new byte[chunkSize];
                 int blockCount = (int)((fileSize + blockSize - 1) / blockSize);
 
-                ResumeInfo resumeInfo = ResumeHelper.Load(recordFile);
+                var resumeInfo = await ResumeHelper.LoadAsync(recordFile);
                 if (resumeInfo == null)
                 {
                     resumeInfo = new ResumeInfo()
@@ -1050,7 +1051,7 @@ namespace Qiniu.IO
                         Contexts = new List<string>(blockCount)
                     };
 
-                    ResumeHelper.Save(resumeInfo, recordFile);
+                    await ResumeHelper.SaveAsync(resumeInfo, recordFile);
                 }
 
                 int index = resumeInfo.BlockIndex;
@@ -1218,12 +1219,12 @@ namespace Qiniu.IO
 
                         resumeInfo.BlockIndex = index;
                         resumeInfo.Contexts.Add(context);
-                        ResumeHelper.Save(resumeInfo, recordFile);
+                        await ResumeHelper.SaveAsync(resumeInfo, recordFile);
                         ++index;
                     }
                 }
 
-                string fileName = Path.GetFileName(localFile);
+                string fileName = Path.GetFileName(file.Path);
                 hr = await MkfileAsync(fileName, fileSize, saveKey, ContentType.APPLICATION_OCTET_STREAM, resumeInfo.Contexts, token, extraParams);
                 if (hr.Code != (int)HttpCode.OK)
                 {
@@ -1234,10 +1235,10 @@ namespace Qiniu.IO
                     return result;
                 }
 
-                File.Delete(recordFile);
+                await recordFile.DeleteAsync();
                 result.shadow(hr);
                 result.RefText += string.Format("[ResumableUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
-                    localFile, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                    file, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
             }
             catch (Exception ex)
             {
@@ -1275,7 +1276,7 @@ namespace Qiniu.IO
         /// <param name="token">上传凭证</param>
         /// <param name="spHandler">数据流上传进度处理</param> 
         /// <returns></returns>
-        public async Task<HttpResult> UploadStreamAsync(Stream stream, string streamId, string saveKey,string token,StreamProgressHandler spHandler)
+        public async Task<HttpResult> UploadStreamAsync(Stream stream, string streamId, string saveKey, string token, StreamProgressHandler spHandler)
         {
             HttpResult result = new HttpResult();
 
@@ -1395,7 +1396,7 @@ namespace Qiniu.IO
         /// <param name="token">上传凭证</param>
         /// <param name="spHandler">上传进度处理</param>
         /// <returns></returns>
-        public async Task<HttpResult> UploadDataAsync(byte[] data,string saveKey,string token,StreamProgressHandler spHandler)
+        public async Task<HttpResult> UploadDataAsync(byte[] data, string saveKey, string token, StreamProgressHandler spHandler)
         {
             Stream ms = new MemoryStream(data);
             return await UploadStreamAsync(ms, "#DATA#", saveKey, token, spHandler);

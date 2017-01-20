@@ -2,6 +2,8 @@
 using System.IO;
 using Newtonsoft.Json;
 using Qiniu.Util;
+using Windows.Storage;
+using System.Threading.Tasks;
 
 namespace Qiniu.IO.Model
 {
@@ -15,20 +17,13 @@ namespace Qiniu.IO.Model
         /// </summary>
         /// <param name="recordFile">断点记录文件</param>
         /// <returns>断点信息</returns>
-        public static ResumeInfo Load(string recordFile)
+        public static async Task<ResumeInfo> LoadAsync(StorageFile recordFile)
         {
             ResumeInfo resumeInfo = null;
 
             try
             {
-                using (FileStream fs = new FileStream(recordFile, FileMode.Open))
-                {
-                    using (StreamReader sr = new StreamReader(fs))
-                    {
-                        string jsonStr = sr.ReadToEnd();
-                        resumeInfo = JsonConvert.DeserializeObject<ResumeInfo>(jsonStr);
-                    }
-                }
+                JsonConvert.DeserializeObject<ResumeInfo>(await FileIO.ReadTextAsync(recordFile));
             }
             catch(Exception)
             {
@@ -43,18 +38,12 @@ namespace Qiniu.IO.Model
         /// </summary>
         /// <param name="resumeInfo">断点信息</param>
         /// <param name="recordFile">断点记录文件</param>
-        public static void Save(ResumeInfo resumeInfo, string recordFile)
+        public static async Task SaveAsync(ResumeInfo resumeInfo, StorageFile recordFile)
         {
             string jsonStr = string.Format("{{\"fileSize\":{0}, \"blockIndex\":{1}, \"blockCount\":{2}, \"contexts\":[{3}]}}",
                 resumeInfo.FileSize, resumeInfo.BlockIndex, resumeInfo.BlockCount, StringHelper.JsonJoin(resumeInfo.Contexts));
 
-            using (FileStream fs = new FileStream(recordFile, FileMode.Create))
-            {
-                using (StreamWriter sw = new StreamWriter(fs))
-                {
-                    sw.Write(jsonStr);
-                }
-            }
+            await FileIO.WriteTextAsync(recordFile, jsonStr);
         }
     }
 }

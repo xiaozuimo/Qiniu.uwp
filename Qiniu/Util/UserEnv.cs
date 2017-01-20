@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace Qiniu.Util
 {
@@ -11,24 +13,9 @@ namespace Qiniu.Util
         /// 获取home路径
         /// </summary>
         /// <returns>HOME路径</returns>
-        public static string GetHomeFolder()
+        public static async Task<StorageFolder> GetHomeFolderAsync()
         {
-            // Windows下Home目录 = %HOMEDRIVE% + %HOMEPATH%
-            string homeFolder = Environment.GetEnvironmentVariable("HOMEDRIVE") + Environment.GetEnvironmentVariable("HOMEPATH");
-
-            if(string.IsNullOrEmpty(homeFolder))
-            {
-                // OSX/Ubuntu下Home目录 = $HOME
-                homeFolder= Environment.GetEnvironmentVariable("HOME");
-            }
-
-            if (string.IsNullOrEmpty(homeFolder))
-            {
-                // 如果获取失败，就设置为./
-                homeFolder = "./";
-            }
-
-            return homeFolder;
+            return await ApplicationData.Current.LocalFolder.CreateFolderAsync("YunFan.Qiniu", CreationCollisionOption.OpenIfExists);
         }
     }
 }
