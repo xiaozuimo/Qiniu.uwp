@@ -89,20 +89,29 @@ namespace Qiniu.IO
                 ms.Write(partData3, 0, partData3.Length);
 
                 result = await httpManager.PostMultipartAsync(uploadHost, ms.ToArray(), boundary, null);
-                result.RefText += string.Format("[SimpleUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
-                    file, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
+                if (result.Code == (int)HttpCode.OK)
+                {
+                    result.RefText += string.Format("[{0}] [SimpleUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), file.Path, saveKey);
+                }
+                else
+                {
+                    result.RefText += string.Format("[{0}] [SimpleUpload] Failed: code = {1}, text = {2}\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Code, result.Text);
+                }
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[SimpleUpload] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [SimpleUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -171,20 +180,28 @@ namespace Qiniu.IO
                 ms.Write(partData3, 0, partData3.Length);
 
                 result = await httpManager.PostMultipartAsync(uploadHost, ms.ToArray(), boundary, null);
-                result.RefText += string.Format("[SimpleUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
-                    file, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                if (result.Code == (int)HttpCode.OK)
+                {
+                    result.RefText += string.Format("[{0}] [SimpleUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), file.Path, saveKey);
+                }
+                else
+                {
+                    result.RefText += string.Format("[{0}] [SimpleUpload] Failed: code = {1}, text = {2}\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Code, result.Text);
+                }
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[SimpleUpload] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [SimpleUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -255,20 +272,28 @@ namespace Qiniu.IO
                 ms.Write(partData3, 0, partData3.Length);
 
                 result = await httpManager.PostMultipartAsync(uploadHost, ms.ToArray(), boundary, null);
-                result.RefText += string.Format("[SimpleUpload] Uploaded: \"#DATA#\" ==> \"{0}\", @{1}\n",
-                    saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                if (result.Code == (int)HttpCode.OK)
+                {
+                    result.RefText += string.Format("[{0}] [SimpleUpload] Uploaded: #DATA# ==> \"{1}\"\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), saveKey);
+                }
+                else
+                {
+                    result.RefText += string.Format("[{0}] [SimpleUpload] Failed: code = {1}, text = {2}\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Code, result.Text);
+                }
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[SimpleUpload] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [SimpleUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -326,20 +351,28 @@ namespace Qiniu.IO
                 ms.Write(partData3, 0, partData3.Length);
 
                 result = await httpManager.PostMultipartAsync(uploadHost, ms.ToArray(), boundary, null);
-                result.RefText += string.Format("[SimpleUpload] Uploaded: \"#DATA#\" ==> \"{0}\", @{1}\n",
-                    saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                if (result.Code == (int)HttpCode.OK)
+                {
+                    result.RefText += string.Format("[{0}] [SimpleUpload] Uploaded: #DATA# ==> \"{1}\"\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), saveKey);
+                }
+                else
+                {
+                    result.RefText += string.Format("[{0}] [SimpleUpload] Failed: code = {1}, text = {2}\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Code, result.Text);
+                }
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[SimpleUpload] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [SimpleUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();

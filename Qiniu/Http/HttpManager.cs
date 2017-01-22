@@ -13,6 +13,7 @@ namespace Qiniu.Http
     /// </summary>
     public class HttpManager
     {
+        private bool allowAutoRedirect;
         private HttpClient client;
         private string userAgent;
 
@@ -29,11 +30,12 @@ namespace Qiniu.Http
         /// <summary>
         /// 初始化
         /// </summary>
-        public HttpManager()
+        public HttpManager(bool allowAutoRedirect = false)
         {
-            var handler = new HttpClientHandler() { AllowAutoRedirect = false };
+            var handler = new HttpClientHandler() { AllowAutoRedirect = allowAutoRedirect };
             client = new HttpClient(handler);
             userAgent = GetUserAgent();
+            this.allowAutoRedirect = allowAutoRedirect;
         }
 
         /// <summary>
@@ -114,15 +116,15 @@ namespace Qiniu.Http
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("Get Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] Get Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -168,15 +170,15 @@ namespace Qiniu.Http
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("Post Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] Post Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -227,15 +229,77 @@ namespace Qiniu.Http
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("Post-data Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] Post-data Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+                sb.AppendLine();
+                
 
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// HTTP-POST方法(包含二进制格式数据)
+        /// </summary>
+        /// <param name="url">请求目标URL</param>
+        /// <param name="data">主体数据</param>
+        /// <param name="mimeType">主体数据内容类型</param>
+        /// <param name="token">令牌(凭证)</param>
+        /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
+        /// <returns></returns>
+        public async Task<HttpResult> PostDataAsync(string url, byte[] data, string mimeType, string token, bool binaryMode = false)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Post, url);
+                req.Headers.Add("User-Agent", userAgent);
+                if (!string.IsNullOrEmpty(token))
+                {
+                    req.Headers.Add("Authorization", token);
+                }
+
+                var content = new ByteArrayContent(data);
+                req.Content = content;
+                req.Content.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
+
+                var msg = await client.SendAsync(req);
+                result.Code = (int)msg.StatusCode;
+                result.RefCode = (int)msg.StatusCode;
+
+                GetHeaders(ref result, msg);
+
+                if (binaryMode)
+                {
+                    result.Data = await msg.Content.ReadAsByteArrayAsync();
+                }
+                else
+                {
+                    result.Text = await msg.Content.ReadAsStringAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] Post-data Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -286,15 +350,75 @@ namespace Qiniu.Http
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("Post-json Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] Post-json Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+                sb.AppendLine();
 
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// HTTP-POST方法(包含文本数据)
+        /// </summary>
+        /// <param name="url">请求目标URL</param>
+        /// <param name="data">主体数据</param>
+        /// <param name="token">令牌(凭证)</param>
+        /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
+        /// <returns>响应结果</returns>
+        public async Task<HttpResult> PostPlainAsync(string url, string data, string token, bool binaryMode = false)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Post, url);
+                req.Headers.Add("User-Agent", userAgent);
+                if (!string.IsNullOrEmpty(token))
+                {
+                    req.Headers.Add("Authorization", token);
+                }
+
+                var content = new StringContent(data);
+                req.Content = content;
+                req.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType.TEXT_PLAIN);
+
+                var msg = await client.SendAsync(req);
+                result.Code = (int)msg.StatusCode;
+                result.RefCode = (int)msg.StatusCode;
+
+                GetHeaders(ref result, msg);
+
+                if (binaryMode)
+                {
+                    result.Data = await msg.Content.ReadAsByteArrayAsync();
+                }
+                else
+                {
+                    result.Text = await msg.Content.ReadAsStringAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] Post-json Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -345,15 +469,15 @@ namespace Qiniu.Http
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("Post-form Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] Post-form Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -404,15 +528,15 @@ namespace Qiniu.Http
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("Post-form Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] Post-form Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -463,15 +587,15 @@ namespace Qiniu.Http
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("Post-form Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] Post-form Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -525,15 +649,15 @@ namespace Qiniu.Http
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("Post-multipart Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] Post-multipart Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
