@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
-using Windows.Storage;
 
 namespace Qiniu.Util
 {
@@ -10,32 +8,48 @@ namespace Qiniu.Util
     /// </summary>
     public class CRC32
     {
-        public const UInt32 IEEE = 0xedb88320;
-        private UInt32[] Table;
-        private UInt32 Value;
+        /// <summary>
+        /// magic
+        /// </summary>
+        public const uint IEEE = 0xedb88320;
+        private uint[] Table;
+        private uint Value;
 
+        /// <summary>
+        /// 初始化
+        /// </summary>
         public CRC32()
         {
             Value = 0;
             Table = MakeTable(IEEE);
         }
 
+        /// <summary>
+        /// 写入
+        /// </summary>
+        /// <param name="p">字节数据</param>
+        /// <param name="offset">偏移位置</param>
+        /// <param name="count">字节数</param>
         public void Write(byte[] p, int offset, int count)
         {
             this.Value = Update(this.Value, this.Table, p, offset, count);
         }
 
-        public UInt32 Sum32()
+        /// <summary>
+        /// 校验和
+        /// </summary>
+        /// <returns>校验和</returns>
+        public uint Sum()
         {
             return this.Value;
         }
 
-        private static UInt32[] MakeTable(UInt32 poly)
+        private static uint[] MakeTable(uint poly)
         {
-            UInt32[] table = new UInt32[256];
+            uint[] table = new uint[256];
             for (int i = 0; i < 256; i++)
             {
-                UInt32 crc = (UInt32)i;
+                uint crc = (uint)i;
                 for (int j = 0; j < 8; j++)
                 {
                     if ((crc & 1) == 1)
@@ -48,7 +62,16 @@ namespace Qiniu.Util
             return table;
         }
 
-        public static UInt32 Update(UInt32 crc, UInt32[] table, byte[] p, int offset, int count)
+        /// <summary>
+        /// 更新
+        /// </summary>
+        /// <param name="crc">crc32</param>
+        /// <param name="table">表</param>
+        /// <param name="p">字节数据</param>
+        /// <param name="offset">偏移位置</param>
+        /// <param name="count">字节数</param>
+        /// <returns></returns>
+        public static uint Update(UInt32 crc, UInt32[] table, byte[] p, int offset, int count)
         {
             crc = ~crc;
             for (int i = 0; i < count; i++)
@@ -62,20 +85,26 @@ namespace Qiniu.Util
         /// 计算字节数据的crc32值
         /// </summary>
         /// <param name="data">二进制数据</param>
-        /// <param name="length">长度</param>
         /// <returns>crc32值</returns>
-        public static UInt32 CheckSumBytes(byte[] data)
+        public static uint CheckSumBytes(byte[] data)
         {
             CRC32 crc = new CRC32();
             crc.Write(data, 0, data.Length);
-            return crc.Sum32();
+            return crc.Sum();
         }
 
-        public static UInt32 CheckSumSlice(byte[] data, int offset, int count)
+        /// <summary>
+        /// 检验
+        /// </summary>
+        /// <param name="data">字节数据</param>
+        /// <param name="offset">偏移位置</param>
+        /// <param name="count">字节数</param>
+        /// <returns></returns>
+        public static uint CheckSumSlice(byte[] data, int offset, int count)
         {
             CRC32 crc = new CRC32();
             crc.Write(data, offset, count);
-            return crc.Sum32();
+            return crc.Sum();
         }
 
         /// <summary>
@@ -83,11 +112,11 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="filePath">沙盒文件全路径</param>
         /// <returns>crc32值</returns>
-        public static async Task<UInt32> CheckSumFileAsync(StorageFile file)
+        public static uint CheckSumFile(string filePath)
         {
             CRC32 crc = new CRC32();
             int bufferLen = 32 * 1024;
-			using (var fs = await file.OpenStreamForReadAsync())
+			using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
                 byte[] buffer = new byte[bufferLen];
                 while (true)
@@ -98,7 +127,7 @@ namespace Qiniu.Util
                     crc.Write(buffer, 0, n);
                 }
             }
-            return crc.Sum32();
+            return crc.Sum();
         }
     }
 }

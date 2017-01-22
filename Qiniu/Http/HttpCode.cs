@@ -1,130 +1,158 @@
-﻿using System.Collections.Generic;
-
-// Created by fengyh
-// 2016-08-17
-
-namespace Qiniu.Http
+﻿namespace Qiniu.Http
 {
-    #region HTTP-CODE
-    // 参考http://developer.qiniu.com/article/developer/response-body.html
-    // @fengyh 2016-08-17 18:28
-    public enum HCODE
-    {
-        OK = 200,
-        PART_OK = 298,
-        REQUEST_ERR = 400,
-        AUTHENTICATION_ERR = 401,
-        ACCESS_DENIED = 403,
-        OBJECT_NOT_FOUND = 404,
-        BAD_REQUEST = 405,
-        CRC32_CHECk_ERR = 406,
-        FSIZE_LIMIT_EXCEED = 413,
-        ACCOUNT_BLOCKED = 419,
-        MIRR2ORG_ERR = 478,
-        BAD_GATEWAY = 502,
-        SERVICE_UNAVAILABLE = 503,
-        SERVER_TIMEOUT = 504,
-        TOO_FREQUENT = 573,
-        CALLBACK_FAILED = 579,
-        SERVER_SIDE_FAILURE = 599,
-        CONTENT_MODIFIED = 608,
-        RESOURCE_NOT_EXSISTS = 612,
-        RESOURCE_ALREADY_EXISTS = 614,
-        NUM_OF_BUCKETS_EXCEEDS = 630,
-        BUCKET_NOT_EXSISTS = 631,
-        INVALID_LIST_MARKER = 640,
-        RESUMABLE_UPLOAD_ERR = 701,
-    };
-
-    #endregion HTTP-CODE
-
     /// <summary>
-    /// 用于解析HTTP Status Code
-    /// 参考http://developer.qiniu.com/article/developer/response-body.html
-    /// @fengyh 2016-08-17 18:28
+    /// HTTP 状态码
     /// </summary>
-    public class HttpCode
+    public enum HttpCode
     {
-        private static Dictionary<HCODE, string> codeTable  =  new Dictionary<HCODE, string>() 
-        {
-            #region TABLE-ITEMS
-            {HCODE.OK,"success"},
-            {HCODE.PART_OK, "partial success"},
-            {HCODE.REQUEST_ERR, "request error or null-response"},
-            {HCODE.AUTHENTICATION_ERR, "authentication failed"},
-            {HCODE.ACCESS_DENIED, "access denied"},
-            {HCODE.OBJECT_NOT_FOUND, "object not found"},
-            {HCODE.BAD_REQUEST, "bad request"},
-            {HCODE.CRC32_CHECk_ERR, "crc32 check failed"},
-            {HCODE.FSIZE_LIMIT_EXCEED, "size limit exceeded"},
-            {HCODE.ACCOUNT_BLOCKED, "account blocked"},
-            {HCODE.MIRR2ORG_ERR, "mirror-to-origin failed"},
-            {HCODE.BAD_GATEWAY, "bad gateway"},
-            {HCODE.SERVICE_UNAVAILABLE, "service unavailable"},
-            {HCODE.SERVER_TIMEOUT, "server timeout"},
-            {HCODE.TOO_FREQUENT, "too frequently access to one file"},
-            {HCODE.CALLBACK_FAILED, "upload success but callbak failed"},
-            {HCODE.SERVER_SIDE_FAILURE, "failure on server-side-ops"},
-            {HCODE.CONTENT_MODIFIED, "content modified"},
-            {HCODE.RESOURCE_NOT_EXSISTS, "resource not found or removed"},
-            {HCODE.RESOURCE_ALREADY_EXISTS, "resource already exists"},
-            {HCODE.NUM_OF_BUCKETS_EXCEEDS, "the number of space is up to limit"},
-            {HCODE.BUCKET_NOT_EXSISTS, "bucket not exsists"},
-            {HCODE.INVALID_LIST_MARKER, "invalid param marker in list-interface"},
-            {HCODE.RESUMABLE_UPLOAD_ERR, "resumable upload error"}
-            #endregion TABLE-ITEMS
-        };
+        #region _PRE_
 
-        public static string GetMessage(int code)
-        {
-            string msg = string.Format("HTTP_CODE({0})", code);
+        /// <summary>
+        /// 成功
+        /// </summary>
+        OK = 200,
 
-            if(codeTable.ContainsKey((HCODE)code))
-            {
-                msg = codeTable[(HCODE)code];
-            }
+        /// <summary>
+        /// 部分OK
+        /// </summary>
+        PARTLY_OK = 298,
 
-            return msg;
-        }
+        /// <summary>
+        /// 请求错误
+        /// </summary>
+        BAD_REQUEST = 400,
 
-        public static bool GetErrorMessage(int code,out string errorMsg)
-        {
-            bool isOtherCode = false;
+        /// <summary>
+        /// 认证授权失败
+        /// </summary>
+        AUTHENTICATION_FAILED = 401,
 
-            switch (code)
-            {
-                case (int)HCODE.PART_OK:
-                case (int)HCODE.REQUEST_ERR:
-                case (int)HCODE.AUTHENTICATION_ERR:
-                case (int)HCODE.ACCESS_DENIED:
-                case (int)HCODE.OBJECT_NOT_FOUND:
-                case (int)HCODE.BAD_REQUEST:
-                case (int)HCODE.CRC32_CHECk_ERR:
-                case (int)HCODE.FSIZE_LIMIT_EXCEED:
-                case (int)HCODE.ACCOUNT_BLOCKED:
-                case (int)HCODE.MIRR2ORG_ERR:
-                case (int)HCODE.BAD_GATEWAY:
-                case (int)HCODE.SERVICE_UNAVAILABLE:
-                case (int)HCODE.SERVER_TIMEOUT:
-                case (int)HCODE.TOO_FREQUENT:
-                case (int)HCODE.CALLBACK_FAILED:
-                case (int)HCODE.SERVER_SIDE_FAILURE:
-                case (int)HCODE.CONTENT_MODIFIED:
-                case (int)HCODE.RESOURCE_NOT_EXSISTS:
-                case (int)HCODE.RESOURCE_ALREADY_EXISTS:
-                case (int)HCODE.NUM_OF_BUCKETS_EXCEEDS:
-                case (int)HCODE.BUCKET_NOT_EXSISTS:
-                case (int)HCODE.INVALID_LIST_MARKER:
-                case (int)HCODE.RESUMABLE_UPLOAD_ERR:
-                    errorMsg = HttpCode.GetMessage(code);
-                    break;
-                default:
-                    errorMsg = "";
-                    isOtherCode = true;
-                    break;
-            }
+        /// <summary>
+        /// 拒绝访问
+        /// </summary>
+        ACCESS_DENIED = 403,
 
-            return isOtherCode;
-        }
+        /// <summary>
+        /// 资源不存在
+        /// </summary>
+        OBJECT_NOT_FOUND = 404,
+
+        /// <summary>
+        /// CRC32校验失败
+        /// </summary>
+        CRC32_CHECK_FAILEd = 406,
+
+        /// <summary>
+        /// 上传文件大小超限
+        /// </summary>
+        FILE_SIZE_EXCEED = 413,
+
+        /// <summary>
+        /// 镜像回源失败
+        /// </summary>
+        PREFETCH_FAILED = 478,
+
+        /// <summary>
+        /// 错误网关
+        /// </summary>
+        BAD_GATEWAY = 502,
+
+        /// <summary>
+        /// 服务端不可用
+        /// </summary>
+        SERVER_UNAVAILABLE = 503,
+
+        /// <summary>
+        /// 服务端操作超时
+        /// </summary>
+        SERVER_TIME_EXCEED = 504,
+
+        /// <summary>
+        /// 单个资源访问频率过高
+        /// </summary>
+        TOO_FREQUENT_ACCESS = 573,
+
+        /// <summary>
+        /// 回调失败
+        /// </summary>
+        CALLBACK_FAILED = 579,
+
+        /// <summary>
+        /// 服务端操作失败
+        /// </summary>
+        SERVER_OPERATION_FAILED = 599,
+
+        /// <summary>
+        /// 资源内容被修改
+        /// </summary>
+        CONTENT_MODIFIED = 608,
+
+        /// <summary>
+        /// 文件不存在
+        /// </summary>
+        FILE_NOT_EXIST = 612,
+
+        /// <summary>
+        /// 文件已存在
+        /// </summary>
+        FILE_EXISTS = 614,
+
+        /// <summary>
+        /// 空间数量已达上限
+        /// </summary>
+        BUCKET_COUNT_LIMIT = 630,
+
+        /// <summary>
+        /// 空间或者文件不存在
+        /// </summary>
+        BUCKET_NOT_EXIST = 631,
+
+        /// <summary>
+        /// 列举资源(list)使用了非法的marker
+        /// </summary>
+        INVALID_MARKER = 640,
+
+        /// <summary>
+        /// 在断点续上传过程中，后续上传接收地址不正确或ctx信息已过期。
+        /// </summary>
+        CONTEXT_EXPIRED = 701,
+
+        #endregion _PRE_
+
+        #region _USR_
+
+        /// <summary>
+        /// 自定义HTTP状态码 (默认值)
+        /// </summary>
+        USER_UNDEF = -256,
+
+        /// <summary>
+        /// 自定义HTTP状态码 (用户取消)
+        /// </summary>
+        USER_CANCELED = -255,
+
+        /// <summary>
+        /// 自定义HTTP状态码 (用户暂停)
+        /// </summary>
+        USER_PAUSED = -254,
+
+        /// <summary>
+        /// 自定义HTTP状态码 (用户继续)
+        /// </summary>
+        USER_RESUMED = -253,
+
+        /// <summary>
+        /// 自定义HTTP状态码 (需要重试)
+        /// </summary>
+        USER_NEED_RETRY = -252,
+
+        /// <summary>
+        /// 自定义HTTP状态码 (异常或错误)
+        /// </summary>
+        USER_EXCEPTION = -252,
+
+        #endregion _USR_
+
     }
+
 }
