@@ -55,7 +55,7 @@ namespace Qiniu.Http
         /// 对象复制
         /// </summary>
         /// <param name="hr"></param>
-        public void shadow(HttpResult hr)
+        public void Shadow(HttpResult hr)
         {
             this.Code = hr.Code;
             this.Text = hr.Text;

@@ -13,7 +13,7 @@ namespace Qiniu.Common
         /// <summary>
         /// 空间所在的区域(Zone)
         /// </summary>
-        public static Zone ZONE = Zone.getZone(ZoneID.Default);
+        public static Zone ZONE = Zone.GetZone(ZoneID.Default);
 
         /// <summary>
         /// Fusion API Host
@@ -35,9 +35,9 @@ namespace Qiniu.Common
         /// </summary>
         /// <param name="zoneId">ZoneID</param>
         /// <param name="useHTTPS">是否使用HTTPS</param>
-        public static void setZone(ZoneID zoneId, bool useHTTPS)
+        public static void SetZone(ZoneID zoneId, bool useHTTPS)
         {
-            ZONE = Zone.getZone(zoneId, useHTTPS);
+            ZONE = Zone.GetZone(zoneId, useHTTPS);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Qiniu.Common
         public static async Task AutoZoneAsync(string accessKey,string bucket, bool useHTTPS)
         {
             ZoneID id = await ZoneHelper.QueryZoneAsync(accessKey, bucket);
-            setZone(id, useHTTPS);
+            SetZone(id, useHTTPS);
         }
     }
 

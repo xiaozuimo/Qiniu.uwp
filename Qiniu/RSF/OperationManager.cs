@@ -63,7 +63,7 @@ namespace Qiniu.RSF
                 string token = auth.CreateManageToken(pfopUrl, data);
 
                 HttpResult hr = await httpManager.PostFormAsync(pfopUrl, data, token);
-                result.shadow(hr);
+                result.Shadow(hr);
             }
             catch (Exception ex)
             {

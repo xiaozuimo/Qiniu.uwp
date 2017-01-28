@@ -71,7 +71,7 @@ namespace Qiniu.CDN
                 string token = auth.CreateManageToken(url);
 
                 HttpResult hr = await httpManager.PostJsonAsync(url, body, token);
-                result.shadow(hr);
+                result.Shadow(hr);
             }
             catch (Exception ex)
             {
@@ -144,7 +144,7 @@ namespace Qiniu.CDN
                 string token = auth.CreateManageToken(url);
 
                 HttpResult hr = await httpManager.PostJsonAsync(url, body, token);
-                result.shadow(hr);                
+                result.Shadow(hr);                
             }
             catch (Exception ex)
             {
@@ -193,7 +193,7 @@ namespace Qiniu.CDN
                 string token = auth.CreateManageToken(url);
 
                 HttpResult hr = await httpManager.PostJsonAsync(url, body, token);
-                result.shadow(hr);                
+                result.Shadow(hr);                
             }
             catch (Exception ex)
             {
@@ -245,7 +245,7 @@ namespace Qiniu.CDN
                 string token = auth.CreateManageToken(url);
 
                 HttpResult hr = await httpManager.PostJsonAsync(url, body, token);
-                result.shadow(hr);
+                result.Shadow(hr);
             }
             catch (Exception ex)
             {
@@ -298,7 +298,7 @@ namespace Qiniu.CDN
                 string token = auth.CreateManageToken(url);
 
                 HttpResult hr = await httpManager.PostJsonAsync(url, body, token);
-                result.shadow(hr);
+                result.Shadow(hr);
             }
             catch (Exception ex)
             {
