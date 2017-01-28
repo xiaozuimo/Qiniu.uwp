@@ -40,7 +40,7 @@ namespace Qiniu.CDN.Model
         /// </summary>
         /// <param name="urls">URL列表</param>
         /// <param name="dirs">URL目录列表</param>
-        public RefreshRequest(IEnumerable<string> urls,IEnumerable<string> dirs)
+        public RefreshRequest(IEnumerable<string> urls, IEnumerable<string> dirs)
         {
             Urls = new List<string>(urls);
             Dirs = new List<string>(dirs);

@@ -27,7 +27,7 @@ namespace Qiniu.Util
 
         private string EncodedSign(byte[] data)
         {
-            return Crypto.HmacSha1(data, mac.SecretKey).HexToBase64String().HexToBase64String();
+            return Crypto.HmacSha1(data, mac.SecretKey).HexToBase64String().ToUrlSafeBase64String();
         }
 
         private string EncodedSign(string str)

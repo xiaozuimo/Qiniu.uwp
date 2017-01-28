@@ -5,6 +5,7 @@ using Qiniu.Util;
 using Qiniu.Http;
 using Qiniu.CDN.Model;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Qiniu.CDN
 {
@@ -99,7 +100,7 @@ namespace Qiniu.CDN
         /// <returns>刷新的结果</returns>
         public async Task<RefreshResult> RefreshUrlsAsync(string[] urls)
         {
-            RefreshRequest request = new RefreshRequest(urls, null);
+            RefreshRequest request = new RefreshRequest(urls, new List<string>());
             return await RefreshUrlsAndDirsAsync(request);
         }
 
@@ -110,7 +111,7 @@ namespace Qiniu.CDN
         /// <returns></returns>
         public async Task<RefreshResult> RefreshDirsAsync(string[] dirs)
         {
-            RefreshRequest request = new RefreshRequest(null,dirs);
+            RefreshRequest request = new RefreshRequest(new List<string>(), dirs);
             return await RefreshUrlsAndDirsAsync(request);
         }
 
