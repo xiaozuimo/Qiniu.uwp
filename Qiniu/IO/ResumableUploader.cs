@@ -164,7 +164,7 @@ namespace Qiniu.IO
                     hr = await MkblkAsync(chunkBuffer, blockSize, chunkSize, token);
                     if (hr.Code != (int)HttpCode.OK)
                     {
-                        result.shadow(hr);
+                        result.Shadow(hr);
                         result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkblk: code = {1}, text = {2}, offset = {3}, blockSize = {4}, chunkSize = {5}\n",
                             DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text, offset, blockSize, chunkSize);
 
@@ -200,7 +200,7 @@ namespace Qiniu.IO
                             hr = await BputAsync(chunkBuffer, blockOffset, chunkSize, context, token);
                             if (hr.Code != (int)HttpCode.OK)
                             {
-                                result.shadow(hr);
+                                result.Shadow(hr);
                                 result.RefText += string.Format("[{0}] [ResumableUpload] Error: bput: code = {1}, text = {2}, offset = {3}, blockOffset = {4}, chunkSize = {5}\n",
                                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text, offset, blockOffset, chunkSize);
 
@@ -232,7 +232,7 @@ namespace Qiniu.IO
                 hr = await MkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
-                    result.shadow(hr);
+                    result.Shadow(hr);
                     result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkfile: code ={1}, text = {2}\n",
                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text);
 
@@ -240,7 +240,7 @@ namespace Qiniu.IO
                 }
 
                 await recordFile.DeleteAsync();
-                result.shadow(hr);
+                result.Shadow(hr);
                 result.RefText += string.Format("[{0}] [ResumableUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
                                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), file.Path, saveKey);
 
@@ -391,7 +391,7 @@ namespace Qiniu.IO
                         hr = await MkblkAsync(chunkBuffer, blockSize, chunkSize, token);
                         if (hr.Code != (int)HttpCode.OK)
                         {
-                            result.shadow(hr);
+                            result.Shadow(hr);
                             result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkblk: code = {1}, text = {2}, offset = {3}, blockSize = {4}, chunkSize = {5}\n",
                             DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text, offset, blockSize, chunkSize);
 
@@ -427,7 +427,7 @@ namespace Qiniu.IO
                                 hr = await BputAsync(chunkBuffer, blockOffset, chunkSize, context, token);
                                 if (hr.Code != (int)HttpCode.OK)
                                 {
-                                    result.shadow(hr);
+                                    result.Shadow(hr);
                                     result.RefText += string.Format("[{0}] [ResumableUpload] Error: bput: code = {1}, text = {2}, offset={3}, blockOffset={4}, chunkSize={5}\n",
                                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text, offset, blockOffset, chunkSize);
 
@@ -460,7 +460,7 @@ namespace Qiniu.IO
                 hr = await MkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
-                    result.shadow(hr);
+                    result.Shadow(hr);
                     result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkfile: code = {1}, text = {2}\n",
                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text);
 
@@ -468,7 +468,7 @@ namespace Qiniu.IO
                 }
 
                 await recordFile.DeleteAsync();
-                result.shadow(hr);
+                result.Shadow(hr);
                 result.RefText += string.Format("[{0}] [ResumableUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), file.Path, saveKey);
             }
@@ -630,7 +630,7 @@ namespace Qiniu.IO
 
                     if (hr.Code != (int)HttpCode.OK || hr.RefCode == (int)HttpCode.USER_NEED_RETRY)
                     {
-                        result.shadow(hr);
+                        result.Shadow(hr);
                         result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkblk: code = {1}, text = {2}, offset = {3}, blockSize={4}, chunkSize={5}\n",
                             DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text, offset, blockSize, chunkSize);
 
@@ -678,7 +678,7 @@ namespace Qiniu.IO
                             }
                             if (hr.Code != (int)HttpCode.OK || hr.RefCode == (int)HttpCode.USER_NEED_RETRY)
                             {
-                                result.shadow(hr);
+                                result.Shadow(hr);
                                 result.RefText += string.Format("[{0}] [ResumableUpload] Error: bput: code = {1}, text = {2}, offset = {3}, blockOffset = {4}, chunkSize = {5}\n",
                                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text, offset, blockOffset, chunkSize);
                                 return result;
@@ -709,7 +709,7 @@ namespace Qiniu.IO
                 hr = await MkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
-                    result.shadow(hr);
+                    result.Shadow(hr);
                     result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkfile: code = {1}, text = {2}\n",
                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text);
 
@@ -717,7 +717,7 @@ namespace Qiniu.IO
                 }
 
                 await recordFile.DeleteAsync();
-                result.shadow(hr);
+                result.Shadow(hr);
                 result.RefText += string.Format("[{0}] [ResumableUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), file.Path, saveKey);
             }
@@ -887,7 +887,7 @@ namespace Qiniu.IO
                         }
                         if (hr.Code != (int)HttpCode.OK || hr.RefCode == (int)HttpCode.USER_NEED_RETRY)
                         {
-                            result.shadow(hr);
+                            result.Shadow(hr);
                             result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkblk: code = {1}, text = {2}, offset = {3}, blockSize = {4}, chunkSize = {5}\n",
                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text, offset, blockSize, chunkSize);
 
@@ -935,7 +935,7 @@ namespace Qiniu.IO
                                 }
                                 if (hr.Code != (int)HttpCode.OK || hr.RefCode == (int)HttpCode.USER_NEED_RETRY)
                                 {
-                                    result.shadow(hr);
+                                    result.Shadow(hr);
                                     result.RefText += string.Format("[{0}] [ResumableUpload] Error: bput: code = {1}, text = {2}, offset = {3}, blockOffset = {4}, chunkSize = {5}\n",
                                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text, offset, blockOffset, chunkSize);
 
@@ -968,7 +968,7 @@ namespace Qiniu.IO
                 hr = await MkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
-                    result.shadow(hr);
+                    result.Shadow(hr);
                     result.RefText += string.Format("[{0}] [ResumableUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), file.Path, saveKey);
 
@@ -976,7 +976,7 @@ namespace Qiniu.IO
                 }
 
                 await recordFile.DeleteAsync();
-                result.shadow(hr);
+                result.Shadow(hr);
                 result.RefText += string.Format("[{0}] [ResumableUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), file.Path, saveKey);
             }
@@ -1146,7 +1146,7 @@ namespace Qiniu.IO
                         }
                         if (hr.Code != (int)HttpCode.OK || hr.RefCode == (int)HttpCode.USER_NEED_RETRY)
                         {
-                            result.shadow(hr);
+                            result.Shadow(hr);
                             result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkblk: code = {1}, text = {2}, offset = {3}, blockSize = {4}, chunkSize = {5}\n",
                             DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text, offset, blockSize, chunkSize);
 
@@ -1194,7 +1194,7 @@ namespace Qiniu.IO
                                 }
                                 if (hr.Code != (int)HttpCode.OK || hr.RefCode == (int)HttpCode.USER_NEED_RETRY)
                                 {
-                                    result.shadow(hr);
+                                    result.Shadow(hr);
                                     result.RefText += string.Format("[{0}] [ResumableUpload] Error: bput: code = {1}, text = {2}, offset = {3}, blockOffset = {4}, chunkSize = {5}\n",
                                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text, offset, blockOffset, chunkSize);
 
@@ -1227,7 +1227,7 @@ namespace Qiniu.IO
                 hr = await MkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
-                    result.shadow(hr);
+                    result.Shadow(hr);
                     result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkfile: code = {1}, text = {2}\n",
                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text);
 
@@ -1235,7 +1235,7 @@ namespace Qiniu.IO
                 }
 
                 await recordFile.DeleteAsync();
-                result.shadow(hr);
+                result.Shadow(hr);
                 result.RefText += string.Format("[{0}] [ResumableUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), file.Path, saveKey);
             }
@@ -1325,7 +1325,7 @@ namespace Qiniu.IO
                     }
                     if (hr.Code != (int)HttpCode.OK)
                     {
-                        result.shadow(hr);
+                        result.Shadow(hr);
                         result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkblk: code = {1}, text = {2}, offset = {3}, blockSize = {4}, chunkSize = {5}\n",
                             DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text, offset, blockSize, chunkSize);
 
@@ -1352,14 +1352,14 @@ namespace Qiniu.IO
                 hr = await MkfileAsync(fileSize, saveKey, resumeInfo.SContexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
-                    result.shadow(hr);
+                    result.Shadow(hr);
                     result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkfile: code = {1}, text = {2}\n",
                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text);
 
                     return result;
                 }
 
-                result.shadow(hr);
+                result.Shadow(hr);
                 result.RefText += string.Format("[{0}] [ResumableUpload] Uploaded: #DATA# ==> \"{1}\"\n",
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), saveKey);
             }

@@ -40,11 +40,11 @@ namespace Qiniu.RS.Model
             if (Result != null)
             {
                 sb.AppendLine("bucket-info:");
-                sb.AppendFormat("tbl={0}\n", Result.tbl);
-                sb.AppendFormat("zone={0}\n", Result.zone);
-                sb.AppendFormat("region={0}\n", Result.region);
-                sb.AppendFormat("isGlobal={0}\n", Result.global);
-                sb.AppendFormat("isLine={0}\n", Result.line);
+                sb.AppendFormat("tbl={0}\n", Result.Tbl);
+                sb.AppendFormat("zone={0}\n", Result.Zone);
+                sb.AppendFormat("region={0}\n", Result.Region);
+                sb.AppendFormat("isGlobal={0}\n", Result.Global);
+                sb.AppendFormat("isLine={0}\n", Result.Line);
             }
             else
             {

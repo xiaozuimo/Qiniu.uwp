@@ -1,4 +1,6 @@
-﻿namespace Qiniu.RS.Model
+﻿using Newtonsoft.Json;
+
+namespace Qiniu.RS.Model
 {
     /// <summary>
     /// bucket info
@@ -8,46 +10,55 @@
         /// <summary>
         /// bucket name
         /// </summary>
-        public string tbl { get; set; }
+        [JsonProperty("tbl")]
+        public string Tbl { get; set; }
 
         /// <summary>
         /// itbl
         /// </summary>
-        public long itbl { get; set; }
+        [JsonProperty("itbl")]
+        public long Itbl { get; set; }
 
         /// <summary>
         /// deprecated
         /// </summary>
-        public string phy {get;set;}
+        [JsonProperty("phy")]
+        public string Phy {get;set;}
 
         /// <summary>
         /// id
         /// </summary>
-        public long uid { get; set; }
+        [JsonProperty("uid")]
+        public long Uid { get; set; }
 
         /// <summary>
         /// zone
         /// </summary>
-        public string zone { get; set; }
+        [JsonProperty("zone")]
+        public string Zone { get; set; }
 
         /// <summary>
         /// region
         /// </summary>
-        public string region { get; set; }
+        [JsonProperty("region")]
+        public string Region { get; set; }
 
         /// <summary>
         /// isGlobal
         /// </summary>
-        public bool global { get; set; }
+        [JsonProperty("global")]
+        public bool Global { get; set; }
 
         /// <summary>
         /// isLineStorage
         /// </summary>
-        public bool line { get; set; }
+        [JsonProperty("line")]
+        public bool Line { get; set; }
 
         /// <summary>
         /// creationTime
         /// </summary>
-        public long ctime { get; set; }
+        [JsonProperty("ctime")]
+        public long Ctime { get; set; }
     }
 }

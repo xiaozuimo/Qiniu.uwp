@@ -42,7 +42,7 @@ namespace Qiniu.RS
                 string token = auth.CreateManageToken(statUrl);
 
                 HttpResult hr = await httpManager.GetAsync(statUrl, token);
-                result.shadow(hr);
+                result.Shadow(hr);
             }
             catch (Exception ex)
             {
@@ -77,7 +77,7 @@ namespace Qiniu.RS
                 string token = auth.CreateManageToken(bucketsUrl);
 
                 HttpResult hr = await httpManager.GetAsync(bucketsUrl, token);
-                result.shadow(hr);
+                result.Shadow(hr);
             }
             catch (Exception ex)
             {
@@ -113,7 +113,7 @@ namespace Qiniu.RS
                 string token = auth.CreateManageToken(bucketsUrl);
 
                 HttpResult hr = await httpManager.GetAsync(bucketsUrl, token);
-                result.shadow(hr);
+                result.Shadow(hr);
             }
             catch (Exception ex)
             {
@@ -389,7 +389,7 @@ namespace Qiniu.RS
                 string token = auth.CreateManageToken(batchUrl, data);
 
                 HttpResult hr = await httpManager.PostFormAsync(batchUrl, data, token);
-                result.shadow(hr);
+                result.Shadow(hr);
             }
             catch (Exception ex)
             {
@@ -551,7 +551,7 @@ namespace Qiniu.RS
                 string token = auth.CreateManageToken(domainsUrl, data);
 
                 HttpResult hr = await httpManager.PostFormAsync(domainsUrl, data, token);
-                result.shadow(hr);
+                result.Shadow(hr);
             }
             catch (Exception ex)
             {
@@ -636,7 +636,7 @@ namespace Qiniu.RS
                 string token = auth.CreateManageToken(listUrl);
 
                 HttpResult hr = await httpManager.PostAsync(listUrl, token);
-                result.shadow(hr);
+                result.Shadow(hr);
             }
             catch (Exception ex)
             {

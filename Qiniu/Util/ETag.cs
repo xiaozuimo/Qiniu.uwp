@@ -19,7 +19,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns>文件hash</returns>
-        public static string calcHash(string filePath)
+        public static string CalcHash(string filePath)
         {
             string qetag = "";
 
