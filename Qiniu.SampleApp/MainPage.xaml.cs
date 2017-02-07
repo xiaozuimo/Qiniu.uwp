@@ -39,8 +39,8 @@ namespace Qiniu.SampleApp
 
         private async void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            var accessKey = "2RzN79slQnF-prpQWmS5Ll56A0AzqAW4oKSW2nKr";
-            var secretKey = "TKbvQVmkCqMe0i_fLREgbLIlPg9olZ2LlE4tqX1r";
+            var accessKey = "";
+            var secretKey = "";
             var bucket = "uwptest";
 
             await Config.AutoZoneAsync(accessKey, bucket, true);
