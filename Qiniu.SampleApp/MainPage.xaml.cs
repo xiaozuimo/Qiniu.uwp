@@ -74,8 +74,8 @@ namespace Qiniu.SampleApp
             var fileKey = "bytes.txt";
             var data = "uwptest";
             var bucket = "uwptest";
-            var ak = "2RzN79slQnF-prpQWmS5Ll56A0AzqAW4oKSW2nKr";
-            var sk = "TKbvQVmkCqMe0i_fLREgbLIlPg9olZ2LlE4tqX1r";
+            var ak = "";
+            var sk = "";
 
             await Config.AutoZoneAsync(ak, bucket, true);
 

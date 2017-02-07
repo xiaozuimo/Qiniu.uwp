@@ -116,7 +116,7 @@ namespace Qiniu.Util
         {
             CRC32 crc = new CRC32();
             int bufferLen = 32 * 1024;
-			using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
                 byte[] buffer = new byte[bufferLen];
                 while (true)

@@ -13,6 +13,17 @@ namespace Qiniu.IO.Model
     public class ResumeHelper
     {
         /// <summary>
+        /// 生成默认的断点记录文件名称
+        /// </summary>
+        /// <param name="localFile">待上传的本地文件</param>
+        /// <param name="saveKey">要保存的目标key</param>
+        /// <returns>用于记录断点信息的文件名</returns>
+        public static string GetDefaultRecordKey(string localFile, string saveKey)
+        {
+            return "QiniuRU_" + Hashing.CalcMD5(localFile + saveKey);
+        }
+
+        /// <summary>
         /// 尝试从从文件载入断点信息
         /// </summary>
         /// <param name="recordFile">断点记录文件</param>

@@ -54,13 +54,13 @@ namespace Qiniu.Http
         public static string GetUserAgent()
         {
             string osDesc = "Windows10";
-            return string.Format("{0}/{1} ({2})", QiniuCSharpSDK.ALIAS, QiniuCSharpSDK.VERSION, osDesc);
+            return string.Format("{0}-{1}/{2} ({3})", QiniuCSharpSDK.ALIAS, QiniuCSharpSDK.RTFX, QiniuCSharpSDK.VERSION, osDesc);
         }
 
         /// <summary>
         /// 多部分表单数据(multi-part form-data)的分界(boundary)标识
         /// </summary>
-        /// <returns>多部分表单数据的boundary</returns>
+        /// <returns>分界(boundary)标识字符串</returns>
         public static string CreateFormDataBoundary()
         {
             string now = DateTime.UtcNow.Ticks.ToString();
@@ -85,9 +85,9 @@ namespace Qiniu.Http
         /// HTTP-GET方法
         /// </summary>
         /// <param name="url">请求目标URL</param>
-        /// <param name="token">令牌(凭证)</param>
-        /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
-        /// <returns>响应结果</returns>
+        /// <param name="token">令牌(凭证)[可选->设置为null]</param>
+        /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
+        /// <returns>HTTP-GET的响应结果</returns>
         public async Task<HttpResult> GetAsync(string url, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
@@ -117,7 +117,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] Get Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [HTTP-GET] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
@@ -134,12 +134,12 @@ namespace Qiniu.Http
         }
 
         /// <summary>
-        /// HTTP-POST方法(不包含数据)
+        /// HTTP-POST方法(不包含body数据)
         /// </summary>
         /// <param name="url">请求目标URL</param>
-        /// <param name="token">令牌(凭证)</param>
-        /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
-        /// <returns>响应结果</returns>
+        /// <param name="token">令牌(凭证)[可选]</param>
+        /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
+        /// <returns>HTTP-POST的响应结果</returns>
         public async Task<HttpResult> PostAsync(string url, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
@@ -171,7 +171,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] Post Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
@@ -188,13 +188,13 @@ namespace Qiniu.Http
         }
 
         /// <summary>
-        /// HTTP-POST方法(包含二进制格式数据)
+        /// HTTP-POST方法(包含body数据)
         /// </summary>
         /// <param name="url">请求目标URL</param>
-        /// <param name="data">主体数据</param>
-        /// <param name="token">令牌(凭证)</param>
-        /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
-        /// <returns>响应结果</returns>
+        /// <param name="data">主体数据(字节数据)</param>
+        /// <param name="token">令牌(凭证)[可选->设置为null]</param>
+        /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
+        /// <returns>HTTP-POST的响应结果</returns>
         public async Task<HttpResult> PostDataAsync(string url, byte[] data, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
@@ -230,7 +230,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] Post-data Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
@@ -249,14 +249,14 @@ namespace Qiniu.Http
 
 
         /// <summary>
-        /// HTTP-POST方法(包含二进制格式数据)
+        /// HTTP-POST方法(包含body数据)
         /// </summary>
         /// <param name="url">请求目标URL</param>
-        /// <param name="data">主体数据</param>
+        /// <param name="data">主体数据(字节数据)</param>
         /// <param name="mimeType">主体数据内容类型</param>
-        /// <param name="token">令牌(凭证)</param>
-        /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
-        /// <returns></returns>
+        /// <param name="token">令牌(凭证)[可选]</param>
+        /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
+        /// <returns>HTTP-POST的响应结果</returns>
         public async Task<HttpResult> PostDataAsync(string url, byte[] data, string mimeType, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
@@ -309,13 +309,13 @@ namespace Qiniu.Http
         }
 
         /// <summary>
-        /// HTTP-POST方法(包含JSON编码格式的数据)
+        /// HTTP-POST方法(包含JSON文本的body数据)
         /// </summary>
         /// <param name="url">请求目标URL</param>
-        /// <param name="data">主体数据</param>
-        /// <param name="token">令牌(凭证)</param>
-        /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
-        /// <returns>响应结果</returns>
+        /// <param name="data">主体数据(JSON文本)</param>
+        /// <param name="token">令牌(凭证)[可选]</param>
+        /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
+        /// <returns>HTTP-POST的响应结果</returns>
         public async Task<HttpResult> PostJsonAsync(string url, string data, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
@@ -351,7 +351,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] Post-json Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
@@ -369,14 +369,14 @@ namespace Qiniu.Http
 
 
         /// <summary>
-        /// HTTP-POST方法(包含文本数据)
+        /// HTTP-POST方法(包含普通文本的body数据)
         /// </summary>
         /// <param name="url">请求目标URL</param>
-        /// <param name="data">主体数据</param>
-        /// <param name="token">令牌(凭证)</param>
-        /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
-        /// <returns>响应结果</returns>
-        public async Task<HttpResult> PostPlainAsync(string url, string data, string token, bool binaryMode = false)
+        /// <param name="data">主体数据(普通文本)</param>
+        /// <param name="token">令牌(凭证)[可选->设置为null]</param>
+        /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
+        /// <returns>HTTP-POST的响应结果</returns>
+        public async Task<HttpResult> PostTextAsync(string url, string data, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -432,9 +432,9 @@ namespace Qiniu.Http
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="kvData">键值对数据</param>
-        /// <param name="token">令牌(凭证)</param>
-        /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
-        /// <returns>响应结果</returns>
+        /// <param name="token">令牌(凭证)[可选->设置为null]</param>
+        /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
+        /// <returns>HTTP-POST的响应结果</returns>
         public async Task<HttpResult> PostFormAsync(string url, Dictionary<string, string> kvData, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
@@ -491,9 +491,9 @@ namespace Qiniu.Http
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="data">表单数据</param>
-        /// <param name="token">令牌(凭证)</param>
-        /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
-        /// <returns>响应结果</returns>
+        /// <param name="token">令牌(凭证)[可选->设置为null]</param>
+        /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
+        /// <returns>HTTP-POST的响应结果</returns>
         public async Task<HttpResult> PostFormAsync(string url, string data, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
@@ -529,7 +529,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] Post-form Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
@@ -549,10 +549,10 @@ namespace Qiniu.Http
         /// HTTP-POST方法(包含表单数据)
         /// </summary>
         /// <param name="url">请求目标URL</param>
-        /// <param name="data">表单</param>
-        /// <param name="token">令牌(凭证)</param>
-        /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
-        /// <returns>响应结果</returns>
+        /// <param name="data">表单数据</param>
+        /// <param name="token">令牌(凭证)[可选->设置为null]</param>
+        /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
+        /// <returns>HTTP-POST的响应结果</returns>
         public async Task<HttpResult> PostFormAsync(string url, byte[] data, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
@@ -588,7 +588,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] Post-form Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
@@ -610,9 +610,9 @@ namespace Qiniu.Http
         /// <param name="url">请求目标URL</param>
         /// <param name="data">主体数据</param>
         /// <param name="boundary">分界标志</param>
-		/// <param name="token">令牌(凭证)</param>
-        /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
-        /// <returns></returns>
+        /// <param name="token">令牌(凭证)[可选->设置为null]</param>
+        /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
+        /// <returns>HTTP-POST的响应结果</returns>
         public async Task<HttpResult> PostMultipartAsync(string url, byte[] data, string boundary, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
@@ -650,7 +650,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] Post-multipart Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
@@ -669,8 +669,8 @@ namespace Qiniu.Http
         /// <summary>
         /// 获取返回信息头
         /// </summary>
-        /// <param name="hr"></param>
-        /// <param name="msg"></param>
+        /// <param name="hr">即将被HTTP请求封装函数返回的HttpResult变量</param>
+        /// <param name="msg">正在被读取的HTTP响应</param>
         private void GetHeaders(ref HttpResult hr, HttpResponseMessage msg)
         {
             if (msg != null)

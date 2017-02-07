@@ -127,6 +127,7 @@
     <Compile Include="CDN\Model\RefreshInfo.cs" />
     <Compile Include="CDN\Model\RefreshRequest.cs" />
     <Compile Include="CDN\Model\RefreshResult.cs" />
+    <Compile Include="CDN\Model\TimestampAntiLeechUrlRequest.cs" />
     <Compile Include="Common\Config.cs" />
     <Compile Include="Common\Zone.cs" />
     <Compile Include="Common\ZoneHelper.cs" />
