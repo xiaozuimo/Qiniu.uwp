@@ -27,12 +27,12 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 获取空间文件信息
+        /// [异步async]获取空间文件信息
         /// </summary>
         /// <param name="bucket">空间名称</param>
         /// <param name="key">文件key</param>
         /// <returns>文件信息获取结果</returns>
-        public async Task<StatResult> GetStatAsync(string bucket, string key)
+        public async Task<StatResult> StatAsync(string bucket, string key)
         {
             StatResult result = new StatResult();
 
@@ -64,10 +64,10 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 获取空间(bucket)列表
+        /// [异步async]获取空间(bucket)列表
         /// </summary>
         /// <returns>空间列表获取结果</returns>
-        public async Task<BucketsResult> GetBucketsAsync()
+        public async Task<BucketsResult> BucketsAsync()
         {
             BucketsResult result = new BucketsResult();
 
@@ -99,11 +99,11 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 查询指定bucket的信息
+        /// [异步async]查询指定bucket的信息
         /// </summary>
         /// <param name="bucketName">bucket名称</param>
         /// <returns></returns>
-        public async Task<BucketResult> GetBucketAsync(string bucketName)
+        public async Task<BucketResult> BucketAsync(string bucketName)
         {
             BucketResult result = new BucketResult();
 
@@ -135,7 +135,7 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 删除文件
+        /// [异步async]删除文件
         /// </summary>
         /// <param name="bucket">空间名称</param>
         /// <param name="key">文件key</param>
@@ -171,7 +171,7 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 复制文件
+        /// [异步async]复制文件
         /// </summary>
         /// <param name="srcBucket">源空间</param>
         /// <param name="srcKey">源文件key</param>
@@ -209,7 +209,7 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 复制文件 (with 'force' param)
+        /// [异步async]复制文件 (with 'force' param)
         /// </summary>
         /// <param name="srcBucket">源空间</param>
         /// <param name="srcKey">源文件key</param>
@@ -248,7 +248,7 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 移动文件
+        /// [异步async]移动文件
         /// </summary>
         /// <param name="srcBucket">源空间</param>
         /// <param name="srcKey">源文件key</param>
@@ -286,7 +286,7 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 移动文件 (with 'force' param)
+        /// [异步async]移动文件 (with 'force' param)
         /// </summary>
         /// <param name="srcBucket">源空间</param>
         /// <param name="srcKey">源文件key</param>
@@ -325,7 +325,7 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 修改文件名(key)
+        /// [异步async]修改文件名(key)
         /// </summary>
         /// <param name="bucket">文件所在空间</param>
         /// <param name="oldKey">旧的文件名</param>
@@ -337,13 +337,13 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 修改文件MimeType
+        /// [异步async]修改文件MimeType
         /// </summary>
         /// <param name="bucket">空间名称</param>
         /// <param name="key">文件key</param>
         /// <param name="mimeType">修改后的MIME Type</param>
         /// <returns>状态码为200时表示OK</returns>
-        public async Task<HttpResult> ChangeMimeTypeAsync(string bucket, string key, string mimeType)
+        public async Task<HttpResult> ChgmAsync(string bucket, string key, string mimeType)
         {
             HttpResult result = new HttpResult();
 
@@ -374,7 +374,7 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 批处理
+        /// [异步async]批处理
         /// </summary>
         /// <param name="batchOps">批量操作的操作字符串</param>
         /// <returns>状态码为200时表示OK</returns>
@@ -411,7 +411,7 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 批处理，字符串数组拼接后与另一形式等价
+        /// [异步async]批处理，字符串数组拼接后与另一形式等价
         /// </summary>
         /// <param name="ops">批量操作的操作字符串数组</param>
         /// <returns>状态码为200时表示OK</returns>
@@ -428,12 +428,12 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 批处理-stat
+        /// [异步async]批处理-stat
         /// </summary>
         /// <param name="bucket">空间名称</param>
         /// <param name="keys">文件key列表</param>
         /// <returns>结果列表</returns>
-        public async Task<BatchResult> GetBatchStatAsync(string bucket, string[] keys)
+        public async Task<BatchResult> BatchStatAsync(string bucket, string[] keys)
         {
             string[] ops = new string[keys.Length];
             for (int i = 0; i < keys.Length; ++i)
@@ -445,7 +445,7 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 批处理 - delete
+        /// [异步async]批处理 - delete
         /// </summary>
         /// <param name="bucket">空间名称</param>
         /// <param name="keys">文件key列表</param>
@@ -460,9 +460,9 @@ namespace Qiniu.RS
 
             return await BatchAsync(ops);
         }
-        
+
         /// <summary>
-        /// 抓取文件
+        /// [异步async]抓取文件
         /// </summary>
         /// <param name="resUrl">资源URL</param>
         /// <param name="bucket">空间名称</param>
@@ -499,7 +499,7 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 更新文件，适用于"镜像源站"设置的空间
+        /// [异步async]更新文件，适用于"镜像源站"设置的空间
         /// </summary>
         /// <param name="bucket">空间名称</param>
         /// <param name="key">文件key</param>
@@ -535,11 +535,11 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 获取空间的域名
+        /// [异步async]获取空间的域名
         /// </summary>
         /// <param name="bucket">空间名称</param>
         /// <returns>空间对应的域名</returns>
-        public async Task<DomainsResult> GetDomainsAsync(string bucket)
+        public async Task<DomainsResult> DomainsAsync(string bucket)
         {
             DomainsResult result = new DomainsResult();
 
@@ -574,7 +574,7 @@ namespace Qiniu.RS
 
         /// <summary>
         /// 
-        /// 获取空间文件列表 
+        /// [异步async]获取空间文件列表 
         /// listFiles(bucket, prefix, marker, limit, delimiter)
         /// 
         /// bucket:    目标空间名称
@@ -600,7 +600,7 @@ namespace Qiniu.RS
         /// <param name="limit">数量限制</param>
         /// <param name="delimiter">分隔符</param>
         /// <returns>文件列表获取结果</returns>
-        public async Task<ListResult> ListFilesAsync(string bucket, string prefix, string marker, int limit, string delimiter)
+        public async Task<ListResult> ListAsync(string bucket, string prefix, string marker, int limit, string delimiter)
         {
             ListResult result = new ListResult();
 
@@ -658,7 +658,7 @@ namespace Qiniu.RS
         }
 
         /// <summary>
-        /// 更新文件生命周期
+        /// [异步async]更新文件生命周期
         /// </summary>
         /// <param name="bucket">空间名称</param>
         /// <param name="key">文件key</param>
@@ -693,6 +693,7 @@ namespace Qiniu.RS
 
             return result;
         }
+
 
         /// <summary>
         /// 生成stat操作字符串
@@ -827,7 +828,7 @@ namespace Qiniu.RS
         /// <param name="key">文件key</param>
         /// <param name="deleteAfterDays">多少天后删除(设为0表示取消)</param>
         /// <returns>updateLifecycle操作字符串</returns>
-        public string UpdateLifecycleOp(string bucket,string key,int deleteAfterDays)
+        public string UpdateLifecycleOp(string bucket, string key, int deleteAfterDays)
         {
             return string.Format("/deleteAfterDays/{0}/{1}",
                 Base64.UrlSafeBase64Encode(bucket, key), deleteAfterDays);

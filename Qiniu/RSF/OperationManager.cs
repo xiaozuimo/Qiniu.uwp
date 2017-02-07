@@ -20,7 +20,7 @@ namespace Qiniu.RSF
         /// <summary>
         /// 初始化
         /// </summary>
-        /// <param name="mac">账户访问控制(密钥)</param>
+        /// <param name="mac">账号(密钥)</param>
         public OperationManager(Mac mac)
         {
             auth = new Auth(mac);
@@ -28,7 +28,7 @@ namespace Qiniu.RSF
         }
 
         /// <summary>
-        /// 数据处理
+        /// [异步async]数据处理
         /// </summary>
         /// <param name="bucket">空间</param>
         /// <param name="key">空间文件的key</param>
@@ -85,7 +85,7 @@ namespace Qiniu.RSF
         }
 
         /// <summary>
-        /// 数据处理，操作字符串拼接后与另一种形式等价
+        /// [异步async]数据处理，操作字符串拼接后与另一种形式等价
         /// </summary>
         /// <param name="bucket">空间</param>
         /// <param name="key">空间文件的key</param>
@@ -101,7 +101,7 @@ namespace Qiniu.RSF
         }
 
         /// <summary>
-        /// 查询pfop操作处理结果(或状态)
+        /// [异步async]查询pfop操作处理结果(或状态)
         /// </summary>
         /// <param name="persistentId">持久化ID</param>
         /// <returns>操作结果</returns>
@@ -136,7 +136,7 @@ namespace Qiniu.RSF
         }
 
         /// <summary>
-        /// 根据uri的类型(网络url或者本地文件路径)自动选择dfop_url或者dfop_data
+        /// [异步async]根据uri的类型(网络url或者本地文件路径)自动选择dfop_url或者dfop_data
         /// </summary>
         /// <param name="fop">文件处理命令</param>
         /// <param name="uri">资源/文件URI</param>
@@ -154,7 +154,7 @@ namespace Qiniu.RSF
         }
 
         /// <summary>
-        /// 文本处理
+        /// [异步async]文本处理(直接传入文本内容)
         /// </summary>
         /// <param name="fop">文本处理命令</param>
         /// <param name="text">文本内容</param>
@@ -201,7 +201,7 @@ namespace Qiniu.RSF
         }
 
         /// <summary>
-        /// 文本处理
+        /// [异步async]文本处理(从文件读取文本)
         /// </summary>
         /// <param name="fop">文本处理命令</param>
         /// <param name="textFile">文本文件</param>
@@ -224,7 +224,7 @@ namespace Qiniu.RSF
         }
 
         /// <summary>
-        /// 如果uri是网络url则使用此方法
+        /// [异步async]如果uri是网络url则使用此方法
         /// </summary>
         /// <param name="fop">文件处理命令</param>
         /// <param name="url">资源URL</param>
@@ -261,7 +261,7 @@ namespace Qiniu.RSF
         }
 
         /// <summary>
-        /// 如果uri是本地文件路径则使用此方法
+        /// [异步async]如果uri是本地文件路径则使用此方法
         /// </summary>
         /// <param name="fop">文件处理命令</param>
         /// <param name="localFile">文件名</param>
@@ -319,6 +319,5 @@ namespace Qiniu.RSF
 
             return result;
         }
-
     }
 }

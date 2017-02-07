@@ -49,7 +49,7 @@ namespace Qiniu.IO
         }
 
         /// <summary>
-        /// 设置上传进度处理器-仅对于上传大文件有效
+        /// 设置上传进度处理器-仅对于上传大文件有效，如果不设置则使用默认的进度处理器
         /// </summary>
         /// <param name="upph">上传进度处理器</param>
         public void SetUploadProgressHandler(UploadProgressHandler upph)
@@ -58,7 +58,7 @@ namespace Qiniu.IO
         }
 
         /// <summary>
-        /// 设置上传控制器-仅对于上传大文件有效
+        /// 设置上传控制器-仅对于上传大文件有效，如不设置则使用默认控制器
         /// </summary>
         /// <param name="upctl">上传控制器</param>
         public void SetUploadController(UploadController upctl)
@@ -85,26 +85,25 @@ namespace Qiniu.IO
         }
 
         /// <summary>
-        /// 上传文件
+        /// [异步async]上传文件
         /// </summary>
-        /// <param name="file">本地待上传的文件</param>
+        /// <param name="localFile">本地待上传的文件名</param>
         /// <param name="saveKey">要保存的文件名称</param>
         /// <param name="token">上传凭证</param>
-        /// <returns>上传结果</returns>
-        public async Task<HttpResult> UploadFileAsync(StorageFile file, string saveKey, string token)
+        /// <returns>上传文件后的返回结果</returns>
+        public async Task<HttpResult> UploadFileAsync(StorageFile localFile, string saveKey, string token)
         {
             HttpResult result = new HttpResult();
 
-            var info = await file.GetBasicPropertiesAsync();
+            var fi = await localFile.GetBasicPropertiesAsync();
 
-            if (info.Size > (ulong)PUT_THRESHOLD)
+            if (fi.Size > (ulong)PUT_THRESHOLD)
             {
                 if (recordFile == null)
                 {
-                    var recordKey = "QiniuRU_" + Hashing.CalcMD5(file + saveKey);
-                    recordFile = await (await UserEnv.GetHomeFolderAsync()).CreateFileAsync(recordKey);
+                    string recordKey = ResumeHelper.GetDefaultRecordKey(localFile.Path, saveKey);
+                    recordFile = await (await UserEnv.GetHomeFolderAsync()).CreateFileAsync(recordKey, CreationCollisionOption.OpenIfExists);
                 }
-
                 if (upph == null)
                 {
                     upph = new UploadProgressHandler(ResumableUploader.DefaultUploadProgressHandler);
@@ -116,24 +115,25 @@ namespace Qiniu.IO
                 }
 
                 ResumableUploader ru = new ResumableUploader(UPLOAD_FROM_CDN, CHUNK_UNIT);
-                result = await ru.UploadFileAsync(file, saveKey, token, recordFile, upph, upctl);
+                result = await ru.UploadFileAsync(localFile, saveKey, token, recordFile, upph, upctl);
             }
             else
             {
-                FormUploader su = new FormUploader(UPLOAD_FROM_CDN);
-                result = await su.UploadFileAsync(file, saveKey, token);
+                FormUploader fu = new FormUploader(UPLOAD_FROM_CDN);
+                result = await fu.UploadFileAsync(localFile, saveKey, token);
             }
 
             return result;
         }
 
+
         /// <summary>
-        /// 上传数据
+        /// [异步async]上传数据
         /// </summary>
         /// <param name="data">待上传的数据</param>
         /// <param name="saveKey">要保存的文件名称</param>
         /// <param name="token">上传凭证</param>
-        /// <returns>上传结果</returns>
+        /// <returns>上传文件后的返回结果</returns>
         public async Task<HttpResult> UploadDataAsync(byte[] data, string saveKey, string token)
         {
             HttpResult result = new HttpResult();
@@ -145,8 +145,33 @@ namespace Qiniu.IO
             }
             else
             {
-                FormUploader su = new FormUploader(UPLOAD_FROM_CDN);
-                result = await su.UploadDataAsync(data, saveKey, token);
+                FormUploader fu = new FormUploader(UPLOAD_FROM_CDN);
+                result = await fu.UploadDataAsync(data, saveKey, token);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// [异步async]上传数据流，根据流长度以及设置的阈值(用户初始化UploadManager时可指定该值)自动选择表单或者分片上传
+        /// </summary>
+        /// <param name="stream">待上传的数据流，要求：流长度(Stream.Length)是确定的</param>
+        /// <param name="saveKey">要保存的文件名称</param>
+        /// <param name="token">上传凭证</param>
+        /// <returns>上传数据后的返回结果</returns>
+        public async Task<HttpResult> UploadStreamAsync(Stream stream, string saveKey, string token)
+        {
+            HttpResult result = new HttpResult();
+
+            if (stream.Length > PUT_THRESHOLD)
+            {
+                ResumableUploader ru = new ResumableUploader(UPLOAD_FROM_CDN);
+                result = await ru.UploadStreamAsync(stream, saveKey, token, null);
+            }
+            else
+            {
+                FormUploader fu = new FormUploader(UPLOAD_FROM_CDN);
+                result = await fu.UploadStreamAsync(stream, saveKey, token);
             }
 
             return result;

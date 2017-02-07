@@ -38,15 +38,12 @@ namespace Qiniu.IO
         }
 
         /// <summary>
-        /// 上传文件
-        /// 需要提供正确的上传凭证(参阅[1]，另关于上传策略请参阅[2])
-        /// [1] http://developer.qiniu.com/article/developer/security/upload-token.html
-        /// [2] http://developer.qiniu.com/article/developer/security/put-policy.html
+        /// [异步async]上传文件
         /// </summary>
         /// <param name="file">待上传的本地文件</param>
         /// <param name="saveKey">要保存的目标文件名称</param>
         /// <param name="token">上传凭证</param>
-        /// <returns>上传结果</returns>
+        /// <returns>上传文件后的返回结果</returns>
         public async Task<HttpResult> UploadFileAsync(StorageFile file, string saveKey, string token)
         {
             HttpResult result = new HttpResult();
@@ -80,31 +77,22 @@ namespace Qiniu.IO
                 sbp3.AppendLine(sep + "--");
 
                 byte[] partData1 = Encoding.UTF8.GetBytes(sbp1.ToString());
-                byte[] partData2 = await ReadToByteArray(file);
+                byte[] partData2 = await ReadToByteArrayAsync(file);
                 byte[] partData3 = Encoding.UTF8.GetBytes(sbp3.ToString());
 
                 MemoryStream ms = new MemoryStream();
-                ms.Write(partData1, 0, partData1.Length);
-                ms.Write(partData2, 0, partData2.Length);
-                ms.Write(partData3, 0, partData3.Length);
+                await ms.WriteAsync(partData1, 0, partData1.Length);
+                await ms.WriteAsync(partData2, 0, partData2.Length);
+                await ms.WriteAsync(partData3, 0, partData3.Length);
 
                 result = await httpManager.PostMultipartAsync(uploadHost, ms.ToArray(), boundary, null);
-
-                if (result.Code == (int)HttpCode.OK)
-                {
-                    result.RefText += string.Format("[{0}] [SimpleUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
-                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), file.Path, saveKey);
-                }
-                else
-                {
-                    result.RefText += string.Format("[{0}] [SimpleUpload] Failed: code = {1}, text = {2}\n",
-                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Code, result.Text);
-                }
+                result.RefText += string.Format("[{0}] [FormUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
+                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), file, saveKey);
             }
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [SimpleUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [FormUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
@@ -121,13 +109,13 @@ namespace Qiniu.IO
         }
 
         /// <summary>
-        /// 上传文件 - 可附加自定义参数
+        /// [异步async]上传文件 - 可附加自定义参数
         /// </summary>
         /// <param name="file">待上传的本地文件</param>
         /// <param name="saveKey">要保存的目标文件名称</param>
         /// <param name="token">上传凭证</param>
         /// <param name="extraParams">用户自定义的附加参数</param>
-        /// <returns></returns>
+        /// <returns>上传文件后的返回结果</returns>
         public async Task<HttpResult> UploadFileAsync(StorageFile file, string saveKey, string token, Dictionary<string, string> extraParams)
         {
             HttpResult result = new HttpResult();
@@ -169,32 +157,24 @@ namespace Qiniu.IO
                 sbp3.AppendLine(sep + "--");
 
                 byte[] partData1 = Encoding.UTF8.GetBytes(sbp1.ToString());
-                byte[] partData2 = await ReadToByteArray(file);
+                byte[] partData2 = await ReadToByteArrayAsync(file);
                 byte[] partData3 = Encoding.UTF8.GetBytes(sbp3.ToString());
-                
+
 
 
                 MemoryStream ms = new MemoryStream();
-                ms.Write(partData1, 0, partData1.Length);
-                ms.Write(partData2, 0, partData2.Length);
-                ms.Write(partData3, 0, partData3.Length);
+                await ms.WriteAsync(partData1, 0, partData1.Length);
+                await ms.WriteAsync(partData2, 0, partData2.Length);
+                await ms.WriteAsync(partData3, 0, partData3.Length);
 
                 result = await httpManager.PostMultipartAsync(uploadHost, ms.ToArray(), boundary, null);
-                if (result.Code == (int)HttpCode.OK)
-                {
-                    result.RefText += string.Format("[{0}] [SimpleUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
-                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), file.Path, saveKey);
-                }
-                else
-                {
-                    result.RefText += string.Format("[{0}] [SimpleUpload] Failed: code = {1}, text = {2}\n",
-                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Code, result.Text);
-                }
+                result.RefText += string.Format("[{0}] [FormUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
+                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), file, saveKey);
             }
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [SimpleUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [FormUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
@@ -211,104 +191,12 @@ namespace Qiniu.IO
         }
 
         /// <summary>
-        /// 上传数据流
-        /// </summary>
-        /// <param name="stream">数据流，流长度必须可确定</param>
-        /// <param name="saveKey">要保存的key</param>
-        /// <param name="token">上传凭证</param>
-        /// <returns></returns>
-        public async Task<HttpResult> UploadStreamAsync(Stream stream, string saveKey, string token)
-        {
-            HttpResult result = new HttpResult();
-
-            try
-            {
-                string boundary = HttpManager.CreateFormDataBoundary();
-                string sep = "--" + boundary;
-                StringBuilder sbp1 = new StringBuilder();
-
-                sbp1.AppendLine(sep);
-
-                sbp1.AppendLine("Content-Disposition: form-data; name=key");
-                sbp1.AppendLine();
-                sbp1.AppendLine(saveKey);
-                sbp1.AppendLine(sep);
-
-                sbp1.AppendLine("Content-Disposition: form-data; name=token");
-                sbp1.AppendLine();
-                sbp1.AppendLine(token);
-                sbp1.AppendLine(sep);
-
-                string filename = Path.GetFileName(saveKey);
-                sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
-                sbp1.AppendLine();
-                sbp1.AppendLine();
-
-                int bufferSize = 1024 * 1024;
-                byte[] buffer = new byte[bufferSize];
-                int bytesRead = 0;
-                MemoryStream dataMS = new MemoryStream();
-                while (true)
-                {
-                    bytesRead = stream.Read(buffer, 0, bufferSize);
-                    if (bytesRead == 0)
-                    {
-                        break;
-                    }
-                    dataMS.Write(buffer, 0, bytesRead);
-                }
-
-                StringBuilder sbp3 = new StringBuilder();
-                sbp3.AppendLine();
-                sbp3.AppendLine(sep + "--");
-
-                byte[] partData1 = Encoding.UTF8.GetBytes(sbp1.ToString());
-                byte[] partData2 = dataMS.ToArray();
-                byte[] partData3 = Encoding.UTF8.GetBytes(sbp3.ToString());
-
-                MemoryStream ms = new MemoryStream();
-                ms.Write(partData1, 0, partData1.Length);
-                ms.Write(partData2, 0, partData2.Length);
-                ms.Write(partData3, 0, partData3.Length);
-
-                result = await httpManager.PostMultipartAsync(uploadHost, ms.ToArray(), boundary, null);
-                if (result.Code == (int)HttpCode.OK)
-                {
-                    result.RefText += string.Format("[{0}] [SimpleUpload] Uploaded: #DATA# ==> \"{1}\"\n",
-                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), saveKey);
-                }
-                else
-                {
-                    result.RefText += string.Format("[{0}] [SimpleUpload] Failed: code = {1}, text = {2}\n",
-                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Code, result.Text);
-                }
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [SimpleUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
-                result.RefText += sb.ToString();
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// 上传字节数据
+        /// [异步async]上传字节数据
         /// </summary>
         /// <param name="data">待上传的数据</param>
         /// <param name="saveKey">要保存的key</param>
         /// <param name="token">上传凭证</param>
-        /// <returns></returns>
+        /// <returns>上传数据后的返回结果</returns>
         public async Task<HttpResult> UploadDataAsync(byte[] data, string saveKey, string token)
         {
             HttpResult result = new HttpResult();
@@ -346,26 +234,18 @@ namespace Qiniu.IO
                 byte[] partData3 = Encoding.UTF8.GetBytes(sbp3.ToString());
 
                 MemoryStream ms = new MemoryStream();
-                ms.Write(partData1, 0, partData1.Length);
-                ms.Write(partData2, 0, partData2.Length);
-                ms.Write(partData3, 0, partData3.Length);
+                await ms.WriteAsync(partData1, 0, partData1.Length);
+                await ms.WriteAsync(partData2, 0, partData2.Length);
+                await ms.WriteAsync(partData3, 0, partData3.Length);
 
                 result = await httpManager.PostMultipartAsync(uploadHost, ms.ToArray(), boundary, null);
-                if (result.Code == (int)HttpCode.OK)
-                {
-                    result.RefText += string.Format("[{0}] [SimpleUpload] Uploaded: #DATA# ==> \"{1}\"\n",
-                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), saveKey);
-                }
-                else
-                {
-                    result.RefText += string.Format("[{0}] [SimpleUpload] Failed: code = {1}, text = {2}\n",
-                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Code, result.Text);
-                }
+                result.RefText += string.Format("[{0}] [FormUpload] Uploaded: \"#DATA#\" ==> \"{1}\"\n",
+                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), saveKey);
             }
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [SimpleUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [FormUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
@@ -382,24 +262,109 @@ namespace Qiniu.IO
         }
 
         /// <summary>
-        /// Read StorageFile to byte array
+        /// [异步async]上传数据流
         /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
-        public static async Task<Byte[]> ReadToByteArray(StorageFile file)
+        /// <param name="stream">数据流，流长度必须可确定</param>
+        /// <param name="saveKey">要保存的key</param>
+        /// <param name="token">上传凭证</param>
+        /// <returns>数据流上传后的返回结果</returns>
+        public async Task<HttpResult> UploadStreamAsync(Stream stream, string saveKey, string token)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string boundary = HttpManager.CreateFormDataBoundary();
+                string sep = "--" + boundary;
+                StringBuilder sbp1 = new StringBuilder();
+
+                sbp1.AppendLine(sep);
+
+                sbp1.AppendLine("Content-Disposition: form-data; name=key");
+                sbp1.AppendLine();
+                sbp1.AppendLine(saveKey);
+                sbp1.AppendLine(sep);
+
+                sbp1.AppendLine("Content-Disposition: form-data; name=token");
+                sbp1.AppendLine();
+                sbp1.AppendLine(token);
+                sbp1.AppendLine(sep);
+
+                string filename = Path.GetFileName(saveKey);
+                sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
+                sbp1.AppendLine();
+                sbp1.AppendLine();
+
+                int bufferSize = 1024 * 1024;
+                byte[] buffer = new byte[bufferSize];
+                int bytesRead = 0;
+                MemoryStream dataMS = new MemoryStream();
+                while (true)
+                {
+                    bytesRead = await stream.ReadAsync(buffer, 0, bufferSize);
+                    if (bytesRead == 0)
+                    {
+                        break;
+                    }
+                    await dataMS.WriteAsync(buffer, 0, bytesRead);
+                }
+
+                StringBuilder sbp3 = new StringBuilder();
+                sbp3.AppendLine();
+                sbp3.AppendLine(sep + "--");
+
+                byte[] partData1 = Encoding.UTF8.GetBytes(sbp1.ToString());
+                byte[] partData2 = dataMS.ToArray();
+                byte[] partData3 = Encoding.UTF8.GetBytes(sbp3.ToString());
+
+                MemoryStream ms = new MemoryStream();
+                await ms.WriteAsync(partData1, 0, partData1.Length);
+                await ms.WriteAsync(partData2, 0, partData2.Length);
+                await ms.WriteAsync(partData3, 0, partData3.Length);
+
+                result = await httpManager.PostMultipartAsync(uploadHost, ms.ToArray(), boundary, null);
+                result.RefText += string.Format("[{0}] [FormUpload] Uploaded: \"#STREAM#\" ==> \"{1}\"\n",
+                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), saveKey);
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [FormUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// [异步async]将文件(StorageFile)内容读取到字节数组中
+        /// </summary>
+        /// <param name="file">文件StorageFile</param>
+        /// <returns>存放文件按内容的字节数组</returns>
+        public static async Task<byte[]> ReadToByteArrayAsync(StorageFile file)
         {
             byte[] bytes = null;
-            using (var stream = await file.OpenStreamForReadAsync()) 
+            using (var stream = await file.OpenStreamForReadAsync())
             {
                 bytes = new byte[stream.Length];
-                using (var dateReader = new DataReader(stream.AsInputStream())) 
+                using (var dataReader = new DataReader(stream.AsInputStream()))
                 {
-                    await dateReader.LoadAsync((uint)stream.Length);
-                    dateReader.ReadBytes(bytes);
+                    await dataReader.LoadAsync((uint)stream.Length);
+                    dataReader.ReadBytes(bytes);
                 }
             }
             return bytes;
         }
+
 
     }
 }

@@ -30,8 +30,8 @@ namespace Qiniu.CDN.Model
         /// 初始化所有成员
         /// </summary>
         /// <param name="day">日期</param>
-        /// <param name="domains">域名列表</param>
-        public LogListRequest(string day,string domains)
+        /// <param name="domains">域名列表(多个域名以;分隔的字符串)</param>
+        public LogListRequest(string day, string domains)
         {
             Day = day;
             Domains = domains;

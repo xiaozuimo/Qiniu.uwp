@@ -44,7 +44,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="text">待解码的字符串</param>
         /// <returns>已解码字符串</returns>
-        public static byte[] UrlSafeBase64Decode(string text)
+        public static byte[] UrlsafeBase64Decode(string text)
         {
             return Convert.FromBase64String(text.Replace('-', '+').Replace('_', '/'));
         }
