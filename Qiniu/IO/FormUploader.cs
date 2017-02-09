@@ -67,7 +67,8 @@ namespace Qiniu.IO
                 sbp1.AppendLine(token);
                 sbp1.AppendLine(sep);
 
-                string filename = Path.GetFileName(file.Path);
+                // FIX 2017-02-08 https://github.com/qiniu/csharp-sdk/issues/140
+                string filename = Util.Hashing.CalcMD5(Path.GetFileName(file.Path));
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();
@@ -147,7 +148,8 @@ namespace Qiniu.IO
                     sbp1.AppendLine(sep);
                 }
 
-                string filename = Path.GetFileName(file.Path);
+                // FIX 2017-02-08 https://github.com/qiniu/csharp-sdk/issues/140
+                string filename = Util.Hashing.CalcMD5(Path.GetFileName(file.Path));
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();
@@ -191,6 +193,27 @@ namespace Qiniu.IO
         }
 
         /// <summary>
+        /// [异步async]将文件(StorageFile)内容读取到字节数组中
+        /// </summary>
+        /// <param name="file">文件StorageFile</param>
+        /// <returns>存放文件按内容的字节数组</returns>
+        public static async Task<byte[]> ReadToByteArrayAsync(StorageFile file)
+        {
+            byte[] bytes = null;
+            using (var stream = await file.OpenStreamForReadAsync())
+            {
+                bytes = new byte[stream.Length];
+                using (var dataReader = new DataReader(stream.AsInputStream()))
+                {
+                    await dataReader.LoadAsync((uint)stream.Length);
+                    dataReader.ReadBytes(bytes);
+                }
+            }
+            return bytes;
+        }
+
+
+        /// <summary>
         /// [异步async]上传字节数据
         /// </summary>
         /// <param name="data">待上传的数据</param>
@@ -220,7 +243,8 @@ namespace Qiniu.IO
                 sbp1.AppendLine(token);
                 sbp1.AppendLine(sep);
 
-                string filename = Path.GetFileName(saveKey);
+                // FIX 2017-02-08 https://github.com/qiniu/csharp-sdk/issues/140
+                string filename = Util.Hashing.CalcMD5(Path.GetFileName(saveKey));
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();
@@ -290,7 +314,8 @@ namespace Qiniu.IO
                 sbp1.AppendLine(token);
                 sbp1.AppendLine(sep);
 
-                string filename = Path.GetFileName(saveKey);
+                // FIX 2017-02-08 https://github.com/qiniu/csharp-sdk/issues/140
+                string filename = Util.Hashing.CalcMD5(Path.GetFileName(saveKey));
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();
@@ -344,27 +369,5 @@ namespace Qiniu.IO
 
             return result;
         }
-
-        /// <summary>
-        /// [异步async]将文件(StorageFile)内容读取到字节数组中
-        /// </summary>
-        /// <param name="file">文件StorageFile</param>
-        /// <returns>存放文件按内容的字节数组</returns>
-        public static async Task<byte[]> ReadToByteArrayAsync(StorageFile file)
-        {
-            byte[] bytes = null;
-            using (var stream = await file.OpenStreamForReadAsync())
-            {
-                bytes = new byte[stream.Length];
-                using (var dataReader = new DataReader(stream.AsInputStream()))
-                {
-                    await dataReader.LoadAsync((uint)stream.Length);
-                    dataReader.ReadBytes(bytes);
-                }
-            }
-            return bytes;
-        }
-
-
     }
 }
