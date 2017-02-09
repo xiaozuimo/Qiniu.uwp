@@ -2,7 +2,7 @@
 
 ##关于
 
-Qiniu.uwp是根据七牛云C# SDK [v7.2.8 release](https://github.com/qiniu/csharp-sdk/releases/tag/7.2.8)版本修改而来。并且已经修复了[issue139](https://github.com/qiniu/csharp-sdk/issues/139)中提到的无法上传问题
+Qiniu.uwp是根据七牛云C# SDK [v7.2.8 release](https://github.com/qiniu/csharp-sdk/releases/tag/v7.2.8)版本修改而来。并且已经修复了[issue139](https://github.com/qiniu/csharp-sdk/issues/139)中提到的无法上传问题
 
 另外因为官方版本已经融合了Qiniu.uwp，所以当前版本的Qiniu.uwp只是修改了官方版本中部分函数名小写的问题，未来如果官方版本解决函数名问题Qiniu.uwp应该就不会继续更新，只会编译官方版本并发布Nuget更新。
 
