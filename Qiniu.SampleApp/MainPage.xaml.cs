@@ -12,6 +12,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -61,6 +62,8 @@ namespace Qiniu.SampleApp
             var file = await picker.PickSingleFileAsync();
 
             var res = await formUploader.UploadFileAsync(file, Path.GetFileName(file.Path), token);
+
+            //var res = await formUploader.UploadDataAsync(Encoding.UTF8.GetBytes(await FileIO.ReadTextAsync(file)), "喵了个咪.json", token);
 
             if (res.Code == 200)
             {
