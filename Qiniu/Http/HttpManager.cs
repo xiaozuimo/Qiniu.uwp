@@ -58,6 +58,20 @@ namespace Qiniu.Http
         }
 
         /// <summary>
+        /// 设置自定义的客户端标识，示例："SepcifiedClient/1.1 (Universal)"
+        /// 如果设置为空白或者不设置，SDK会自动使用默认的UserAgent
+        /// </summary>
+        /// <param name="userAgent">用户自定义的UA</param>
+        /// <returns>客户端标识UA</returns>
+        public void SetUserAgent(string userAgent)
+        {
+            if (!string.IsNullOrEmpty(userAgent))
+            {
+                this.userAgent = userAgent;
+            }
+        }
+
+        /// <summary>
         /// 多部分表单数据(multi-part form-data)的分界(boundary)标识
         /// </summary>
         /// <returns>分界(boundary)标识字符串</returns>
