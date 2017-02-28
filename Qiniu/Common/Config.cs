@@ -37,7 +37,14 @@ namespace Qiniu.Common
         /// <param name="useHTTPS">是否使用HTTPS</param>
         public static void SetZone(ZoneID zoneId, bool useHTTPS)
         {
-            ZONE = Zone.GetZone(zoneId, useHTTPS);
+            if (zoneId != ZoneID.Invalid)
+            {
+                ZONE = Zone.GetZone(zoneId, useHTTPS);
+            }
+            else
+            {
+                throw new System.Exception("Invalid ZoneID");
+            }
         }
 
         /// <summary>

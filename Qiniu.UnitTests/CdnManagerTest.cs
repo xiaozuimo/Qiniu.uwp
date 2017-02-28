@@ -14,6 +14,7 @@ namespace Qiniu.UnitTests
     [TestClass]
     public class CdnManagerTest : QiniuTestEnvars
     {
+
         [TestMethod]
         public async Task RefreshTest()
         {
@@ -24,7 +25,7 @@ namespace Qiniu.UnitTests
             string[] dirs = new string[] { "" };
             RefreshResult result = await target.RefreshUrlsAndDirsAsync(urls, dirs);
 
-            Assert.AreEqual((int)HttpCode.OK, result.Code);
+            Assert.AreNotEqual((int)HttpCode.USER_EXCEPTION, result.RefCode);
         }
 
         [TestMethod]
@@ -37,7 +38,7 @@ namespace Qiniu.UnitTests
 
             PrefetchResult result = await target.PrefetchUrlsAsync(urls);
 
-            Assert.AreEqual((int)HttpCode.OK, result.Code);
+            Assert.AreNotEqual((int)HttpCode.USER_EXCEPTION, result.RefCode);
         }
 
         [TestMethod]
@@ -53,7 +54,7 @@ namespace Qiniu.UnitTests
 
             BandwidthResult result = await target.GetBandwidthDataAsync(domains, start, end, granu);
 
-            Assert.AreEqual((int)HttpCode.OK, result.Code);
+            Assert.AreNotEqual((int)HttpCode.USER_EXCEPTION, result.RefCode);
         }
 
         [TestMethod]
@@ -84,6 +85,8 @@ namespace Qiniu.UnitTests
             TimestampAntiLeechUrlRequest req = new TimestampAntiLeechUrlRequest(TestURL2, qiniuKey, expireInSeconds);
 
             string result = target.CreateTimestampAntiLeechUrl(req);
+
+            Assert.IsNotNull(result);
         }
 
     }
