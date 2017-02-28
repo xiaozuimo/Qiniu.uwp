@@ -169,6 +169,7 @@
     <Compile Include="Util\Crypto.cs" />
     <Compile Include="Util\ETag.cs" />
     <Compile Include="Util\Hashing.cs" />
+    <Compile Include="Util\LabMD5.cs" />
     <Compile Include="Util\Mac.cs" />
     <Compile Include="Util\QETag.cs" />
     <Compile Include="Util\Signature.cs" />

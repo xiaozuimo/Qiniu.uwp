@@ -48,5 +48,18 @@ namespace Qiniu.Util
 
             return CryptographicBuffer.EncodeToHexString(digest);
         }
+
+
+        /// <summary>
+        /// 计算MD5哈希(第三方实现)
+        /// </summary>
+        /// <param name="str">待计算的字符串,避免FIPS-Exception</param>
+        /// <returns>MD5结果</returns>
+        public static string CalcMD5X(string str)
+        {
+            byte[] data = Encoding.UTF8.GetBytes(str);
+            LabMD5 md5 = new LabMD5();
+            return md5.ComputeHash(data);
+        }
     }
 }

@@ -96,7 +96,7 @@ namespace Qiniu.Http
         }
 
         /// <summary>
-        /// HTTP-GET方法
+        /// [异步async]HTTP-GET方法
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="token">令牌(凭证)[可选->设置为null]</param>
@@ -131,13 +131,14 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-GET] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-GET] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+
                 sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
@@ -148,7 +149,7 @@ namespace Qiniu.Http
         }
 
         /// <summary>
-        /// HTTP-POST方法(不包含body数据)
+        /// [异步async]HTTP-POST方法(不包含body数据)
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="token">令牌(凭证)[可选]</param>
@@ -185,13 +186,14 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+
                 sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
@@ -202,7 +204,7 @@ namespace Qiniu.Http
         }
 
         /// <summary>
-        /// HTTP-POST方法(包含body数据)
+        /// [异步async]HTTP-POST方法(包含body数据)
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="data">主体数据(字节数据)</param>
@@ -224,7 +226,7 @@ namespace Qiniu.Http
 
                 var content = new ByteArrayContent(data);
                 req.Content = content;
-				req.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType.APPLICATION_OCTET_STREAM);
+                req.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType.APPLICATION_OCTET_STREAM);
 
                 var msg = await client.SendAsync(req);
                 result.Code = (int)msg.StatusCode;
@@ -244,15 +246,15 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-BIN] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+
                 sb.AppendLine();
-                
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -261,9 +263,8 @@ namespace Qiniu.Http
             return result;
         }
 
-
         /// <summary>
-        /// HTTP-POST方法(包含body数据)
+        /// [异步async]HTTP-POST方法(包含body数据)
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="data">主体数据(字节数据)</param>
@@ -306,7 +307,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] Post-data Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-BIN] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -323,7 +324,7 @@ namespace Qiniu.Http
         }
 
         /// <summary>
-        /// HTTP-POST方法(包含JSON文本的body数据)
+        /// [异步async]HTTP-POST方法(包含JSON文本的body数据)
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="data">主体数据(JSON文本)</param>
@@ -365,13 +366,14 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-JSON] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+
                 sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
@@ -381,9 +383,8 @@ namespace Qiniu.Http
             return result;
         }
 
-
         /// <summary>
-        /// HTTP-POST方法(包含普通文本的body数据)
+        /// [异步async]HTTP-POST方法(包含普通文本的body数据)
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="data">主体数据(普通文本)</param>
@@ -425,7 +426,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] Post-json Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-TEXT] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -442,7 +443,7 @@ namespace Qiniu.Http
         }
 
         /// <summary>
-        /// HTTP-POST方法(包含表单数据)
+        /// [异步async]HTTP-POST方法(包含表单数据)
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="kvData">键值对数据</param>
@@ -464,7 +465,7 @@ namespace Qiniu.Http
 
                 var content = new FormUrlEncodedContent(kvData);
                 req.Content = content;
-				req.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType.WWW_FORM_URLENC);
+                req.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType.WWW_FORM_URLENC);
 
                 var msg = await client.SendAsync(req);
                 result.Code = (int)msg.StatusCode;
@@ -484,13 +485,14 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] Post-form Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-FORM] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+
                 sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
@@ -501,7 +503,7 @@ namespace Qiniu.Http
         }
 
         /// <summary>
-        /// HTTP-POST方法(包含表单数据)
+        /// [异步async]HTTP-POST方法(包含表单数据)
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="data">表单数据</param>
@@ -543,13 +545,14 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-FORM] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+
                 sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
@@ -560,7 +563,7 @@ namespace Qiniu.Http
         }
 
         /// <summary>
-        /// HTTP-POST方法(包含表单数据)
+        /// [异步async]HTTP-POST方法(包含表单数据)
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="data">表单数据</param>
@@ -582,8 +585,8 @@ namespace Qiniu.Http
 
                 var content = new ByteArrayContent(data);
                 req.Content = content;
-				req.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType.WWW_FORM_URLENC);				
-				
+                req.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType.WWW_FORM_URLENC);
+
                 var msg = await client.SendAsync(req);
                 result.Code = (int)msg.StatusCode;
                 result.RefCode = (int)msg.StatusCode;
@@ -602,13 +605,14 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-FORM] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+
                 sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
@@ -619,7 +623,7 @@ namespace Qiniu.Http
         }
 
         /// <summary>
-        /// HTTP-POST方法(包含多分部数据,multipart/form-data)
+        /// [异步async]HTTP-POST方法(包含多分部数据,multipart/form-data)
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="data">主体数据</param>
@@ -643,9 +647,9 @@ namespace Qiniu.Http
 
                 var content = new ByteArrayContent(data);
                 req.Content = content;
-				string ct = string.Format("{0}; boundary={1}", ContentType.MULTIPART_FORM_DATA, boundary);
+                string ct = string.Format("{0}; boundary={1}", ContentType.MULTIPART_FORM_DATA, boundary);
                 req.Content.Headers.Add("Content-Type", ct);
-                
+
                 var msg = await client.SendAsync(req);
                 result.Code = (int)msg.StatusCode;
                 result.RefCode = (int)msg.StatusCode;
@@ -664,13 +668,14 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-MPART] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+
                 sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
